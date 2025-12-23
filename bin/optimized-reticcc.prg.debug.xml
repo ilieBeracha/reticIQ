@@ -1,0 +1,716 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<debugInfo>
+    <manifest filename="/Users/ilie/Desktop/Dev/garmin/reticcc/manifest.xml"/>
+    <pcToLineNum>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="1" lineNum="5" parent="globals/reticccDelegate" pc="268435460" symbol="&lt;init&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="2" lineNum="187" parent="globals" pc="268435479" symbol="getApp"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="2" lineNum="188" parent="globals" pc="268435489" symbol="getApp"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="3" lineNum="10" parent="globals/reticccView" pc="268435505" symbol="&lt;init&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="3" lineNum="37" parent="globals/reticccView" pc="268435523" symbol="&lt;init&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/gen/006-B3888-00/source/Rez.mcgen" id="4" lineNum="7" parent="globals/Rez" pc="268435538" symbol="&lt;init&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="5" lineNum="161" parent="globals/CommListener" pc="268435562" symbol="&lt;init&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc" id="6" lineNum="5" parent="globals/reticccMenuDelegate" pc="268435581" symbol="&lt;init&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="7" lineNum="15" parent="globals/reticccApp" pc="268435600" symbol="&lt;init&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="8" lineNum="30" parent="globals/reticccDelegate" pc="268435619" symbol="onBack"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="8" lineNum="32" parent="globals/reticccDelegate" pc="268435623" symbol="onBack"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="8" lineNum="33" parent="globals/reticccDelegate" pc="268435633" symbol="onBack"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="8" lineNum="34" parent="globals/reticccDelegate" pc="268435640" symbol="onBack"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="8" lineNum="36" parent="globals/reticccDelegate" pc="268435655" symbol="onBack"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="9" lineNum="10" parent="globals/reticccDelegate" pc="268435658" symbol="onMenu"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="9" lineNum="11" parent="globals/reticccDelegate" pc="268435660" symbol="onMenu"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="9" lineNum="16" parent="globals/reticccDelegate" pc="268435741" symbol="onMenu"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="10" lineNum="6" parent="globals/reticccDelegate" pc="268435744" symbol="initialize"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="10" lineNum="7" parent="globals/reticccDelegate" pc="268435746" symbol="initialize"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="11" lineNum="20" parent="globals/reticccDelegate" pc="268435765" symbol="onSelect"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="11" lineNum="22" parent="globals/reticccDelegate" pc="268435769" symbol="onSelect"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="11" lineNum="23" parent="globals/reticccDelegate" pc="268435779" symbol="onSelect"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="11" lineNum="24" parent="globals/reticccDelegate" pc="268435786" symbol="onSelect"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccDelegate.mc" id="11" lineNum="26" parent="globals/reticccDelegate" pc="268435801" symbol="onSelect"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="208" parent="globals/reticccView" pc="268435804" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="215" parent="globals/reticccView" pc="268435808" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="216" parent="globals/reticccView" pc="268435815" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="217" parent="globals/reticccView" pc="268435822" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="218" parent="globals/reticccView" pc="268435829" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="220" parent="globals/reticccView" pc="268435836" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="224" parent="globals/reticccView" pc="268435855" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="233" parent="globals/reticccView" pc="268435898" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="239" parent="globals/reticccView" pc="268435936" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="242" parent="globals/reticccView" pc="268435966" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="246" parent="globals/reticccView" pc="268435985" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="247" parent="globals/reticccView" pc="268435992" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="248" parent="globals/reticccView" pc="268436006" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="249" parent="globals/reticccView" pc="268436016" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="250" parent="globals/reticccView" pc="268436030" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="252" parent="globals/reticccView" pc="268436040" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="261" parent="globals/reticccView" pc="268436065" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="265" parent="globals/reticccView" pc="268436084" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="268" parent="globals/reticccView" pc="268436110" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="272" parent="globals/reticccView" pc="268436129" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="274" parent="globals/reticccView" pc="268436136" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="275" parent="globals/reticccView" pc="268436140" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="276" parent="globals/reticccView" pc="268436163" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="278" parent="globals/reticccView" pc="268436176" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="279" parent="globals/reticccView" pc="268436196" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="281" parent="globals/reticccView" pc="268436225" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="288" parent="globals/reticccView" pc="268436250" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="293" parent="globals/reticccView" pc="268436270" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="12" lineNum="297" parent="globals/reticccView" pc="268436289" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="13" lineNum="149" parent="globals/reticccView" pc="268436324" symbol="resetToIdle"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="13" lineNum="151" parent="globals/reticccView" pc="268436328" symbol="resetToIdle"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="13" lineNum="152" parent="globals/reticccView" pc="268436335" symbol="resetToIdle"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="13" lineNum="153" parent="globals/reticccView" pc="268436345" symbol="resetToIdle"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="13" lineNum="154" parent="globals/reticccView" pc="268436355" symbol="resetToIdle"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="13" lineNum="155" parent="globals/reticccView" pc="268436365" symbol="resetToIdle"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="13" lineNum="156" parent="globals/reticccView" pc="268436375" symbol="resetToIdle"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="13" lineNum="157" parent="globals/reticccView" pc="268436392" symbol="resetToIdle"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="13" lineNum="158" parent="globals/reticccView" pc="268436405" symbol="resetToIdle"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="95" parent="globals/reticccView" pc="268436422" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="97" parent="globals/reticccView" pc="268436426" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="98" parent="globals/reticccView" pc="268436433" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="101" parent="globals/reticccView" pc="268436452" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="103" parent="globals/reticccView" pc="268436462" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="104" parent="globals/reticccView" pc="268436475" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="105" parent="globals/reticccView" pc="268436498" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="108" parent="globals/reticccView" pc="268436508" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="110" parent="globals/reticccView" pc="268436570" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="114" parent="globals/reticccView" pc="268436632" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="116" parent="globals/reticccView" pc="268436694" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="118" parent="globals/reticccView" pc="268436744" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="119" parent="globals/reticccView" pc="268436794" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="122" parent="globals/reticccView" pc="268436844" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="123" parent="globals/reticccView" pc="268436870" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="14" lineNum="124" parent="globals/reticccView" pc="268436883" symbol="startSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="15" lineNum="71" parent="globals/reticccView" pc="268436900" symbol="onHide"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="15" lineNum="73" parent="globals/reticccView" pc="268436904" symbol="onHide"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="15" lineNum="74" parent="globals/reticccView" pc="268436914" symbol="onHide"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="15" lineNum="75" parent="globals/reticccView" pc="268436921" symbol="onHide"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="15" lineNum="76" parent="globals/reticccView" pc="268436933" symbol="onHide"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="16" lineNum="162" parent="globals/reticccView" pc="268436946" symbol="toggleDebug"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="16" lineNum="163" parent="globals/reticccView" pc="268436948" symbol="toggleDebug"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="16" lineNum="164" parent="globals/reticccView" pc="268436965" symbol="toggleDebug"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="16" lineNum="165" parent="globals/reticccView" pc="268437001" symbol="toggleDebug"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="17" lineNum="52" parent="globals/reticccView" pc="268437018" symbol="addDebug"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="17" lineNum="54" parent="globals/reticccView" pc="268437022" symbol="addDebug"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="17" lineNum="55" parent="globals/reticccView" pc="268437032" symbol="addDebug"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="17" lineNum="56" parent="globals/reticccView" pc="268437056" symbol="addDebug"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="17" lineNum="57" parent="globals/reticccView" pc="268437070" symbol="addDebug"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="17" lineNum="58" parent="globals/reticccView" pc="268437090" symbol="addDebug"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="17" lineNum="60" parent="globals/reticccView" pc="268437124" symbol="addDebug"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="307" parent="globals/reticccView" pc="268437141" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="314" parent="globals/reticccView" pc="268437145" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="315" parent="globals/reticccView" pc="268437152" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="317" parent="globals/reticccView" pc="268437159" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="321" parent="globals/reticccView" pc="268437178" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="330" parent="globals/reticccView" pc="268437209" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="331" parent="globals/reticccView" pc="268437216" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="337" parent="globals/reticccView" pc="268437254" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="340" parent="globals/reticccView" pc="268437284" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="344" parent="globals/reticccView" pc="268437303" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="353" parent="globals/reticccView" pc="268437334" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="357" parent="globals/reticccView" pc="268437353" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="360" parent="globals/reticccView" pc="268437388" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="364" parent="globals/reticccView" pc="268437407" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="371" parent="globals/reticccView" pc="268437435" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="380" parent="globals/reticccView" pc="268437463" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="384" parent="globals/reticccView" pc="268437482" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="386" parent="globals/reticccView" pc="268437492" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="387" parent="globals/reticccView" pc="268437496" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="388" parent="globals/reticccView" pc="268437519" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="389" parent="globals/reticccView" pc="268437532" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="390" parent="globals/reticccView" pc="268437552" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="392" parent="globals/reticccView" pc="268437581" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="18" lineNum="399" parent="globals/reticccView" pc="268437609" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="405" parent="globals/reticccView" pc="268437630" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="412" parent="globals/reticccView" pc="268437634" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="413" parent="globals/reticccView" pc="268437641" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="415" parent="globals/reticccView" pc="268437648" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="419" parent="globals/reticccView" pc="268437667" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="420" parent="globals/reticccView" pc="268437690" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="424" parent="globals/reticccView" pc="268437706" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="425" parent="globals/reticccView" pc="268437716" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="426" parent="globals/reticccView" pc="268437736" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="428" parent="globals/reticccView" pc="268437765" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="429" parent="globals/reticccView" pc="268437772" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="430" parent="globals/reticccView" pc="268437779" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="431" parent="globals/reticccView" pc="268437786" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="440" parent="globals/reticccView" pc="268437811" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="444" parent="globals/reticccView" pc="268437827" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="453" parent="globals/reticccView" pc="268437872" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="454" parent="globals/reticccView" pc="268437886" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="455" parent="globals/reticccView" pc="268437905" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="456" parent="globals/reticccView" pc="268437913" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="458" parent="globals/reticccView" pc="268437920" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="464" parent="globals/reticccView" pc="268437958" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="474" parent="globals/reticccView" pc="268438009" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="475" parent="globals/reticccView" pc="268438016" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="479" parent="globals/reticccView" pc="268438035" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="487" parent="globals/reticccView" pc="268438064" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="490" parent="globals/reticccView" pc="268438074" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="491" parent="globals/reticccView" pc="268438088" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="495" parent="globals/reticccView" pc="268438107" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="502" parent="globals/reticccView" pc="268438135" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="506" parent="globals/reticccView" pc="268438151" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="516" parent="globals/reticccView" pc="268438200" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="517" parent="globals/reticccView" pc="268438214" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="521" parent="globals/reticccView" pc="268438233" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="528" parent="globals/reticccView" pc="268438261" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="532" parent="globals/reticccView" pc="268438277" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="542" parent="globals/reticccView" pc="268438320" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="543" parent="globals/reticccView" pc="268438346" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="547" parent="globals/reticccView" pc="268438365" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="548" parent="globals/reticccView" pc="268438375" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="549" parent="globals/reticccView" pc="268438395" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="552" parent="globals/reticccView" pc="268438424" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="562" parent="globals/reticccView" pc="268438455" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="19" lineNum="568" parent="globals/reticccView" pc="268438499" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="20" lineNum="65" parent="globals/reticccView" pc="268438530" symbol="onShow"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="20" lineNum="66" parent="globals/reticccView" pc="268438532" symbol="onShow"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="20" lineNum="67" parent="globals/reticccView" pc="268438566" symbol="onShow"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="20" lineNum="68" parent="globals/reticccView" pc="268438607" symbol="onShow"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="21" lineNum="128" parent="globals/reticccView" pc="268438625" symbol="endSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="21" lineNum="129" parent="globals/reticccView" pc="268438627" symbol="endSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="21" lineNum="131" parent="globals/reticccView" pc="268438646" symbol="endSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="21" lineNum="134" parent="globals/reticccView" pc="268438659" symbol="endSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="21" lineNum="138" parent="globals/reticccView" pc="268438715" symbol="endSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="21" lineNum="140" parent="globals/reticccView" pc="268438768" symbol="endSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="21" lineNum="143" parent="globals/reticccView" pc="268438821" symbol="endSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="21" lineNum="144" parent="globals/reticccView" pc="268438862" symbol="endSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="21" lineNum="145" parent="globals/reticccView" pc="268438875" symbol="endSession"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="22" lineNum="63" parent="globals/reticccView" pc="268438892" symbol="onLayout"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="23" lineNum="176" parent="globals/reticccView" pc="268438895" symbol="&lt;globals/reticccView/&lt;&gt;formatTime&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="23" lineNum="177" parent="globals/reticccView" pc="268438897" symbol="&lt;globals/reticccView/&lt;&gt;formatTime&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="24" lineNum="170" parent="globals/reticccView" pc="268438949" symbol="setStatus"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="24" lineNum="171" parent="globals/reticccView" pc="268438951" symbol="setStatus"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="25" lineNum="81" parent="globals/reticccView" pc="268438962" symbol="onTimerTick"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="25" lineNum="82" parent="globals/reticccView" pc="268438964" symbol="onTimerTick"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="25" lineNum="83" parent="globals/reticccView" pc="268438998" symbol="onTimerTick"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="25" lineNum="84" parent="globals/reticccView" pc="268439036" symbol="onTimerTick"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="26" lineNum="45" parent="globals/reticccView" pc="268439056" symbol="initialize"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="26" lineNum="46" parent="globals/reticccView" pc="268439058" symbol="initialize"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="26" lineNum="47" parent="globals/reticccView" pc="268439076" symbol="initialize"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="26" lineNum="48" parent="globals/reticccView" pc="268439093" symbol="initialize"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="572" parent="globals/reticccView" pc="268439111" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="579" parent="globals/reticccView" pc="268439115" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="580" parent="globals/reticccView" pc="268439122" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="581" parent="globals/reticccView" pc="268439129" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="582" parent="globals/reticccView" pc="268439136" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="583" parent="globals/reticccView" pc="268439143" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="584" parent="globals/reticccView" pc="268439150" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="586" parent="globals/reticccView" pc="268439157" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="590" parent="globals/reticccView" pc="268439176" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="591" parent="globals/reticccView" pc="268439199" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="595" parent="globals/reticccView" pc="268439218" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="604" parent="globals/reticccView" pc="268439246" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="608" parent="globals/reticccView" pc="268439262" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="609" parent="globals/reticccView" pc="268439272" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="610" parent="globals/reticccView" pc="268439289" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="613" parent="globals/reticccView" pc="268439315" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="623" parent="globals/reticccView" pc="268439340" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="627" parent="globals/reticccView" pc="268439356" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="634" parent="globals/reticccView" pc="268439384" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="638" parent="globals/reticccView" pc="268439403" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="647" parent="globals/reticccView" pc="268439448" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="651" parent="globals/reticccView" pc="268439464" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="658" parent="globals/reticccView" pc="268439492" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="662" parent="globals/reticccView" pc="268439511" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="671" parent="globals/reticccView" pc="268439551" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="675" parent="globals/reticccView" pc="268439567" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="682" parent="globals/reticccView" pc="268439601" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="690" parent="globals/reticccView" pc="268439670" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="699" parent="globals/reticccView" pc="268439722" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="27" lineNum="703" parent="globals/reticccView" pc="268439741" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="28" lineNum="181" parent="globals/reticccView" pc="268439773" symbol="onUpdate"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="28" lineNum="183" parent="globals/reticccView" pc="268439777" symbol="onUpdate"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="28" lineNum="184" parent="globals/reticccView" pc="268439784" symbol="onUpdate"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="28" lineNum="185" parent="globals/reticccView" pc="268439794" symbol="onUpdate"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="28" lineNum="189" parent="globals/reticccView" pc="268439810" symbol="onUpdate"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="28" lineNum="191" parent="globals/reticccView" pc="268439822" symbol="onUpdate"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="28" lineNum="192" parent="globals/reticccView" pc="268439835" symbol="onUpdate"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="28" lineNum="193" parent="globals/reticccView" pc="268439848" symbol="onUpdate"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="28" lineNum="196" parent="globals/reticccView" pc="268439858" symbol="onUpdate"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="28" lineNum="197" parent="globals/reticccView" pc="268439877" symbol="onUpdate"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="28" lineNum="198" parent="globals/reticccView" pc="268439900" symbol="onUpdate"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="28" lineNum="199" parent="globals/reticccView" pc="268439911" symbol="onUpdate"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="28" lineNum="200" parent="globals/reticccView" pc="268439934" symbol="onUpdate"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="28" lineNum="201" parent="globals/reticccView" pc="268439945" symbol="onUpdate"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="28" lineNum="203" parent="globals/reticccView" pc="268439968" symbol="onUpdate"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="29" lineNum="89" parent="globals/reticccView" pc="268439989" symbol="onMessageReceived"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="29" lineNum="90" parent="globals/reticccView" pc="268439991" symbol="onMessageReceived"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccView.mc" id="29" lineNum="91" parent="globals/reticccView" pc="268440010" symbol="onMessageReceived"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="30" lineNum="176" parent="globals/CommListener" pc="268440055" symbol="onError"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="30" lineNum="178" parent="globals/CommListener" pc="268440059" symbol="onError"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="30" lineNum="180" parent="globals/CommListener" pc="268440069" symbol="onError"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="30" lineNum="181" parent="globals/CommListener" pc="268440076" symbol="onError"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="30" lineNum="182" parent="globals/CommListener" pc="268440093" symbol="onError"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="31" lineNum="166" parent="globals/CommListener" pc="268440113" symbol="onComplete"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="31" lineNum="168" parent="globals/CommListener" pc="268440117" symbol="onComplete"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="31" lineNum="170" parent="globals/CommListener" pc="268440127" symbol="onComplete"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="31" lineNum="171" parent="globals/CommListener" pc="268440134" symbol="onComplete"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="31" lineNum="172" parent="globals/CommListener" pc="268440151" symbol="onComplete"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="32" lineNum="162" parent="globals/CommListener" pc="268440171" symbol="initialize"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="32" lineNum="163" parent="globals/CommListener" pc="268440173" symbol="initialize"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc" id="33" lineNum="10" parent="globals/reticccMenuDelegate" pc="268440192" symbol="onMenuItem"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc" id="33" lineNum="11" parent="globals/reticccMenuDelegate" pc="268440194" symbol="onMenuItem"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc" id="33" lineNum="12" parent="globals/reticccMenuDelegate" pc="268440205" symbol="onMenuItem"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc" id="33" lineNum="13" parent="globals/reticccMenuDelegate" pc="268440229" symbol="onMenuItem"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc" id="33" lineNum="14" parent="globals/reticccMenuDelegate" pc="268440240" symbol="onMenuItem"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc" id="34" lineNum="6" parent="globals/reticccMenuDelegate" pc="268440265" symbol="initialize"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc" id="34" lineNum="7" parent="globals/reticccMenuDelegate" pc="268440267" symbol="initialize"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="35" lineNum="21" parent="globals/reticccApp" pc="268440286" symbol="onStart"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="35" lineNum="23" parent="globals/reticccApp" pc="268440288" symbol="onStart"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="35" lineNum="24" parent="globals/reticccApp" pc="268440320" symbol="onStart"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="35" lineNum="25" parent="globals/reticccApp" pc="268440333" symbol="onStart"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="31" parent="globals/reticccApp" pc="268440360" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="33" parent="globals/reticccApp" pc="268440364" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="34" parent="globals/reticccApp" pc="268440374" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="35" parent="globals/reticccApp" pc="268440381" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="38" parent="globals/reticccApp" pc="268440401" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="40" parent="globals/reticccApp" pc="268440411" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="41" parent="globals/reticccApp" pc="268440417" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="42" parent="globals/reticccApp" pc="268440424" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="44" parent="globals/reticccApp" pc="268440444" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="47" parent="globals/reticccApp" pc="268440448" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="49" parent="globals/reticccApp" pc="268440455" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="50" parent="globals/reticccApp" pc="268440473" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="51" parent="globals/reticccApp" pc="268440493" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="52" parent="globals/reticccApp" pc="268440511" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="53" parent="globals/reticccApp" pc="268440531" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="54" parent="globals/reticccApp" pc="268440549" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="56" parent="globals/reticccApp" pc="268440569" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="61" parent="globals/reticccApp" pc="268440589" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="62" parent="globals/reticccApp" pc="268440607" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="63" parent="globals/reticccApp" pc="268440611" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="64" parent="globals/reticccApp" pc="268440629" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="65" parent="globals/reticccApp" pc="268440636" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="66" parent="globals/reticccApp" pc="268440643" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="67" parent="globals/reticccApp" pc="268440672" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="69" parent="globals/reticccApp" pc="268440704" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="74" parent="globals/reticccApp" pc="268440730" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="77" parent="globals/reticccApp" pc="268440763" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="78" parent="globals/reticccApp" pc="268440776" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="79" parent="globals/reticccApp" pc="268440789" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="80" parent="globals/reticccApp" pc="268440809" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="82" parent="globals/reticccApp" pc="268440841" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="84" parent="globals/reticccApp" pc="268440870" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="36" lineNum="87" parent="globals/reticccApp" pc="268440906" symbol="onPhoneMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="91" parent="globals/reticccApp" pc="268440923" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="93" parent="globals/reticccApp" pc="268440927" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="94" parent="globals/reticccApp" pc="268440933" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="97" parent="globals/reticccApp" pc="268440937" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="99" parent="globals/reticccApp" pc="268440950" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="101" parent="globals/reticccApp" pc="268440969" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="103" parent="globals/reticccApp" pc="268441027" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="104" parent="globals/reticccApp" pc="268441034" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="105" parent="globals/reticccApp" pc="268441041" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="107" parent="globals/reticccApp" pc="268441060" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="112" parent="globals/reticccApp" pc="268441098" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="114" parent="globals/reticccApp" pc="268441118" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="118" parent="globals/reticccApp" pc="268441154" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="120" parent="globals/reticccApp" pc="268441173" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="125" parent="globals/reticccApp" pc="268441211" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="127" parent="globals/reticccApp" pc="268441231" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="131" parent="globals/reticccApp" pc="268441267" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="37" lineNum="133" parent="globals/reticccApp" pc="268441286" symbol="handleMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="38" lineNum="153" parent="globals/reticccApp" pc="268441320" symbol="getInitialView"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="38" lineNum="154" parent="globals/reticccApp" pc="268441324" symbol="getInitialView"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="38" lineNum="155" parent="globals/reticccApp" pc="268441348" symbol="getInitialView"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="38" lineNum="156" parent="globals/reticccApp" pc="268441358" symbol="getInitialView"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="39" lineNum="140" parent="globals/reticccApp" pc="268441405" symbol="sendMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="39" lineNum="141" parent="globals/reticccApp" pc="268441407" symbol="sendMessage"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="40" lineNum="16" parent="globals/reticccApp" pc="268441473" symbol="initialize"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="40" lineNum="17" parent="globals/reticccApp" pc="268441475" symbol="initialize"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccApp.mc" id="41" lineNum="150" parent="globals/reticccApp" pc="268441494" symbol="onStop"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/gen/006-B3888-00/source/Rez.mcgen" id="42" lineNum="14" parent="globals/Rez/Layouts" pc="268441497" symbol="MainLayout"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/gen/006-B3888-00/source/Rez.mcgen" id="42" lineNum="15" parent="globals/Rez/Layouts" pc="268441509" symbol="MainLayout"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/gen/006-B3888-00/source/Rez.mcgen" id="42" lineNum="17" parent="globals/Rez/Layouts" pc="268441522" symbol="MainLayout"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/gen/006-B3888-00/source/Rez.mcgen" id="42" lineNum="19" parent="globals/Rez/Layouts" pc="268441656" symbol="MainLayout"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/gen/006-B3888-00/source/Rez.mcgen" id="42" lineNum="20" parent="globals/Rez/Layouts" pc="268441761" symbol="MainLayout"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/gen/006-B3888-00/source/Rez.mcgen" id="42" lineNum="22" parent="globals/Rez/Layouts" pc="268441798" symbol="MainLayout"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/gen/006-B3888-00/source/Rez.mcgen" id="43" lineNum="27" parent="globals/Rez/Menus/MainMenu" pc="268441825" symbol="&lt;init&gt;"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/gen/006-B3888-00/source/Rez.mcgen" id="44" lineNum="28" parent="globals/Rez/Menus/MainMenu" pc="268441844" symbol="initialize"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/gen/006-B3888-00/source/Rez.mcgen" id="44" lineNum="29" parent="globals/Rez/Menus/MainMenu" pc="268441846" symbol="initialize"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/gen/006-B3888-00/source/Rez.mcgen" id="44" lineNum="30" parent="globals/Rez/Menus/MainMenu" pc="268441864" symbol="initialize"/>
+        <entry filename="/Users/ilie/Desktop/Dev/garmin/reticcc/bin/gen/006-B3888-00/source/Rez.mcgen" id="44" lineNum="31" parent="globals/Rez/Menus/MainMenu" pc="268441920" symbol="initialize"/>
+    </pcToLineNum>
+    <symbolTable>
+        <entry id="42" method="true" symbol="resetToIdle"/>
+        <entry id="8388639" module="true" symbol="Graphics"/>
+        <entry field="true" id="8389346" symbol="text"/>
+        <entry field="true" id="29" symbol="&lt;globals/reticccView/&lt;&gt;_status&gt;"/>
+        <entry id="9" module="true" symbol="MessageTypes"/>
+        <entry id="8388632" method="true" symbol="&lt;init&gt;"/>
+        <entry id="6" module="true" symbol="globals/Rez/Menus"/>
+        <entry id="2" module="true" symbol="globals/MessageTypes"/>
+        <entry id="41" method="true" symbol="onTimerTick"/>
+        <entry id="53" method="true" symbol="MainLayout"/>
+        <entry id="43" method="true" symbol="setStatus"/>
+        <entry field="true" id="16" symbol="&lt;globals/reticccView/&lt;&gt;_connected&gt;"/>
+        <entry id="36" method="true" symbol="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;"/>
+        <entry id="44" method="true" symbol="startSession"/>
+        <entry id="13" object="true" symbol="reticccMenuDelegate"/>
+        <entry field="true" id="17" symbol="&lt;globals/reticccView/&lt;&gt;_debugLog&gt;"/>
+        <entry field="true" id="8388611" module="true" symbol="Toybox"/>
+        <entry field="true" id="26" symbol="&lt;globals/reticccView/&lt;&gt;_sessionId&gt;"/>
+        <entry id="40" method="true" symbol="onMessageReceived"/>
+        <entry field="true" id="23" symbol="&lt;globals/reticccView/&lt;&gt;_elapsedSeconds&gt;"/>
+        <entry field="true" id="55" symbol="AppName"/>
+        <entry field="true" id="30" symbol="&lt;globals/reticccView/&lt;&gt;_targetsCount&gt;"/>
+        <entry id="7" module="true" symbol="globals/Rez/Strings"/>
+        <entry field="true" id="25" symbol="&lt;globals/reticccView/&lt;&gt;_rounds&gt;"/>
+        <entry id="8389080" method="true" symbol="onMenu"/>
+        <entry id="8389345" symbol="rezId"/>
+        <entry field="true" id="28" symbol="&lt;globals/reticccView/&lt;&gt;_state&gt;"/>
+        <entry id="8388648" module="true" symbol="WatchUi"/>
+        <entry id="8389081" method="true" symbol="onBack"/>
+        <entry field="true" id="15" symbol="&lt;globals/reticccView/&lt;&gt;_accuracy&gt;"/>
+        <entry field="true" id="10" symbol="mainView"/>
+        <entry id="3" module="true" symbol="globals/Rez"/>
+        <entry field="true" id="58" symbol="prompt"/>
+        <entry field="true" id="52" symbol="id_monkey"/>
+        <entry id="11" object="true" symbol="reticccApp"/>
+        <entry id="8389124" method="true" symbol="onUpdate"/>
+        <entry id="14" object="true" symbol="reticccView"/>
+        <entry field="true" id="8389065" symbol="locY"/>
+        <entry field="true" id="8389064" symbol="locX"/>
+        <entry id="50" method="true" symbol="sendMessage"/>
+        <entry id="39" method="true" symbol="&lt;globals/reticccView/&lt;&gt;formatTime&gt;"/>
+        <entry id="38" method="true" symbol="endSession"/>
+        <entry id="8388771" module="true" object="true" symbol="Drawables"/>
+        <entry id="8389348" symbol="font"/>
+        <entry id="60" symbol="item_2"/>
+        <entry id="59" symbol="item_1"/>
+        <entry id="47" module="true" symbol="Menus"/>
+        <entry id="8389275" method="true" symbol="getApp"/>
+        <entry id="5" module="true" symbol="globals/Rez/Layouts"/>
+        <entry field="true" id="19" symbol="&lt;globals/reticccView/&lt;&gt;_distance&gt;"/>
+        <entry field="true" id="31" symbol="&lt;globals/reticccView/&lt;&gt;_timeLimit&gt;"/>
+        <entry field="true" id="22" symbol="&lt;globals/reticccView/&lt;&gt;_duration&gt;"/>
+        <entry id="35" method="true" symbol="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;"/>
+        <entry id="8389122" method="true" symbol="onLayout"/>
+        <entry field="true" id="8389063" symbol="identifier"/>
+        <entry id="8389349" symbol="justification"/>
+        <entry field="true" id="21" symbol="&lt;globals/reticccView/&lt;&gt;_drillName&gt;"/>
+        <entry field="true" id="27" symbol="&lt;globals/reticccView/&lt;&gt;_startTime&gt;"/>
+        <entry id="48" method="true" symbol="handleMessage"/>
+        <entry id="8388637" module="true" symbol="Communications"/>
+        <entry id="4" module="true" symbol="globals/Rez/Drawables"/>
+        <entry id="8388828" method="true" symbol="onError"/>
+        <entry id="54" object="true" symbol="MainMenu"/>
+        <entry id="45" method="true" symbol="toggleDebug"/>
+        <entry id="34" method="true" symbol="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;"/>
+        <entry id="8388644" module="true" symbol="System"/>
+        <entry id="8389619" method="true" symbol="onSelect"/>
+        <entry field="true" id="32" symbol="&lt;globals/reticccView/&lt;&gt;_timer&gt;"/>
+        <entry id="8388645" module="true" symbol="Time"/>
+        <entry id="8388769" module="true" object="true" symbol="Rez"/>
+        <entry id="8388640" module="true" symbol="Lang"/>
+        <entry id="49" method="true" symbol="onPhoneMessage"/>
+        <entry field="true" id="18" symbol="&lt;globals/reticccView/&lt;&gt;_debugMode&gt;"/>
+        <entry field="true" id="51" symbol="LauncherIcon"/>
+        <entry id="8" object="true" symbol="CommListener"/>
+        <entry id="8388610" symbol="statics"/>
+        <entry id="8389123" method="true" symbol="onShow"/>
+        <entry id="8389350" module="true" symbol="globals"/>
+        <entry id="8388770" module="true" object="true" symbol="Strings"/>
+        <entry id="33" method="true" symbol="addDebug"/>
+        <entry id="8388702" method="true" symbol="initialize"/>
+        <entry field="true" id="20" symbol="&lt;globals/reticccView/&lt;&gt;_drillGoal&gt;"/>
+        <entry id="8389279" method="true" symbol="onStart"/>
+        <entry id="37" method="true" symbol="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;"/>
+        <entry id="8389280" method="true" symbol="getInitialView"/>
+        <entry id="8389281" method="true" symbol="onStop"/>
+        <entry id="8389109" method="true" symbol="onMenuItem"/>
+        <entry field="true" id="8389347" symbol="color"/>
+        <entry id="8388829" method="true" symbol="onComplete"/>
+        <entry id="8388646" module="true" object="true" symbol="Timer"/>
+        <entry id="46" module="true" symbol="Layouts"/>
+        <entry id="12" object="true" symbol="reticccDelegate"/>
+        <entry field="true" id="24" symbol="&lt;globals/reticccView/&lt;&gt;_msgCount&gt;"/>
+        <entry id="8389125" method="true" symbol="onHide"/>
+        <entry id="8388635" module="true" symbol="Application"/>
+        <entry field="true" id="57" symbol="menu_label_2"/>
+        <entry field="true" id="56" symbol="menu_label_1"/>
+    </symbolTable>
+    <localVars>
+        <entry endPc="268435657" name="pre_mainView" stackId="1" startPc="268435623"/>
+        <entry endPc="268435803" name="pre_mainView" stackId="1" startPc="268435769"/>
+        <entry arg="true" endPc="268436323" name="dc" stackId="1" startPc="268435804"/>
+        <entry arg="true" endPc="268436323" name="width" stackId="2" startPc="268435804"/>
+        <entry arg="true" endPc="268436323" name="height" stackId="3" startPc="268435804"/>
+        <entry arg="true" endPc="268436323" name="centerX" stackId="4" startPc="268435804"/>
+        <entry endPc="268436322" name="stateStr" stackId="5" startPc="268435808"/>
+        <entry endPc="268436322" name="pre__1" stackId="6" startPc="268435808"/>
+        <entry endPc="268436322" name="pre_0" stackId="7" startPc="268435808"/>
+        <entry endPc="268436322" name="pre_1" stackId="8" startPc="268435808"/>
+        <entry endPc="268436322" name="pre_2" stackId="9" startPc="268435808"/>
+        <entry endPc="268436259" name="entry" stackId="10" startPc="268436163"/>
+        <entry endPc="268436420" name="pre_0" stackId="1" startPc="268436328"/>
+        <entry arg="true" endPc="268436899" name="data" stackId="1" startPc="268436422"/>
+        <entry endPc="268436898" name="pre_0" stackId="2" startPc="268436426"/>
+        <entry endPc="268436944" name="pre__timer" stackId="1" startPc="268436904"/>
+        <entry arg="true" endPc="268437140" name="msg" stackId="1" startPc="268437018"/>
+        <entry endPc="268437139" name="pre__debugLog" stackId="2" startPc="268437022"/>
+        <entry arg="true" endPc="268437629" name="dc" stackId="1" startPc="268437141"/>
+        <entry arg="true" endPc="268437629" name="width" stackId="2" startPc="268437141"/>
+        <entry arg="true" endPc="268437629" name="height" stackId="3" startPc="268437141"/>
+        <entry arg="true" endPc="268437629" name="centerX" stackId="4" startPc="268437141"/>
+        <entry endPc="268437628" name="logY" stackId="5" startPc="268437145"/>
+        <entry endPc="268437628" name="pre_0" stackId="6" startPc="268437145"/>
+        <entry endPc="268437628" name="pre_1" stackId="7" startPc="268437145"/>
+        <entry arg="true" endPc="268438529" name="dc" stackId="1" startPc="268437630"/>
+        <entry arg="true" endPc="268438529" name="width" stackId="2" startPc="268437630"/>
+        <entry arg="true" endPc="268438529" name="height" stackId="3" startPc="268437630"/>
+        <entry arg="true" endPc="268438529" name="centerX" stackId="4" startPc="268437630"/>
+        <entry endPc="268438528" name="displayName" stackId="5" startPc="268437634"/>
+        <entry endPc="268438528" name="pre__1" stackId="6" startPc="268437634"/>
+        <entry endPc="268438528" name="pre_0" stackId="7" startPc="268437634"/>
+        <entry endPc="268438528" name="pre_0xffffff" stackId="8" startPc="268437634"/>
+        <entry endPc="268438528" name="pre_1" stackId="9" startPc="268437634"/>
+        <entry endPc="268438528" name="pre_2" stackId="10" startPc="268437634"/>
+        <entry endPc="268438528" name="rightX" stackId="11" startPc="268437634"/>
+        <entry arg="true" endPc="268438891" name="data" stackId="1" startPc="268438625"/>
+        <entry arg="true" endPc="268438948" name="seconds" stackId="1" startPc="268438895"/>
+        <entry arg="true" endPc="268438961" name="status" stackId="1" startPc="268438949"/>
+        <entry arg="true" endPc="268439772" name="dc" stackId="1" startPc="268439111"/>
+        <entry arg="true" endPc="268439772" name="width" stackId="2" startPc="268439111"/>
+        <entry arg="true" endPc="268439772" name="height" stackId="3" startPc="268439111"/>
+        <entry arg="true" endPc="268439772" name="centerX" stackId="4" startPc="268439111"/>
+        <entry endPc="268439771" name="pre__1" stackId="5" startPc="268439115"/>
+        <entry endPc="268439771" name="pre_0" stackId="6" startPc="268439115"/>
+        <entry endPc="268439771" name="pre_0xaaaaaa" stackId="7" startPc="268439115"/>
+        <entry endPc="268439771" name="pre_1" stackId="8" startPc="268439115"/>
+        <entry endPc="268439771" name="pre_2" stackId="9" startPc="268439115"/>
+        <entry endPc="268439771" name="pre_20" stackId="10" startPc="268439115"/>
+        <entry arg="true" endPc="268439988" name="dc" stackId="1" startPc="268439773"/>
+        <entry endPc="268439987" name="pre__state" stackId="2" startPc="268439777"/>
+        <entry endPc="268439987" name="pre_0x000000" stackId="3" startPc="268439777"/>
+        <entry endPc="268439987" name="width" stackId="4" startPc="268439777"/>
+        <entry endPc="268439987" name="height" stackId="5" startPc="268439777"/>
+        <entry endPc="268439987" name="centerX" stackId="6" startPc="268439777"/>
+        <entry arg="true" endPc="268440054" name="msgType" stackId="1" startPc="268439989"/>
+        <entry endPc="268440111" name="pre_mainView" stackId="1" startPc="268440059"/>
+        <entry endPc="268440169" name="pre_mainView" stackId="1" startPc="268440117"/>
+        <entry arg="true" endPc="268440264" name="item" stackId="1" startPc="268440192"/>
+        <entry arg="true" endPc="268440359" name="state" stackId="1" startPc="268440286"/>
+        <entry arg="true" endPc="268440922" name="msg" stackId="1" startPc="268440360"/>
+        <entry endPc="268440921" name="pre_mainView" stackId="2" startPc="268440364"/>
+        <entry endPc="268440759" name="msgType" stackId="3" startPc="268440607"/>
+        <entry arg="true" endPc="268441319" name="msgType" stackId="1" startPc="268440923"/>
+        <entry arg="true" endPc="268441319" name="payload" stackId="2" startPc="268440923"/>
+        <entry endPc="268441318" name="pre__ACK_" stackId="3" startPc="268440927"/>
+        <entry endPc="268441318" name="typeStr" stackId="4" startPc="268440927"/>
+        <entry endPc="268441404" name="view" stackId="1" startPc="268441324"/>
+        <entry arg="true" endPc="268441472" name="msgType" stackId="1" startPc="268441405"/>
+        <entry arg="true" endPc="268441472" name="payload" stackId="2" startPc="268441405"/>
+        <entry arg="true" endPc="268441824" name="dc" stackId="1" startPc="268441497"/>
+        <entry endPc="268441824" name="rez_cmp_local_var_dc_getWidth" stackId="2" startPc="268441509"/>
+        <entry endPc="268441824" name="rez_cmp_local_text_1193959466" stackId="3" startPc="268441509"/>
+        <entry endPc="268441824" name="rez_cmp_local_bitmap_id_monkey" stackId="4" startPc="268441509"/>
+    </localVars>
+    <deviceInfo deviceVersion="8fc30743a4191ec19bcafa28e3ffcc2b5a958a17" partNumber="006-B3888-00"/>
+    <annotations>
+        <annotationEntry annotation="initialized" class="Drawables" module="globals/Rez" symbol="LauncherIcon"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="menu_label_2"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="menu_label_1"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="prompt"/>
+        <annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="AppName"/>
+        <annotationEntry annotation="initialized" class="Drawables" module="globals/Rez" symbol="id_monkey"/>
+    </annotations>
+    <dataEntryOffsetMappings>
+        <dataEntry label="globals" offset="79" parentId="" symbolId="globals" type="module"/>
+        <dataEntry label="globals/reticccDelegate" offset="190" parentId="globals" symbolId="reticccDelegate" type="class"/>
+        <dataEntry label="globals/reticccView" offset="261" parentId="globals" symbolId="reticccView" type="class"/>
+        <dataEntry label="globals/Rez" offset="588" parentId="globals" symbolId="Rez" type="module"/>
+        <dataEntry label="globals/CommListener" offset="651" parentId="globals" symbolId="CommListener" type="class"/>
+        <dataEntry label="globals/MessageTypes" offset="714" parentId="globals" symbolId="MessageTypes" type="module"/>
+        <dataEntry label="globals/reticccMenuDelegate" offset="745" parentId="globals" symbolId="reticccMenuDelegate" type="class"/>
+        <dataEntry label="globals/reticccApp" offset="800" parentId="globals" symbolId="reticccApp" type="class"/>
+        <dataEntry label="globals/Rez/Drawables" offset="895" parentId="Rez" symbolId="Drawables" type="module"/>
+        <dataEntry label="globals/Rez/Layouts" offset="942" parentId="Rez" symbolId="Layouts" type="module"/>
+        <dataEntry label="globals/Rez/Menus" offset="981" parentId="Rez" symbolId="Menus" type="module"/>
+        <dataEntry label="globals/Rez/Strings" offset="1020" parentId="Rez" symbolId="Strings" type="module"/>
+        <dataEntry label="globals/Rez/Menus/MainMenu" offset="1083" parentId="Menus" symbolId="MainMenu" type="class"/>
+    </dataEntryOffsetMappings>
+    <functions>
+        <functionEntry accessMode="public" endPc="268435478" name="&lt;init&gt;" parent="reticccDelegate" startPc="268435460">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435504" name="getApp" startPc="268435479">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435537" name="&lt;init&gt;" parent="reticccView" startPc="268435505">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435561" name="&lt;init&gt;" parent="Rez" startPc="268435538">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435580" name="&lt;init&gt;" parent="CommListener" startPc="268435562">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" name="&lt;init&gt;" parent="MessageTypes">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435599" name="&lt;init&gt;" parent="reticccMenuDelegate" startPc="268435581">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435618" name="&lt;init&gt;" parent="reticccApp" startPc="268435600">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435657" name="onBack" parent="reticccDelegate" startPc="268435619">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435743" name="onMenu" parent="reticccDelegate" startPc="268435658">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435764" name="initialize" parent="reticccDelegate" startPc="268435744">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268435803" name="onSelect" parent="reticccDelegate" startPc="268435765">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268436323" name="&lt;globals/reticccView/&lt;&gt;drawDebugScreen&gt;" parent="reticccView" startPc="268435804">
+            <param id="dc"/>
+            <param id="width"/>
+            <param id="height"/>
+            <param id="centerX"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436421" name="resetToIdle" parent="reticccView" startPc="268436324">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436899" name="startSession" parent="reticccView" startPc="268436422">
+            <param id="data"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268436945" name="onHide" parent="reticccView" startPc="268436900">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268437017" name="toggleDebug" parent="reticccView" startPc="268436946">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268437140" name="addDebug" parent="reticccView" startPc="268437018">
+            <param id="msg"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268437629" name="&lt;globals/reticccView/&lt;&gt;drawIdleScreen&gt;" parent="reticccView" startPc="268437141">
+            <param id="dc"/>
+            <param id="width"/>
+            <param id="height"/>
+            <param id="centerX"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268438529" name="&lt;globals/reticccView/&lt;&gt;drawActiveSession&gt;" parent="reticccView" startPc="268437630">
+            <param id="dc"/>
+            <param id="width"/>
+            <param id="height"/>
+            <param id="centerX"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268438624" name="onShow" parent="reticccView" startPc="268438530">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268438891" name="endSession" parent="reticccView" startPc="268438625">
+            <param id="data"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268438894" name="onLayout" parent="reticccView" startPc="268438892">
+            <param id="dc"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268438948" name="&lt;globals/reticccView/&lt;&gt;formatTime&gt;" parent="reticccView" startPc="268438895">
+            <param id="seconds"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268438961" name="setStatus" parent="reticccView" startPc="268438949">
+            <param id="status"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268439055" name="onTimerTick" parent="reticccView" startPc="268438962">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268439110" name="initialize" parent="reticccView" startPc="268439056">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="private" endPc="268439772" name="&lt;globals/reticccView/&lt;&gt;drawSessionEnded&gt;" parent="reticccView" startPc="268439111">
+            <param id="dc"/>
+            <param id="width"/>
+            <param id="height"/>
+            <param id="centerX"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268439988" name="onUpdate" parent="reticccView" startPc="268439773">
+            <param id="dc"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440054" name="onMessageReceived" parent="reticccView" startPc="268439989">
+            <param id="msgType"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" name="&lt;init&gt;" parent="Drawables">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" name="&lt;init&gt;" parent="Layouts">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" name="&lt;init&gt;" parent="Menus">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" name="&lt;init&gt;" parent="Strings">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440112" name="onError" parent="CommListener" startPc="268440055">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440170" name="onComplete" parent="CommListener" startPc="268440113">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440191" name="initialize" parent="CommListener" startPc="268440171">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440264" name="onMenuItem" parent="reticccMenuDelegate" startPc="268440192">
+            <param id="item"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440285" name="initialize" parent="reticccMenuDelegate" startPc="268440265">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440359" name="onStart" parent="reticccApp" startPc="268440286">
+            <param id="state"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268440922" name="onPhoneMessage" parent="reticccApp" startPc="268440360">
+            <param id="msg"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268441319" name="handleMessage" parent="reticccApp" startPc="268440923">
+            <param id="msgType"/>
+            <param id="payload"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268441404" name="getInitialView" parent="reticccApp" startPc="268441320">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268441472" name="sendMessage" parent="reticccApp" startPc="268441405">
+            <param id="msgType"/>
+            <param id="payload"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268441493" name="initialize" parent="reticccApp" startPc="268441473">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268441496" name="onStop" parent="reticccApp" startPc="268441494">
+            <param id="state"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268441824" name="MainLayout" parent="Layouts" startPc="268441497">
+            <param id="dc"/>
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268441843" name="&lt;init&gt;" parent="MainMenu" startPc="268441825">
+            <documentation/>
+        </functionEntry>
+        <functionEntry accessMode="public" endPc="268441976" name="initialize" parent="MainMenu" startPc="268441844">
+            <documentation/>
+        </functionEntry>
+    </functions>
+</debugInfo>

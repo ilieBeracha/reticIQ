@@ -1,0 +1,269 @@
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc"; @line = 1; @symbol_importdef<0> = [Toybox,1,7,13]; @symbol_importdef<1> = [Lang,1,14,18]; ]
+import Toybox.Lang;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc"; @line = 2; @symbol_importdef<0> = [Toybox,2,7,13]; @symbol_importdef<1> = [WatchUi,2,14,21]; ]
+import Toybox.WatchUi;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc"; @line = 3; @symbol_importdef<0> = [Toybox,3,7,13]; @symbol_importdef<1> = [Attention,3,14,23]; ]
+import Toybox.Attention;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc"; @line = 5; @symbol_classdef = [reticccDelegate,5,6,21]; @symbol_extends<0> = [WatchUi,5,30,37]; @symbol_extends<1> = [BehaviorDelegate,5,38,54]; ]
+class reticccDelegate extends WatchUi.BehaviorDelegate {
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc"; @line = 5; ]
+    <init> {
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc"; @line = 5; ]
+    static
+    <init> {
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc"; @line = 7; @symbol_functiondef = [initialize,7,13,23]; ]
+    function initialize() as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_7_26_9_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 8 8 ]
+        symbol [ BehaviorDelegate %tmp.2 8 8 24 ];
+        %tmp.2 = getv ? :BehaviorDelegate;
+        symbol [ initialize %tmp.3 8 25 35 ];
+        %tmp.3 = getv function %tmp.2 :initialize;
+        invoke %tmp.2 %tmp.3();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_7_26_9_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc"; @line = 11; @symbol_functiondef = [onMenu,11,13,19]; @symbol_return<0> = [Boolean,11,25,32]; ]
+    function onMenu() as Boolean {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_11_33_14_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 12 8 ]
+        symbol [ WatchUi %tmp.1 12 8 15 ];
+        %tmp.1 = getm $.Toybox.WatchUi;
+        symbol [ pushView %tmp.2 12 16 24 ];
+        %tmp.2 = getv function %tmp.1 :pushView;
+        symbol [ Rez %tmp.6 12 29 32 ];
+        %tmp.6 = getv ? :Rez;
+        symbol [ Menus %tmp.7 12 33 38 ];
+        %tmp.7 = getv %tmp.6 :Menus;
+        symbol [ MainMenu %tmp.8 12 39 47 ];
+        %tmp.8 = getv function ? %tmp.7 :MainMenu;
+        %tmp.3 = newc %tmp.8 ();
+        symbol [ reticccMenuDelegate %tmp.12 12 55 74 ];
+        %tmp.12 = getv ? :reticccMenuDelegate;
+        %tmp.9 = newc %tmp.12 ();
+        symbol [ WatchUi %tmp.13 12 78 85 ];
+        %tmp.13 = getm $.Toybox.WatchUi;
+        symbol [ SLIDE_UP %tmp.14 12 86 94 ];
+        %tmp.14 = getv %tmp.13 :SLIDE_UP;
+        invoke %tmp.1 %tmp.2(%tmp.3, %tmp.9, %tmp.14);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 13 8 ]
+        %tmp.15 = true;
+        ret %tmp.15;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_11_33_14_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc"; @line = 17; @symbol_functiondef = [onSelect,17,13,21]; @symbol_return<0> = [Boolean,17,27,34]; ]
+    function onSelect() as Boolean {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_17_35_37_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 18 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_18_8_35_8_if_stmt:
+        symbol [ mainView %tmp.2 18 12 20 ];
+        %tmp.2 = getv ? :mainView;
+        %tmp.3 = null;
+        %tmp.4 = ne %tmp.2 %tmp.3;
+        bf %tmp.4 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_18_8_35_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_18_8_35_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_18_30_35_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 19 12 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_18_30_35_8_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_18_30_35_8_stop" ]
+        %state.1 = local;
+        symbol [ state %state.1 19 16 21 ];
+        symbol [ mainView %tmp.6 19 24 32 ];
+        %tmp.6 = getv ? :mainView;
+        %tmp.7 = as %tmp.6 { (!Null) };
+        symbol [ getState %tmp.8 19 33 41 ];
+        %tmp.8 = getv function %tmp.7 :getState;
+        %tmp.9 = invoke %tmp.7 %tmp.8();
+        lputv %state.1 %tmp.9;
+        symbol [ state %state.1 19 16 21 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 21 12 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_21_12_34_12_if_stmt:
+        %tmp.10 = lgetv %state.1;
+        symbol [ state %tmp.10 21 16 21 ];
+        symbol [ STATE_SESSION_ACTIVE %tmp.12 21 25 45 ];
+        %tmp.12 = getv ? :STATE_SESSION_ACTIVE;
+        %tmp.13 = eq %tmp.10 %tmp.12;
+        bf %tmp.13 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_21_12_34_12_if_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_21_12_34_12_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_21_47_31_12_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 23 16 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_21_47_31_12_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_21_47_31_12_stop" ]
+        %added.2 = local;
+        symbol [ added %added.2 23 20 25 ];
+        symbol [ mainView %tmp.15 23 28 36 ];
+        %tmp.15 = getv ? :mainView;
+        symbol [ addShot %tmp.16 23 37 44 ];
+        %tmp.16 = getv function %tmp.15 :addShot;
+        %tmp.17 = invoke %tmp.15 %tmp.16();
+        lputv %added.2 %tmp.17;
+        symbol [ added %added.2 23 20 25 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 24 16 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_24_16_30_16_if_stmt:
+        %tmp.18 = lgetv %added.2;
+        symbol [ added %tmp.18 24 20 25 ];
+        bf %tmp.18 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_24_16_30_16_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_24_16_30_16_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_24_27_30_16_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 26 20 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_26_20_29_20_if_stmt:
+        symbol [ Attention %tmp.19 26 24 33 ];
+        %tmp.19 = getm $.Toybox.Attention;
+        %tmp.21 = const :vibrate;
+        symbol [ vibrate %tmp.21 26 39 46 const ];
+        %tmp.22 = canhazplz %tmp.19 %tmp.21;
+        bf %tmp.22 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_26_20_29_20_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_26_20_29_20_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_26_48_29_20_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 27 24 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_26_48_29_20_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_26_48_29_20_stop" ]
+        %vibeData.3 = local;
+        symbol [ vibeData %vibeData.3 27 28 36 ];
+        %tmp.23 = newa 1;
+        symbol [ Attention %tmp.26 27 44 53 ];
+        %tmp.26 = getm $.Toybox.Attention;
+        symbol [ VibeProfile %tmp.27 27 54 65 ];
+        %tmp.27 = getv function ? %tmp.26 :VibeProfile;
+        %tmp.28 = 50;
+        %tmp.29 = 100;
+        %tmp.24 = newc %tmp.27 (%tmp.28, %tmp.29);
+        %tmp.30 = dup %tmp.23;
+        %tmp.31 = aputv %tmp.30 0 %tmp.24;
+        lputv %vibeData.3 %tmp.31;
+        symbol [ vibeData %vibeData.3 27 28 36 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 28 24 ]
+        symbol [ Attention %tmp.32 28 24 33 ];
+        %tmp.32 = getm $.Toybox.Attention;
+        symbol [ vibrate %tmp.33 28 34 41 ];
+        %tmp.33 = getv function %tmp.32 :vibrate;
+        %tmp.34 = lgetv %vibeData.3;
+        symbol [ vibeData %tmp.34 28 42 50 ];
+        invoke %tmp.32 %tmp.33(%tmp.34);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_26_48_29_20_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_26_20_29_20_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_26_20_29_20_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_24_27_30_16_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_24_16_30_16_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_24_16_30_16_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_21_47_31_12_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_21_12_34_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_21_12_34_12_if_false:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 31 19 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_31_19_34_12_if_stmt:
+        %tmp.35 = lgetv %state.1;
+        symbol [ state %tmp.35 31 23 28 ];
+        symbol [ STATE_SESSION_ENDED %tmp.37 31 32 51 ];
+        %tmp.37 = getv ? :STATE_SESSION_ENDED;
+        %tmp.38 = eq %tmp.35 %tmp.37;
+        bf %tmp.38 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_31_19_34_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_31_19_34_12_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_31_53_34_12_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 33 16 ]
+        symbol [ mainView %tmp.40 33 16 24 ];
+        %tmp.40 = getv ? :mainView;
+        symbol [ resetToIdle %tmp.41 33 25 36 ];
+        %tmp.41 = getv function %tmp.40 :resetToIdle;
+        invoke %tmp.40 %tmp.41();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_31_53_34_12_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_31_19_34_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_31_19_34_12_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_21_12_34_12_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_18_30_35_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_18_8_35_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_18_8_35_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 36 8 ]
+        %tmp.42 = true;
+        ret %tmp.42;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_17_35_37_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc"; @line = 40; @symbol_functiondef = [onBack,40,13,19]; @symbol_return<0> = [Boolean,40,25,32]; ]
+    function onBack() as Boolean {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_40_33_56_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 41 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_41_8_53_8_if_stmt:
+        symbol [ mainView %tmp.2 41 12 20 ];
+        %tmp.2 = getv ? :mainView;
+        %tmp.3 = null;
+        %tmp.4 = ne %tmp.2 %tmp.3;
+        bf %tmp.4 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_41_8_53_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_41_8_53_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_41_30_53_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 42 12 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_41_30_53_8_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_41_30_53_8_stop" ]
+        %state.1 = local;
+        symbol [ state %state.1 42 16 21 ];
+        symbol [ mainView %tmp.6 42 24 32 ];
+        %tmp.6 = getv ? :mainView;
+        %tmp.7 = as %tmp.6 { (!Null) };
+        symbol [ getState %tmp.8 42 33 41 ];
+        %tmp.8 = getv function %tmp.7 :getState;
+        %tmp.9 = invoke %tmp.7 %tmp.8();
+        lputv %state.1 %tmp.9;
+        symbol [ state %state.1 42 16 21 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 44 12 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_44_12_52_12_if_stmt:
+        %tmp.10 = lgetv %state.1;
+        symbol [ state %tmp.10 44 16 21 ];
+        symbol [ STATE_SESSION_ACTIVE %tmp.12 44 25 45 ];
+        %tmp.12 = getv ? :STATE_SESSION_ACTIVE;
+        %tmp.13 = eq %tmp.10 %tmp.12;
+        bf %tmp.13 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_44_12_52_12_if_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_44_12_52_12_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_44_47_48_12_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 46 16 ]
+        symbol [ mainView %tmp.15 46 16 24 ];
+        %tmp.15 = getv ? :mainView;
+        symbol [ finishSession %tmp.16 46 25 38 ];
+        %tmp.16 = getv function %tmp.15 :finishSession;
+        invoke %tmp.15 %tmp.16();
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 47 16 ]
+        %tmp.17 = true;
+        ret %tmp.17;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_44_47_48_12_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_44_12_52_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_44_12_52_12_if_false:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 48 19 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_48_19_52_12_if_stmt:
+        %tmp.18 = lgetv %state.1;
+        symbol [ state %tmp.18 48 23 28 ];
+        symbol [ STATE_SESSION_ENDED %tmp.20 48 32 51 ];
+        %tmp.20 = getv ? :STATE_SESSION_ENDED;
+        %tmp.21 = eq %tmp.18 %tmp.20;
+        bf %tmp.21 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_48_19_52_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_48_19_52_12_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_48_53_52_12_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 50 16 ]
+        symbol [ mainView %tmp.23 50 16 24 ];
+        %tmp.23 = getv ? :mainView;
+        symbol [ resetToIdle %tmp.24 50 25 36 ];
+        %tmp.24 = getv function %tmp.23 :resetToIdle;
+        invoke %tmp.23 %tmp.24();
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 51 16 ]
+        %tmp.25 = true;
+        ret %tmp.25;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_48_53_52_12_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_48_19_52_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_48_19_52_12_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_44_12_52_12_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_41_30_53_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_41_8_53_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_41_8_53_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 55 8 ]
+        %tmp.26 = false;
+        ret %tmp.26;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_40_33_56_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc"; @line = 59; @symbol_functiondef = [onTap,59,13,18]; @symbol_param<0> = [evt,59,19,22]; @symbol_param<0>_type<0> = [WatchUi,59,26,33]; @symbol_param<0>_type<1> = [ClickEvent,59,34,44]; @symbol_return<0> = [Boolean,59,49,56]; ]
+    function onTap(evt as WatchUi.ClickEvent) as Boolean {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_59_57_61_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc" 60 8 ]
+        %tmp.1 = self;
+        symbol [ onSelect %tmp.2 60 15 23 ];
+        %tmp.2 = getv function %tmp.1 :onSelect;
+        %tmp.3 = invoke %tmp.1 %tmp.2();
+        ret %tmp.3;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccDelegate_mc_59_57_61_4_stop:
+    }
+}
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccDelegate.mc"; @line = 1; ]
+<init> {
+}

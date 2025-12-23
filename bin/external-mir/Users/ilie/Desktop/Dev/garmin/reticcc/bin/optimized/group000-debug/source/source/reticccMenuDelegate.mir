@@ -1,0 +1,76 @@
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc"; @line = 1; @symbol_importdef<0> = [Toybox,1,7,13]; @symbol_importdef<1> = [Lang,1,14,18]; ]
+import Toybox.Lang;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc"; @line = 2; @symbol_importdef<0> = [Toybox,2,7,13]; @symbol_importdef<1> = [System,2,14,20]; ]
+import Toybox.System;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc"; @line = 3; @symbol_importdef<0> = [Toybox,3,7,13]; @symbol_importdef<1> = [WatchUi,3,14,21]; ]
+import Toybox.WatchUi;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc"; @line = 5; @symbol_classdef = [reticccMenuDelegate,5,6,25]; @symbol_extends<0> = [WatchUi,5,34,41]; @symbol_extends<1> = [MenuInputDelegate,5,42,59]; ]
+class reticccMenuDelegate extends WatchUi.MenuInputDelegate {
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc"; @line = 5; ]
+    <init> {
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc"; @line = 5; ]
+    static
+    <init> {
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc"; @line = 6; @symbol_functiondef = [initialize,6,11,21]; ]
+    function initialize() as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_6_24_8_2_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc" 7 4 ]
+        symbol [ MenuInputDelegate %tmp.2 7 4 21 ];
+        %tmp.2 = getv ? :MenuInputDelegate;
+        symbol [ initialize %tmp.3 7 22 32 ];
+        %tmp.3 = getv function %tmp.2 :initialize;
+        invoke %tmp.2 %tmp.3();
+_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_6_24_8_2_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc"; @line = 10; @symbol_functiondef = [onMenuItem,10,11,21]; @symbol_param<0> = [item,10,22,26]; @symbol_param<0>_type<0> = [Symbol,10,30,36]; ]
+    function onMenuItem(item as Symbol) as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_10_46_16_2_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc" 11 4 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_11_4_15_4_if_stmt:
+        %tmp.1 = lgetv %item;
+        symbol [ item %tmp.1 11 8 12 ];
+        %tmp.3 = const :item_1;
+        symbol [ item_1 %tmp.3 11 17 23 const ];
+        %tmp.4 = eq %tmp.1 %tmp.3;
+        bf %tmp.4 @_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_11_4_15_4_if_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_11_4_15_4_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_11_25_13_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc" 12 6 ]
+        symbol [ System %tmp.5 12 6 12 ];
+        %tmp.5 = getm $.Toybox.System;
+        symbol [ println %tmp.6 12 13 20 ];
+        %tmp.6 = getv function %tmp.5 :println;
+        %tmp.7 = "item 1";
+        invoke %tmp.5 %tmp.6(%tmp.7);
+_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_11_25_13_4_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_11_4_15_4_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_11_4_15_4_if_false:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc" 13 11 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_13_11_15_4_if_stmt:
+        %tmp.8 = lgetv %item;
+        symbol [ item %tmp.8 13 15 19 ];
+        %tmp.10 = const :item_2;
+        symbol [ item_2 %tmp.10 13 24 30 const ];
+        %tmp.11 = eq %tmp.8 %tmp.10;
+        bf %tmp.11 @_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_13_11_15_4_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_13_11_15_4_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_13_32_15_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc" 14 6 ]
+        symbol [ System %tmp.12 14 6 12 ];
+        %tmp.12 = getm $.Toybox.System;
+        symbol [ println %tmp.13 14 13 20 ];
+        %tmp.13 = getv function %tmp.12 :println;
+        %tmp.14 = "item 2";
+        invoke %tmp.12 %tmp.13(%tmp.14);
+_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_13_32_15_4_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_13_11_15_4_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_13_11_15_4_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_11_4_15_4_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_bin_optimized_group000_debug_source_source_reticccMenuDelegate_mc_10_46_16_2_stop:
+    }
+}
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/bin/optimized/group000-debug/source/source/reticccMenuDelegate.mc"; @line = 1; ]
+<init> {
+}

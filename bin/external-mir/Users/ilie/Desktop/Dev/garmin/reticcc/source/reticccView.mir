@@ -1,0 +1,2426 @@
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 1; @symbol_importdef<0> = [Toybox,1,7,13]; @symbol_importdef<1> = [Graphics,1,14,22]; ]
+import Toybox.Graphics;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 2; @symbol_importdef<0> = [Toybox,2,7,13]; @symbol_importdef<1> = [WatchUi,2,14,21]; ]
+import Toybox.WatchUi;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 3; @symbol_importdef<0> = [Toybox,3,7,13]; @symbol_importdef<1> = [Lang,3,14,18]; ]
+import Toybox.Lang;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 4; @symbol_importdef<0> = [Toybox,4,7,13]; @symbol_importdef<1> = [System,4,14,20]; ]
+import Toybox.System;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 5; @symbol_importdef<0> = [Toybox,5,7,13]; @symbol_importdef<1> = [Timer,5,14,19]; ]
+import Toybox.Timer;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 6; @symbol_importdef<0> = [Toybox,6,7,13]; @symbol_importdef<1> = [Time,6,14,18]; ]
+import Toybox.Time;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 9; @symbol_enumdef = [SessionState,9,5,17]; ]
+enum SessionState {
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 10; @position = 4; @symbol_enumdec = [STATE_IDLE,10,4,14]; ]
+    STATE_IDLE,
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 11; @position = 4; @symbol_enumdec = [STATE_SESSION_ACTIVE,11,4,24]; ]
+    STATE_SESSION_ACTIVE,
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 12; @position = 4; @symbol_enumdec = [STATE_SESSION_ENDED,12,4,23]; ]
+    STATE_SESSION_ENDED
+}
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 15; @symbol_classdef = [reticccView,15,6,17]; @symbol_extends<0> = [WatchUi,15,26,33]; @symbol_extends<1> = [View,15,34,38]; ]
+class reticccView extends WatchUi.View {
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 15; ]
+    <init> {
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 18 16 ]
+        symbol [ STATE_IDLE %tmp.2 18 41 51 ];
+        %tmp.2 = getv ? :STATE_IDLE;
+        putv self :_state %tmp.2;
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 15; ]
+    static
+    <init> {
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 18; @position = 16; @symbol_vardef = [_state,18,16,22]; @symbol_type<0> = [SessionState,18,26,38]; ]
+    private
+    var _state as SessionState;
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 21; @position = 16; @symbol_vardef = [_sessionId,21,16,26]; @symbol_type<0> = [String,21,30,36]; ]
+    private
+    var _sessionId as String = "";
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 22; @position = 16; @symbol_vardef = [_drillName,22,16,26]; @symbol_type<0> = [String,22,30,36]; ]
+    private
+    var _drillName as String = "";
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 23; @position = 16; @symbol_vardef = [_drillGoal,23,16,26]; @symbol_type<0> = [String,23,30,36]; ]
+    private
+    var _drillGoal as String = "";
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 24; @position = 16; @symbol_vardef = [_distance,24,16,25]; @symbol_type<0> = [Number,24,29,35]; ]
+    private
+    var _distance as Number = 0;
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 25; @position = 16; @symbol_vardef = [_maxBullets,25,16,27]; @symbol_type<0> = [Number,25,31,37]; ]
+    private
+    var _maxBullets as Number = 0;
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 26; @position = 16; @symbol_vardef = [_timeLimit,26,16,26]; @symbol_type<0> = [Number,26,30,36]; ]
+    private
+    var _timeLimit as Number = 0;
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 29; @position = 16; @symbol_vardef = [_shotsFired,29,16,27]; @symbol_type<0> = [Number,29,31,37]; ]
+    private
+    var _shotsFired as Number = 0;
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 32; @position = 16; @symbol_vardef = [_startTime,32,16,26]; @symbol_type<0> = [Number,32,30,36]; ]
+    private
+    var _startTime as Number = 0;
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 33; @position = 16; @symbol_vardef = [_timer,33,16,22]; @symbol_type<0> = [Timer,33,26,31]; @symbol_type<1> = [Timer,33,32,37]; ]
+    private
+    var _timer as Timer.Timer or Null;
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 34; @position = 16; @symbol_vardef = [_elapsedSeconds,34,16,31]; @symbol_type<0> = [Number,34,35,41]; ]
+    private
+    var _elapsedSeconds as Number = 0;
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 37; @position = 16; @symbol_vardef = [_connected,37,16,26]; @symbol_type<0> = [Boolean,37,30,37]; ]
+    private
+    var _connected as Boolean = false;
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 40; @position = 16; @symbol_vardef = [_windSpeed,40,16,26]; @symbol_type<0> = [Number,40,30,36]; ]
+    private
+    var _windSpeed as Number = 0;
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 41; @position = 16; @symbol_vardef = [_windDirection,41,16,30]; @symbol_type<0> = [String,41,34,40]; ]
+    private
+    var _windDirection as String = "";
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 42; @position = 16; @symbol_vardef = [_temperature,42,16,28]; @symbol_type<0> = [Number,42,32,38]; ]
+    private
+    var _temperature as Number = 0;
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 45; @position = 16; @symbol_vardef = [_lastMsg,45,16,24]; @symbol_type<0> = [String,45,28,34]; ]
+    private
+    var _lastMsg as String = "";
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 47; @symbol_functiondef = [initialize,47,13,23]; ]
+    function initialize() as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_47_26_49_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 48 8 ]
+        symbol [ View %tmp.2 48 8 12 ];
+        %tmp.2 = getv ? :View;
+        symbol [ initialize %tmp.3 48 13 23 ];
+        %tmp.3 = getv function %tmp.2 :initialize;
+        invoke %tmp.2 %tmp.3();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_47_26_49_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 51; @symbol_functiondef = [onLayout,51,13,21]; @symbol_param<0> = [dc,51,22,24]; @symbol_param<0>_type<0> = [Dc,51,28,30]; ]
+    function onLayout(dc as Dc) as Void {
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 54; @symbol_functiondef = [onShow,54,13,19]; ]
+    function onShow() as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_54_30_57_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 55 8 ]
+        symbol [ Timer %tmp.3 55 21 26 ];
+        %tmp.3 = getm $.Toybox.Timer;
+        symbol [ Timer %tmp.4 55 27 32 ];
+        %tmp.4 = getv function ? %tmp.3 :Timer;
+        %tmp.1 = newc %tmp.4 ();
+        symbol [ _timer ? 55 8 14 ];
+        putv self :_timer %tmp.1;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 56 8 ]
+        symbol [ _timer %tmp.6 56 8 14 ];
+        %tmp.6 = getv ? :_timer;
+        symbol [ start %tmp.7 56 15 20 ];
+        %tmp.7 = getv function %tmp.6 :start;
+        %tmp.8 = self;
+        symbol [ method %tmp.9 56 21 27 ];
+        %tmp.9 = getv function %tmp.8 :method;
+        %tmp.11 = const :onTimerTick;
+        symbol [ onTimerTick %tmp.11 56 29 40 const ];
+        %tmp.12 = invoke %tmp.8 %tmp.9(%tmp.11);
+        %tmp.13 = 1000;
+        %tmp.14 = true;
+        invoke %tmp.6 %tmp.7(%tmp.12, %tmp.13, %tmp.14);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_54_30_57_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 59; @symbol_functiondef = [onHide,59,13,19]; ]
+    function onHide() as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_59_30_64_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 60 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_60_8_63_8_if_stmt:
+        symbol [ _timer %tmp.2 60 12 18 ];
+        %tmp.2 = getv ? :_timer;
+        %tmp.3 = null;
+        %tmp.4 = ne %tmp.2 %tmp.3;
+        bf %tmp.4 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_60_8_63_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_60_8_63_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_60_28_63_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 61 12 ]
+        symbol [ _timer %tmp.6 61 12 18 ];
+        %tmp.6 = getv ? :_timer;
+        %tmp.7 = as %tmp.6 { (!Null) };
+        symbol [ stop %tmp.8 61 19 23 ];
+        %tmp.8 = getv function %tmp.7 :stop;
+        invoke %tmp.7 %tmp.8();
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 62 12 ]
+        %tmp.9 = null;
+        symbol [ _timer ? 62 12 18 ];
+        putv self :_timer %tmp.9;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_60_28_63_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_60_8_63_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_60_8_63_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_59_30_64_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 67; @symbol_functiondef = [onTimerTick,67,13,24]; ]
+    function onTimerTick() as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_67_35_72_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 68 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_68_8_71_8_if_stmt:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_68_12_68_59_begin:
+        symbol [ _state %tmp.2 68 12 18 ];
+        %tmp.2 = getv ? :_state;
+        symbol [ STATE_SESSION_ACTIVE %tmp.4 68 22 42 ];
+        %tmp.4 = getv ? :STATE_SESSION_ACTIVE;
+        %tmp.5 = eq %tmp.2 %tmp.4;
+        bf %tmp.5 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_68_8_71_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_68_46_68_59_true:
+        symbol [ _startTime %tmp.7 68 46 56 ];
+        %tmp.7 = getv ? :_startTime;
+        %tmp.8 = 0;
+        %tmp.9 = gt %tmp.7 %tmp.8;
+        push %tmp.9;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_68_46_68_59_end:
+        %tmp.10 = phi [%tmp.5 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_68_12_68_59_begin] [%tmp.9 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_68_46_68_59_true] [%tmp.10 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_68_46_68_59_end];
+        bf %tmp.10 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_68_8_71_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_68_8_71_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_68_62_71_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 69 12 ]
+        symbol [ System %tmp.11 69 31 37 ];
+        %tmp.11 = getm $.Toybox.System;
+        symbol [ getTimer %tmp.12 69 38 46 ];
+        %tmp.12 = getv function %tmp.11 :getTimer;
+        %tmp.13 = invoke %tmp.11 %tmp.12();
+        symbol [ _startTime %tmp.15 69 51 61 ];
+        %tmp.15 = getv ? :_startTime;
+        %tmp.16 = sub %tmp.13 %tmp.15;
+        %tmp.17 = 1000;
+        %tmp.18 = div %tmp.16 %tmp.17;
+        symbol [ _elapsedSeconds ? 69 12 27 ];
+        putv self :_elapsedSeconds %tmp.18;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 70 12 ]
+        symbol [ WatchUi %tmp.19 70 12 19 ];
+        %tmp.19 = getm $.Toybox.WatchUi;
+        symbol [ requestUpdate %tmp.20 70 20 33 ];
+        %tmp.20 = getv function %tmp.19 :requestUpdate;
+        invoke %tmp.19 %tmp.20();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_68_62_71_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_68_8_71_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_68_8_71_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_67_35_72_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 75; @symbol_functiondef = [startSession,75,13,25]; @symbol_param<0> = [data,75,26,30]; @symbol_param<0>_type<0> = [Dictionary,75,34,44]; ]
+    function startSession(data as Dictionary) as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_75_54_98_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 76 8 ]
+        symbol [ STATE_SESSION_ACTIVE %tmp.2 76 17 37 ];
+        %tmp.2 = getv ? :STATE_SESSION_ACTIVE;
+        symbol [ _state ? 76 8 14 ];
+        putv self :_state %tmp.2;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 77 8 ]
+        symbol [ System %tmp.3 77 21 27 ];
+        %tmp.3 = getm $.Toybox.System;
+        symbol [ getTimer %tmp.4 77 28 36 ];
+        %tmp.4 = getv function %tmp.3 :getTimer;
+        %tmp.5 = invoke %tmp.3 %tmp.4();
+        symbol [ _startTime ? 77 8 18 ];
+        putv self :_startTime %tmp.5;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 78 8 ]
+        %tmp.6 = 0;
+        symbol [ _elapsedSeconds ? 78 8 23 ];
+        putv self :_elapsedSeconds %tmp.6;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 79 8 ]
+        %tmp.7 = 0;
+        symbol [ _shotsFired ? 79 8 19 ];
+        putv self :_shotsFired %tmp.7;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 82 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_82_21_82_88_begin:
+        %tmp.8 = lgetv %data;
+        symbol [ data %tmp.8 82 21 25 ];
+        symbol [ get %tmp.9 82 26 29 ];
+        %tmp.9 = getv function %tmp.8 :get;
+        %tmp.10 = "sessionId";
+        %tmp.11 = invoke %tmp.8 %tmp.9(%tmp.10);
+        %tmp.12 = null;
+        %tmp.13 = ne %tmp.11 %tmp.12;
+        bf %tmp.13 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_82_21_82_88_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_82_21_82_88_true:
+        %tmp.14 = lgetv %data;
+        symbol [ data %tmp.14 82 53 57 ];
+        symbol [ get %tmp.15 82 58 61 ];
+        %tmp.15 = getv function %tmp.14 :get;
+        %tmp.16 = "sessionId";
+        %tmp.17 = invoke %tmp.14 %tmp.15(%tmp.16);
+        symbol [ toString %tmp.18 82 75 83 ];
+        %tmp.18 = getv function %tmp.17 :toString;
+        %tmp.19 = invoke %tmp.17 %tmp.18();
+        push %tmp.19;
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_82_21_82_88_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_82_21_82_88_else_false:
+        %tmp.20 = "";
+        push %tmp.20;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_82_21_82_88_end:
+        %tmp.21 = phi [%tmp.13 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_82_21_82_88_begin] [%tmp.19 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_82_21_82_88_true] [%tmp.20 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_82_21_82_88_else_false] [%tmp.21 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_82_21_82_88_end];
+        symbol [ _sessionId ? 82 8 18 ];
+        putv self :_sessionId %tmp.21;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 83 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_83_21_83_88_begin:
+        %tmp.22 = lgetv %data;
+        symbol [ data %tmp.22 83 21 25 ];
+        symbol [ get %tmp.23 83 26 29 ];
+        %tmp.23 = getv function %tmp.22 :get;
+        %tmp.24 = "drillName";
+        %tmp.25 = invoke %tmp.22 %tmp.23(%tmp.24);
+        %tmp.26 = null;
+        %tmp.27 = ne %tmp.25 %tmp.26;
+        bf %tmp.27 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_83_21_83_88_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_83_21_83_88_true:
+        %tmp.28 = lgetv %data;
+        symbol [ data %tmp.28 83 53 57 ];
+        symbol [ get %tmp.29 83 58 61 ];
+        %tmp.29 = getv function %tmp.28 :get;
+        %tmp.30 = "drillName";
+        %tmp.31 = invoke %tmp.28 %tmp.29(%tmp.30);
+        symbol [ toString %tmp.32 83 75 83 ];
+        %tmp.32 = getv function %tmp.31 :toString;
+        %tmp.33 = invoke %tmp.31 %tmp.32();
+        push %tmp.33;
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_83_21_83_88_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_83_21_83_88_else_false:
+        %tmp.34 = "Session";
+        push %tmp.34;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_83_21_83_88_end:
+        %tmp.35 = phi [%tmp.27 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_83_21_83_88_begin] [%tmp.33 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_83_21_83_88_true] [%tmp.34 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_83_21_83_88_else_false] [%tmp.35 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_83_21_83_88_end];
+        symbol [ _drillName ? 83 8 18 ];
+        putv self :_drillName %tmp.35;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 84 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_84_21_84_88_begin:
+        %tmp.36 = lgetv %data;
+        symbol [ data %tmp.36 84 21 25 ];
+        symbol [ get %tmp.37 84 26 29 ];
+        %tmp.37 = getv function %tmp.36 :get;
+        %tmp.38 = "drillGoal";
+        %tmp.39 = invoke %tmp.36 %tmp.37(%tmp.38);
+        %tmp.40 = null;
+        %tmp.41 = ne %tmp.39 %tmp.40;
+        bf %tmp.41 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_84_21_84_88_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_84_21_84_88_true:
+        %tmp.42 = lgetv %data;
+        symbol [ data %tmp.42 84 53 57 ];
+        symbol [ get %tmp.43 84 58 61 ];
+        %tmp.43 = getv function %tmp.42 :get;
+        %tmp.44 = "drillGoal";
+        %tmp.45 = invoke %tmp.42 %tmp.43(%tmp.44);
+        symbol [ toString %tmp.46 84 75 83 ];
+        %tmp.46 = getv function %tmp.45 :toString;
+        %tmp.47 = invoke %tmp.45 %tmp.46();
+        push %tmp.47;
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_84_21_84_88_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_84_21_84_88_else_false:
+        %tmp.48 = "";
+        push %tmp.48;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_84_21_84_88_end:
+        %tmp.49 = phi [%tmp.41 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_84_21_84_88_begin] [%tmp.47 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_84_21_84_88_true] [%tmp.48 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_84_21_84_88_else_false] [%tmp.49 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_84_21_84_88_end];
+        symbol [ _drillGoal ? 84 8 18 ];
+        putv self :_drillGoal %tmp.49;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 85 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_85_20_85_86_begin:
+        %tmp.50 = lgetv %data;
+        symbol [ data %tmp.50 85 20 24 ];
+        symbol [ get %tmp.51 85 25 28 ];
+        %tmp.51 = getv function %tmp.50 :get;
+        %tmp.52 = "distance";
+        %tmp.53 = invoke %tmp.50 %tmp.51(%tmp.52);
+        %tmp.54 = null;
+        %tmp.55 = ne %tmp.53 %tmp.54;
+        bf %tmp.55 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_85_20_85_86_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_85_20_85_86_true:
+        %tmp.56 = lgetv %data;
+        symbol [ data %tmp.56 85 52 56 ];
+        symbol [ get %tmp.57 85 57 60 ];
+        %tmp.57 = getv function %tmp.56 :get;
+        %tmp.58 = "distance";
+        %tmp.59 = invoke %tmp.56 %tmp.57(%tmp.58);
+        %tmp.60 = as %tmp.59 Number;
+        symbol [ Number %tmp.60 85 76 82 ];
+        push %tmp.60;
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_85_20_85_86_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_85_20_85_86_else_false:
+        %tmp.61 = 0;
+        push %tmp.61;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_85_20_85_86_end:
+        %tmp.62 = phi [%tmp.55 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_85_20_85_86_begin] [%tmp.60 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_85_20_85_86_true] [%tmp.61 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_85_20_85_86_else_false] [%tmp.62 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_85_20_85_86_end];
+        symbol [ _distance ? 85 8 17 ];
+        putv self :_distance %tmp.62;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 86 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_86_22_86_84_begin:
+        %tmp.63 = lgetv %data;
+        symbol [ data %tmp.63 86 22 26 ];
+        symbol [ get %tmp.64 86 27 30 ];
+        %tmp.64 = getv function %tmp.63 :get;
+        %tmp.65 = "rounds";
+        %tmp.66 = invoke %tmp.63 %tmp.64(%tmp.65);
+        %tmp.67 = null;
+        %tmp.68 = ne %tmp.66 %tmp.67;
+        bf %tmp.68 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_86_22_86_84_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_86_22_86_84_true:
+        %tmp.69 = lgetv %data;
+        symbol [ data %tmp.69 86 52 56 ];
+        symbol [ get %tmp.70 86 57 60 ];
+        %tmp.70 = getv function %tmp.69 :get;
+        %tmp.71 = "rounds";
+        %tmp.72 = invoke %tmp.69 %tmp.70(%tmp.71);
+        %tmp.73 = as %tmp.72 Number;
+        symbol [ Number %tmp.73 86 74 80 ];
+        push %tmp.73;
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_86_22_86_84_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_86_22_86_84_else_false:
+        %tmp.74 = 0;
+        push %tmp.74;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_86_22_86_84_end:
+        %tmp.75 = phi [%tmp.68 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_86_22_86_84_begin] [%tmp.73 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_86_22_86_84_true] [%tmp.74 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_86_22_86_84_else_false] [%tmp.75 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_86_22_86_84_end];
+        symbol [ _maxBullets ? 86 8 19 ];
+        putv self :_maxBullets %tmp.75;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 87 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_87_21_87_89_begin:
+        %tmp.76 = lgetv %data;
+        symbol [ data %tmp.76 87 21 25 ];
+        symbol [ get %tmp.77 87 26 29 ];
+        %tmp.77 = getv function %tmp.76 :get;
+        %tmp.78 = "timeLimit";
+        %tmp.79 = invoke %tmp.76 %tmp.77(%tmp.78);
+        %tmp.80 = null;
+        %tmp.81 = ne %tmp.79 %tmp.80;
+        bf %tmp.81 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_87_21_87_89_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_87_21_87_89_true:
+        %tmp.82 = lgetv %data;
+        symbol [ data %tmp.82 87 54 58 ];
+        symbol [ get %tmp.83 87 59 62 ];
+        %tmp.83 = getv function %tmp.82 :get;
+        %tmp.84 = "timeLimit";
+        %tmp.85 = invoke %tmp.82 %tmp.83(%tmp.84);
+        %tmp.86 = as %tmp.85 Number;
+        symbol [ Number %tmp.86 87 79 85 ];
+        push %tmp.86;
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_87_21_87_89_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_87_21_87_89_else_false:
+        %tmp.87 = 0;
+        push %tmp.87;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_87_21_87_89_end:
+        %tmp.88 = phi [%tmp.81 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_87_21_87_89_begin] [%tmp.86 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_87_21_87_89_true] [%tmp.87 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_87_21_87_89_else_false] [%tmp.88 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_87_21_87_89_end];
+        symbol [ _timeLimit ? 87 8 18 ];
+        putv self :_timeLimit %tmp.88;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 90 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_90_8_94_8_if_stmt:
+        %tmp.89 = lgetv %data;
+        symbol [ data %tmp.89 90 12 16 ];
+        symbol [ get %tmp.90 90 17 20 ];
+        %tmp.90 = getv function %tmp.89 :get;
+        %tmp.91 = "maxBullets";
+        %tmp.92 = invoke %tmp.89 %tmp.90(%tmp.91);
+        %tmp.93 = null;
+        %tmp.94 = ne %tmp.92 %tmp.93;
+        bf %tmp.94 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_90_8_94_8_if_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_90_8_94_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_90_44_92_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 91 12 ]
+        %tmp.95 = lgetv %data;
+        symbol [ data %tmp.95 91 26 30 ];
+        symbol [ get %tmp.96 91 31 34 ];
+        %tmp.96 = getv function %tmp.95 :get;
+        %tmp.97 = "maxBullets";
+        %tmp.98 = invoke %tmp.95 %tmp.96(%tmp.97);
+        %tmp.99 = as %tmp.98 Number;
+        symbol [ Number %tmp.99 91 52 58 ];
+        symbol [ _maxBullets ? 91 12 23 ];
+        putv self :_maxBullets %tmp.99;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_90_44_92_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_90_8_94_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_90_8_94_8_if_false:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 92 15 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_92_15_94_8_if_stmt:
+        %tmp.100 = lgetv %data;
+        symbol [ data %tmp.100 92 19 23 ];
+        symbol [ get %tmp.101 92 24 27 ];
+        %tmp.101 = getv function %tmp.100 :get;
+        %tmp.102 = "bullets";
+        %tmp.103 = invoke %tmp.100 %tmp.101(%tmp.102);
+        %tmp.104 = null;
+        %tmp.105 = ne %tmp.103 %tmp.104;
+        bf %tmp.105 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_92_15_94_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_92_15_94_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_92_48_94_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 93 12 ]
+        %tmp.106 = lgetv %data;
+        symbol [ data %tmp.106 93 26 30 ];
+        symbol [ get %tmp.107 93 31 34 ];
+        %tmp.107 = getv function %tmp.106 :get;
+        %tmp.108 = "bullets";
+        %tmp.109 = invoke %tmp.106 %tmp.107(%tmp.108);
+        %tmp.110 = as %tmp.109 Number;
+        symbol [ Number %tmp.110 93 49 55 ];
+        symbol [ _maxBullets ? 93 12 23 ];
+        putv self :_maxBullets %tmp.110;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_92_48_94_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_92_15_94_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_92_15_94_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_90_8_94_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 96 8 ]
+        %tmp.111 = "Session started";
+        symbol [ _lastMsg ? 96 8 16 ];
+        putv self :_lastMsg %tmp.111;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 97 8 ]
+        symbol [ WatchUi %tmp.112 97 8 15 ];
+        %tmp.112 = getm $.Toybox.WatchUi;
+        symbol [ requestUpdate %tmp.113 97 16 29 ];
+        %tmp.113 = getv function %tmp.112 :requestUpdate;
+        invoke %tmp.112 %tmp.113();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_75_54_98_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 101; @symbol_functiondef = [endSession,101,13,23]; @symbol_param<0> = [data,101,24,28]; @symbol_param<0>_type<0> = [Dictionary,101,32,42]; ]
+    function endSession(data as Dictionary) as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_101_52_105_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 102 8 ]
+        symbol [ STATE_SESSION_ENDED %tmp.2 102 17 36 ];
+        %tmp.2 = getv ? :STATE_SESSION_ENDED;
+        symbol [ _state ? 102 8 14 ];
+        putv self :_state %tmp.2;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 103 8 ]
+        %tmp.3 = "Session ended";
+        symbol [ _lastMsg ? 103 8 16 ];
+        putv self :_lastMsg %tmp.3;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 104 8 ]
+        symbol [ WatchUi %tmp.4 104 8 15 ];
+        %tmp.4 = getm $.Toybox.WatchUi;
+        symbol [ requestUpdate %tmp.5 104 16 29 ];
+        %tmp.5 = getv function %tmp.4 :requestUpdate;
+        invoke %tmp.4 %tmp.5();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_101_52_105_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 109; @symbol_functiondef = [addShot,109,13,20]; @symbol_return<0> = [Boolean,109,26,33]; ]
+    function addShot() as Boolean {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_109_34_129_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 110 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_110_8_112_8_if_stmt:
+        symbol [ _state %tmp.2 110 12 18 ];
+        %tmp.2 = getv ? :_state;
+        symbol [ STATE_SESSION_ACTIVE %tmp.4 110 22 42 ];
+        %tmp.4 = getv ? :STATE_SESSION_ACTIVE;
+        %tmp.5 = ne %tmp.2 %tmp.4;
+        bf %tmp.5 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_110_8_112_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_110_8_112_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_110_44_112_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 111 12 ]
+        %tmp.6 = false;
+        ret %tmp.6;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_110_44_112_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_110_8_112_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_110_8_112_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 115 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_115_8_117_8_if_stmt:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_115_12_115_46_begin:
+        symbol [ _maxBullets %tmp.8 115 12 23 ];
+        %tmp.8 = getv ? :_maxBullets;
+        %tmp.9 = 0;
+        %tmp.10 = gt %tmp.8 %tmp.9;
+        bf %tmp.10 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_115_8_117_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_115_31_115_46_true:
+        symbol [ _shotsFired %tmp.12 115 31 42 ];
+        %tmp.12 = getv ? :_shotsFired;
+        symbol [ _maxBullets %tmp.14 115 46 57 ];
+        %tmp.14 = getv ? :_maxBullets;
+        %tmp.15 = gte %tmp.12 %tmp.14;
+        push %tmp.15;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_115_31_115_46_end:
+        %tmp.16 = phi [%tmp.10 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_115_12_115_46_begin] [%tmp.15 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_115_31_115_46_true] [%tmp.16 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_115_31_115_46_end];
+        bf %tmp.16 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_115_8_117_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_115_8_117_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_115_59_117_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 116 12 ]
+        %tmp.17 = false;
+        ret %tmp.17;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_115_59_117_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_115_8_117_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_115_8_117_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 119 8 ]
+        symbol [ _shotsFired %tmp.20 119 8 19 ];
+        %tmp.20 = getv ? :_shotsFired;
+        %tmp.21 = add %tmp.20 1;
+        symbol [ _shotsFired ? 119 8 19 ];
+        putv self :_shotsFired dup %tmp.21;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 120 8 ]
+        symbol [ WatchUi %tmp.22 120 8 15 ];
+        %tmp.22 = getm $.Toybox.WatchUi;
+        symbol [ requestUpdate %tmp.23 120 16 29 ];
+        %tmp.23 = getv function %tmp.22 :requestUpdate;
+        invoke %tmp.22 %tmp.23();
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 123 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_123_8_126_8_if_stmt:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_123_12_123_46_begin:
+        symbol [ _maxBullets %tmp.25 123 12 23 ];
+        %tmp.25 = getv ? :_maxBullets;
+        %tmp.26 = 0;
+        %tmp.27 = gt %tmp.25 %tmp.26;
+        bf %tmp.27 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_123_8_126_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_123_31_123_46_true:
+        symbol [ _shotsFired %tmp.29 123 31 42 ];
+        %tmp.29 = getv ? :_shotsFired;
+        symbol [ _maxBullets %tmp.31 123 46 57 ];
+        %tmp.31 = getv ? :_maxBullets;
+        %tmp.32 = gte %tmp.29 %tmp.31;
+        push %tmp.32;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_123_31_123_46_end:
+        %tmp.33 = phi [%tmp.27 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_123_12_123_46_begin] [%tmp.32 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_123_31_123_46_true] [%tmp.33 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_123_31_123_46_end];
+        bf %tmp.33 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_123_8_126_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_123_8_126_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_123_59_126_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 125 12 ]
+        %tmp.34 = self;
+        symbol [ sendResultsToPhone %tmp.35 125 12 30 ];
+        %tmp.35 = getv function %tmp.34 :sendResultsToPhone;
+        invoke %tmp.34 %tmp.35();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_123_59_126_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_123_8_126_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_123_8_126_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 128 8 ]
+        %tmp.36 = true;
+        ret %tmp.36;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_109_34_129_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 132; @symbol_functiondef = [sendResultsToPhone,132,13,31]; ]
+    function sendResultsToPhone() as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_132_42_149_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 133 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_132_42_149_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_132_42_149_4_stop" ]
+        %app.1 = local;
+        symbol [ app %app.1 133 12 15 ];
+        symbol [ Application %tmp.2 133 18 29 ];
+        %tmp.2 = getv ? :Application;
+        symbol [ getApp %tmp.3 133 30 36 ];
+        %tmp.3 = getv function %tmp.2 :getApp;
+        %tmp.4 = invoke %tmp.2 %tmp.3();
+        %tmp.5 = as %tmp.4 reticccApp;
+        symbol [ reticccApp %tmp.5 133 42 52 ];
+        lputv %app.1 %tmp.5;
+        symbol [ app %app.1 133 12 15 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 135 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_132_42_149_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_132_42_149_4_stop" ]
+        %results.2 = local;
+        symbol [ results %results.2 135 12 19 ];
+        %tmp.6 = newd 5;
+        %tmp.7 = "sessionId";
+        symbol [ _sessionId %tmp.9 136 27 37 ];
+        %tmp.9 = getv ? :_sessionId;
+        %tmp.10 = dup %tmp.6;
+        %tmp.11 = aputv %tmp.10 %tmp.7 %tmp.9;
+        %tmp.12 = "shotsFired";
+        symbol [ _shotsFired %tmp.14 137 28 39 ];
+        %tmp.14 = getv ? :_shotsFired;
+        %tmp.15 = dup %tmp.11;
+        %tmp.16 = aputv %tmp.15 %tmp.12 %tmp.14;
+        %tmp.17 = "elapsedTime";
+        symbol [ _elapsedSeconds %tmp.19 138 29 44 ];
+        %tmp.19 = getv ? :_elapsedSeconds;
+        %tmp.20 = dup %tmp.16;
+        %tmp.21 = aputv %tmp.20 %tmp.17 %tmp.19;
+        %tmp.22 = "distance";
+        symbol [ _distance %tmp.24 139 26 35 ];
+        %tmp.24 = getv ? :_distance;
+        %tmp.25 = dup %tmp.21;
+        %tmp.26 = aputv %tmp.25 %tmp.22 %tmp.24;
+        %tmp.27 = "completed";
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_140_28_140_62_begin:
+        symbol [ _maxBullets %tmp.29 140 28 39 ];
+        %tmp.29 = getv ? :_maxBullets;
+        %tmp.30 = 0;
+        %tmp.31 = gt %tmp.29 %tmp.30;
+        %tmp.32 = dup %tmp.31;
+        bf %tmp.32 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_140_47_140_62_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_140_47_140_62_true:
+        symbol [ _shotsFired %tmp.34 140 47 58 ];
+        %tmp.34 = getv ? :_shotsFired;
+        symbol [ _maxBullets %tmp.36 140 62 73 ];
+        %tmp.36 = getv ? :_maxBullets;
+        %tmp.37 = gte %tmp.34 %tmp.36;
+        %tmp.38 = and %tmp.31 %tmp.37;
+        push %tmp.38;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_140_47_140_62_end:
+        %tmp.39 = phi [%tmp.32 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_140_28_140_62_begin] [%tmp.38 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_140_47_140_62_true] [%tmp.39 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_140_47_140_62_end];
+        %tmp.40 = dup %tmp.26;
+        %tmp.41 = aputv %tmp.40 %tmp.27 %tmp.39;
+        lputv %results.2 %tmp.41;
+        symbol [ results %results.2 135 12 19 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 143 8 ]
+        %tmp.42 = lgetv %app.1;
+        symbol [ app %tmp.42 143 8 11 ];
+        symbol [ sendMessage %tmp.43 143 12 23 ];
+        %tmp.43 = getv function %tmp.42 :sendMessage;
+        %tmp.44 = "SESSION_RESULT";
+        %tmp.45 = lgetv %results.2;
+        symbol [ results %tmp.45 143 42 49 ];
+        invoke %tmp.42 %tmp.43(%tmp.44, %tmp.45);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 146 8 ]
+        symbol [ STATE_SESSION_ENDED %tmp.47 146 17 36 ];
+        %tmp.47 = getv ? :STATE_SESSION_ENDED;
+        symbol [ _state ? 146 8 14 ];
+        putv self :_state %tmp.47;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 147 8 ]
+        %tmp.48 = "Results sent!";
+        symbol [ _lastMsg ? 147 8 16 ];
+        putv self :_lastMsg %tmp.48;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 148 8 ]
+        symbol [ WatchUi %tmp.49 148 8 15 ];
+        %tmp.49 = getm $.Toybox.WatchUi;
+        symbol [ requestUpdate %tmp.50 148 16 29 ];
+        %tmp.50 = getv function %tmp.49 :requestUpdate;
+        invoke %tmp.49 %tmp.50();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_132_42_149_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 152; @symbol_functiondef = [finishSession,152,13,26]; ]
+    function finishSession() as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_152_37_156_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 153 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_153_8_155_8_if_stmt:
+        symbol [ _state %tmp.2 153 12 18 ];
+        %tmp.2 = getv ? :_state;
+        symbol [ STATE_SESSION_ACTIVE %tmp.4 153 22 42 ];
+        %tmp.4 = getv ? :STATE_SESSION_ACTIVE;
+        %tmp.5 = eq %tmp.2 %tmp.4;
+        bf %tmp.5 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_153_8_155_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_153_8_155_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_153_44_155_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 154 12 ]
+        %tmp.6 = self;
+        symbol [ sendResultsToPhone %tmp.7 154 12 30 ];
+        %tmp.7 = getv function %tmp.6 :sendResultsToPhone;
+        invoke %tmp.6 %tmp.7();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_153_44_155_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_153_8_155_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_153_8_155_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_152_37_156_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 159; @symbol_functiondef = [resetToIdle,159,13,24]; ]
+    function resetToIdle() as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_159_35_166_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 160 8 ]
+        symbol [ STATE_IDLE %tmp.2 160 17 27 ];
+        %tmp.2 = getv ? :STATE_IDLE;
+        symbol [ _state ? 160 8 14 ];
+        putv self :_state %tmp.2;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 161 8 ]
+        %tmp.3 = 0;
+        symbol [ _elapsedSeconds ? 161 8 23 ];
+        putv self :_elapsedSeconds %tmp.3;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 162 8 ]
+        %tmp.4 = 0;
+        symbol [ _startTime ? 162 8 18 ];
+        putv self :_startTime %tmp.4;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 163 8 ]
+        %tmp.5 = 0;
+        symbol [ _shotsFired ? 163 8 19 ];
+        putv self :_shotsFired %tmp.5;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 164 8 ]
+        %tmp.6 = "";
+        symbol [ _lastMsg ? 164 8 16 ];
+        putv self :_lastMsg %tmp.6;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 165 8 ]
+        symbol [ WatchUi %tmp.7 165 8 15 ];
+        %tmp.7 = getm $.Toybox.WatchUi;
+        symbol [ requestUpdate %tmp.8 165 16 29 ];
+        %tmp.8 = getv function %tmp.7 :requestUpdate;
+        invoke %tmp.7 %tmp.8();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_159_35_166_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 169; @symbol_functiondef = [setConnected,169,13,25]; @symbol_param<0> = [connected,169,26,35]; @symbol_param<0>_type<0> = [Boolean,169,39,46]; ]
+    function setConnected(connected as Boolean) as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_169_56_172_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 170 8 ]
+        %tmp.1 = lgetv %connected;
+        symbol [ connected %tmp.1 170 21 30 ];
+        symbol [ _connected ? 170 8 18 ];
+        putv self :_connected %tmp.1;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 171 8 ]
+        symbol [ WatchUi %tmp.2 171 8 15 ];
+        %tmp.2 = getm $.Toybox.WatchUi;
+        symbol [ requestUpdate %tmp.3 171 16 29 ];
+        %tmp.3 = getv function %tmp.2 :requestUpdate;
+        invoke %tmp.2 %tmp.3();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_169_56_172_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 175; @symbol_functiondef = [setWeather,175,13,23]; @symbol_param<0> = [wind,175,24,28]; @symbol_param<0>_type<0> = [Number,175,32,38]; @symbol_param<1> = [windDir,175,40,47]; @symbol_param<1>_type<0> = [String,175,51,57]; @symbol_param<2> = [temp,175,59,63]; @symbol_param<2>_type<0> = [Number,175,67,73]; ]
+    function setWeather(wind as Number, windDir as String, temp as Number) as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_175_83_180_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 176 8 ]
+        %tmp.1 = lgetv %wind;
+        symbol [ wind %tmp.1 176 21 25 ];
+        symbol [ _windSpeed ? 176 8 18 ];
+        putv self :_windSpeed %tmp.1;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 177 8 ]
+        %tmp.2 = lgetv %windDir;
+        symbol [ windDir %tmp.2 177 25 32 ];
+        symbol [ _windDirection ? 177 8 22 ];
+        putv self :_windDirection %tmp.2;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 178 8 ]
+        %tmp.3 = lgetv %temp;
+        symbol [ temp %tmp.3 178 23 27 ];
+        symbol [ _temperature ? 178 8 20 ];
+        putv self :_temperature %tmp.3;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 179 8 ]
+        symbol [ WatchUi %tmp.4 179 8 15 ];
+        %tmp.4 = getm $.Toybox.WatchUi;
+        symbol [ requestUpdate %tmp.5 179 16 29 ];
+        %tmp.5 = getv function %tmp.4 :requestUpdate;
+        invoke %tmp.4 %tmp.5();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_175_83_180_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 183; @symbol_functiondef = [formatTime,183,21,31]; @symbol_param<0> = [seconds,183,32,39]; @symbol_param<0>_type<0> = [Number,183,43,49]; @symbol_return<0> = [String,183,54,60]; ]
+    private
+    function formatTime(seconds as Number) as String {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_183_61_187_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 184 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_183_61_187_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_183_61_187_4_stop" ]
+        %mins.1 = local;
+        symbol [ mins %mins.1 184 12 16 ];
+        %tmp.1 = lgetv %seconds;
+        symbol [ seconds %tmp.1 184 19 26 ];
+        %tmp.2 = 60;
+        %tmp.3 = div %tmp.1 %tmp.2;
+        lputv %mins.1 %tmp.3;
+        symbol [ mins %mins.1 184 12 16 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 185 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_183_61_187_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_183_61_187_4_stop" ]
+        %secs.2 = local;
+        symbol [ secs %secs.2 185 12 16 ];
+        %tmp.4 = lgetv %seconds;
+        symbol [ seconds %tmp.4 185 19 26 ];
+        %tmp.5 = 60;
+        %tmp.6 = mod %tmp.4 %tmp.5;
+        lputv %secs.2 %tmp.6;
+        symbol [ secs %secs.2 185 12 16 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 186 8 ]
+        %tmp.7 = lgetv %mins.1;
+        symbol [ mins %tmp.7 186 15 19 ];
+        symbol [ format %tmp.8 186 20 26 ];
+        %tmp.8 = getv function %tmp.7 :format;
+        %tmp.9 = "%02d";
+        %tmp.10 = invoke %tmp.7 %tmp.8(%tmp.9);
+        %tmp.11 = ":";
+        %tmp.12 = add %tmp.10 %tmp.11;
+        %tmp.13 = lgetv %secs.2;
+        symbol [ secs %tmp.13 186 43 47 ];
+        symbol [ format %tmp.14 186 48 54 ];
+        %tmp.14 = getv function %tmp.13 :format;
+        %tmp.15 = "%02d";
+        %tmp.16 = invoke %tmp.13 %tmp.14(%tmp.15);
+        %tmp.17 = add %tmp.12 %tmp.16;
+        ret %tmp.17;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_183_61_187_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 190; @symbol_functiondef = [getState,190,13,21]; @symbol_return<0> = [SessionState,190,27,39]; ]
+    function getState() as SessionState {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_190_40_192_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 191 8 ]
+        symbol [ _state %tmp.2 191 15 21 ];
+        %tmp.2 = getv ? :_state;
+        ret %tmp.2;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_190_40_192_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 195; @symbol_functiondef = [onUpdate,195,13,21]; @symbol_param<0> = [dc,195,22,24]; @symbol_param<0>_type<0> = [Dc,195,28,30]; ]
+    function onUpdate(dc as Dc) as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_195_40_211_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 196 8 ]
+        %tmp.1 = lgetv %dc;
+        symbol [ dc %tmp.1 196 8 10 ];
+        symbol [ setColor %tmp.2 196 11 19 ];
+        %tmp.2 = getv function %tmp.1 :setColor;
+        symbol [ Graphics %tmp.3 196 20 28 ];
+        %tmp.3 = getm $.Toybox.Graphics;
+        symbol [ COLOR_BLACK %tmp.4 196 29 40 ];
+        %tmp.4 = getv %tmp.3 :COLOR_BLACK;
+        symbol [ Graphics %tmp.5 196 42 50 ];
+        %tmp.5 = getm $.Toybox.Graphics;
+        symbol [ COLOR_BLACK %tmp.6 196 51 62 ];
+        %tmp.6 = getv %tmp.5 :COLOR_BLACK;
+        invoke %tmp.1 %tmp.2(%tmp.4, %tmp.6);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 197 8 ]
+        %tmp.7 = lgetv %dc;
+        symbol [ dc %tmp.7 197 8 10 ];
+        symbol [ clear %tmp.8 197 11 16 ];
+        %tmp.8 = getv function %tmp.7 :clear;
+        invoke %tmp.7 %tmp.8();
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 199 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_195_40_211_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_195_40_211_4_stop" ]
+        %width.1 = local;
+        symbol [ width %width.1 199 12 17 ];
+        %tmp.9 = lgetv %dc;
+        symbol [ dc %tmp.9 199 20 22 ];
+        symbol [ getWidth %tmp.10 199 23 31 ];
+        %tmp.10 = getv function %tmp.9 :getWidth;
+        %tmp.11 = invoke %tmp.9 %tmp.10();
+        lputv %width.1 %tmp.11;
+        symbol [ width %width.1 199 12 17 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 200 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_195_40_211_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_195_40_211_4_stop" ]
+        %height.2 = local;
+        symbol [ height %height.2 200 12 18 ];
+        %tmp.12 = lgetv %dc;
+        symbol [ dc %tmp.12 200 21 23 ];
+        symbol [ getHeight %tmp.13 200 24 33 ];
+        %tmp.13 = getv function %tmp.12 :getHeight;
+        %tmp.14 = invoke %tmp.12 %tmp.13();
+        lputv %height.2 %tmp.14;
+        symbol [ height %height.2 200 12 18 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 201 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_195_40_211_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_195_40_211_4_stop" ]
+        %centerX.3 = local;
+        symbol [ centerX %centerX.3 201 12 19 ];
+        %tmp.15 = lgetv %width.1;
+        symbol [ width %tmp.15 201 22 27 ];
+        %tmp.16 = 2;
+        %tmp.17 = div %tmp.15 %tmp.16;
+        lputv %centerX.3 %tmp.17;
+        symbol [ centerX %centerX.3 201 12 19 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 202 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_195_40_211_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_195_40_211_4_stop" ]
+        %centerY.4 = local;
+        symbol [ centerY %centerY.4 202 12 19 ];
+        %tmp.18 = lgetv %height.2;
+        symbol [ height %tmp.18 202 22 28 ];
+        %tmp.19 = 2;
+        %tmp.20 = div %tmp.18 %tmp.19;
+        lputv %centerY.4 %tmp.20;
+        symbol [ centerY %centerY.4 202 12 19 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 204 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_204_8_210_8_if_stmt:
+        symbol [ _state %tmp.22 204 12 18 ];
+        %tmp.22 = getv ? :_state;
+        symbol [ STATE_SESSION_ACTIVE %tmp.24 204 22 42 ];
+        %tmp.24 = getv ? :STATE_SESSION_ACTIVE;
+        %tmp.25 = eq %tmp.22 %tmp.24;
+        bf %tmp.25 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_204_8_210_8_if_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_204_8_210_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_204_44_206_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 205 12 ]
+        %tmp.26 = self;
+        symbol [ drawActiveSession %tmp.27 205 12 29 ];
+        %tmp.27 = getv function %tmp.26 :drawActiveSession;
+        %tmp.28 = lgetv %dc;
+        symbol [ dc %tmp.28 205 30 32 ];
+        %tmp.29 = lgetv %width.1;
+        symbol [ width %tmp.29 205 34 39 ];
+        %tmp.30 = lgetv %height.2;
+        symbol [ height %tmp.30 205 41 47 ];
+        %tmp.31 = lgetv %centerX.3;
+        symbol [ centerX %tmp.31 205 49 56 ];
+        %tmp.32 = lgetv %centerY.4;
+        symbol [ centerY %tmp.32 205 58 65 ];
+        invoke %tmp.26 %tmp.27(%tmp.28, %tmp.29, %tmp.30, %tmp.31, %tmp.32);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_204_44_206_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_204_8_210_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_204_8_210_8_if_false:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 206 15 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_206_15_210_8_if_stmt:
+        symbol [ _state %tmp.34 206 19 25 ];
+        %tmp.34 = getv ? :_state;
+        symbol [ STATE_SESSION_ENDED %tmp.36 206 29 48 ];
+        %tmp.36 = getv ? :STATE_SESSION_ENDED;
+        %tmp.37 = eq %tmp.34 %tmp.36;
+        bf %tmp.37 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_206_15_210_8_if_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_206_15_210_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_206_50_208_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 207 12 ]
+        %tmp.38 = self;
+        symbol [ drawSessionEnded %tmp.39 207 12 28 ];
+        %tmp.39 = getv function %tmp.38 :drawSessionEnded;
+        %tmp.40 = lgetv %dc;
+        symbol [ dc %tmp.40 207 29 31 ];
+        %tmp.41 = lgetv %width.1;
+        symbol [ width %tmp.41 207 33 38 ];
+        %tmp.42 = lgetv %height.2;
+        symbol [ height %tmp.42 207 40 46 ];
+        %tmp.43 = lgetv %centerX.3;
+        symbol [ centerX %tmp.43 207 48 55 ];
+        %tmp.44 = lgetv %centerY.4;
+        symbol [ centerY %tmp.44 207 57 64 ];
+        invoke %tmp.38 %tmp.39(%tmp.40, %tmp.41, %tmp.42, %tmp.43, %tmp.44);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_206_50_208_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_206_15_210_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_206_15_210_8_if_else_false:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_208_15_210_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 209 12 ]
+        %tmp.45 = self;
+        symbol [ drawIdleScreen %tmp.46 209 12 26 ];
+        %tmp.46 = getv function %tmp.45 :drawIdleScreen;
+        %tmp.47 = lgetv %dc;
+        symbol [ dc %tmp.47 209 27 29 ];
+        %tmp.48 = lgetv %width.1;
+        symbol [ width %tmp.48 209 31 36 ];
+        %tmp.49 = lgetv %height.2;
+        symbol [ height %tmp.49 209 38 44 ];
+        %tmp.50 = lgetv %centerX.3;
+        symbol [ centerX %tmp.50 209 46 53 ];
+        %tmp.51 = lgetv %centerY.4;
+        symbol [ centerY %tmp.51 209 55 62 ];
+        invoke %tmp.45 %tmp.46(%tmp.47, %tmp.48, %tmp.49, %tmp.50, %tmp.51);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_208_15_210_8_stop:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_206_15_210_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_204_8_210_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_195_40_211_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 216; @symbol_functiondef = [drawIdleScreen,216,21,35]; @symbol_param<0> = [dc,216,36,38]; @symbol_param<0>_type<0> = [Dc,216,42,44]; @symbol_param<1> = [width,216,46,51]; @symbol_param<1>_type<0> = [Number,216,55,61]; @symbol_param<2> = [height,216,63,69]; @symbol_param<2>_type<0> = [Number,216,73,79]; @symbol_param<3> = [centerX,216,81,88]; @symbol_param<3>_type<0> = [Number,216,92,98]; @symbol_param<4> = [centerY,216,100,107]; @symbol_param<4>_type<0> = [Number,216,111,117]; ]
+    private
+    function drawIdleScreen(dc as Dc, width as Number, height as Number, centerX as Number, centerY as Number) as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_216_127_257_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 218 8 ]
+        %tmp.1 = lgetv %dc;
+        symbol [ dc %tmp.1 218 8 10 ];
+        symbol [ setColor %tmp.2 218 11 19 ];
+        %tmp.2 = getv function %tmp.1 :setColor;
+        symbol [ Graphics %tmp.3 218 20 28 ];
+        %tmp.3 = getm $.Toybox.Graphics;
+        symbol [ COLOR_WHITE %tmp.4 218 29 40 ];
+        %tmp.4 = getv %tmp.3 :COLOR_WHITE;
+        symbol [ Graphics %tmp.5 218 42 50 ];
+        %tmp.5 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.6 218 51 68 ];
+        %tmp.6 = getv %tmp.5 :COLOR_TRANSPARENT;
+        invoke %tmp.1 %tmp.2(%tmp.4, %tmp.6);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 219 8 ]
+        %tmp.7 = lgetv %dc;
+        symbol [ dc %tmp.7 219 8 10 ];
+        symbol [ drawText %tmp.8 219 11 19 ];
+        %tmp.8 = getv function %tmp.7 :drawText;
+        %tmp.9 = lgetv %centerX;
+        symbol [ centerX %tmp.9 219 20 27 ];
+        %tmp.10 = 8;
+        symbol [ Graphics %tmp.11 219 32 40 ];
+        %tmp.11 = getm $.Toybox.Graphics;
+        symbol [ FONT_TINY %tmp.12 219 41 50 ];
+        %tmp.12 = getv %tmp.11 :FONT_TINY;
+        %tmp.13 = "RETIC";
+        symbol [ Graphics %tmp.14 219 61 69 ];
+        %tmp.14 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.15 219 70 89 ];
+        %tmp.15 = getv %tmp.14 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.7 %tmp.8(%tmp.9, %tmp.10, %tmp.12, %tmp.13, %tmp.15);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 222 8 ]
+        %tmp.16 = lgetv %dc;
+        symbol [ dc %tmp.16 222 8 10 ];
+        symbol [ setColor %tmp.17 222 11 19 ];
+        %tmp.17 = getv function %tmp.16 :setColor;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_222_20_222_65_begin:
+        symbol [ _connected %tmp.19 222 20 30 ];
+        %tmp.19 = getv ? :_connected;
+        bf %tmp.19 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_222_20_222_65_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_222_20_222_65_true:
+        symbol [ Graphics %tmp.20 222 33 41 ];
+        %tmp.20 = getm $.Toybox.Graphics;
+        symbol [ COLOR_GREEN %tmp.21 222 42 53 ];
+        %tmp.21 = getv %tmp.20 :COLOR_GREEN;
+        push %tmp.21;
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_222_20_222_65_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_222_20_222_65_else_false:
+        symbol [ Graphics %tmp.22 222 56 64 ];
+        %tmp.22 = getm $.Toybox.Graphics;
+        symbol [ COLOR_DK_GRAY %tmp.23 222 65 78 ];
+        %tmp.23 = getv %tmp.22 :COLOR_DK_GRAY;
+        push %tmp.23;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_222_20_222_65_end:
+        %tmp.24 = phi [%tmp.19 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_222_20_222_65_begin] [%tmp.21 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_222_20_222_65_true] [%tmp.23 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_222_20_222_65_else_false] [%tmp.24 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_222_20_222_65_end];
+        symbol [ Graphics %tmp.25 222 80 88 ];
+        %tmp.25 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.26 222 89 106 ];
+        %tmp.26 = getv %tmp.25 :COLOR_TRANSPARENT;
+        invoke %tmp.16 %tmp.17(%tmp.24, %tmp.26);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 223 8 ]
+        %tmp.27 = lgetv %dc;
+        symbol [ dc %tmp.27 223 8 10 ];
+        symbol [ fillCircle %tmp.28 223 11 21 ];
+        %tmp.28 = getv function %tmp.27 :fillCircle;
+        %tmp.29 = lgetv %width;
+        symbol [ width %tmp.29 223 22 27 ];
+        %tmp.30 = 12;
+        %tmp.31 = sub %tmp.29 %tmp.30;
+        %tmp.32 = 12;
+        %tmp.33 = 5;
+        invoke %tmp.27 %tmp.28(%tmp.31, %tmp.32, %tmp.33);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 226 8 ]
+        %tmp.34 = lgetv %dc;
+        symbol [ dc %tmp.34 226 8 10 ];
+        symbol [ setColor %tmp.35 226 11 19 ];
+        %tmp.35 = getv function %tmp.34 :setColor;
+        symbol [ Graphics %tmp.36 226 20 28 ];
+        %tmp.36 = getm $.Toybox.Graphics;
+        symbol [ COLOR_DK_GRAY %tmp.37 226 29 42 ];
+        %tmp.37 = getv %tmp.36 :COLOR_DK_GRAY;
+        symbol [ Graphics %tmp.38 226 44 52 ];
+        %tmp.38 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.39 226 53 70 ];
+        %tmp.39 = getv %tmp.38 :COLOR_TRANSPARENT;
+        invoke %tmp.34 %tmp.35(%tmp.37, %tmp.39);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 227 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_216_127_257_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_216_127_257_4_stop" ]
+        %crossSize.1 = local;
+        symbol [ crossSize %crossSize.1 227 12 21 ];
+        %tmp.40 = 25;
+        lputv %crossSize.1 %tmp.40;
+        symbol [ crossSize %crossSize.1 227 12 21 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 228 8 ]
+        %tmp.41 = lgetv %dc;
+        symbol [ dc %tmp.41 228 8 10 ];
+        symbol [ drawLine %tmp.42 228 11 19 ];
+        %tmp.42 = getv function %tmp.41 :drawLine;
+        %tmp.43 = lgetv %centerX;
+        symbol [ centerX %tmp.43 228 20 27 ];
+        %tmp.44 = lgetv %crossSize.1;
+        symbol [ crossSize %tmp.44 228 30 39 ];
+        %tmp.45 = sub %tmp.43 %tmp.44;
+        %tmp.46 = lgetv %centerY;
+        symbol [ centerY %tmp.46 228 41 48 ];
+        %tmp.47 = lgetv %centerX;
+        symbol [ centerX %tmp.47 228 50 57 ];
+        %tmp.48 = lgetv %crossSize.1;
+        symbol [ crossSize %tmp.48 228 60 69 ];
+        %tmp.49 = add %tmp.47 %tmp.48;
+        %tmp.50 = lgetv %centerY;
+        symbol [ centerY %tmp.50 228 71 78 ];
+        invoke %tmp.41 %tmp.42(%tmp.45, %tmp.46, %tmp.49, %tmp.50);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 229 8 ]
+        %tmp.51 = lgetv %dc;
+        symbol [ dc %tmp.51 229 8 10 ];
+        symbol [ drawLine %tmp.52 229 11 19 ];
+        %tmp.52 = getv function %tmp.51 :drawLine;
+        %tmp.53 = lgetv %centerX;
+        symbol [ centerX %tmp.53 229 20 27 ];
+        %tmp.54 = lgetv %centerY;
+        symbol [ centerY %tmp.54 229 29 36 ];
+        %tmp.55 = lgetv %crossSize.1;
+        symbol [ crossSize %tmp.55 229 39 48 ];
+        %tmp.56 = sub %tmp.54 %tmp.55;
+        %tmp.57 = lgetv %centerX;
+        symbol [ centerX %tmp.57 229 50 57 ];
+        %tmp.58 = lgetv %centerY;
+        symbol [ centerY %tmp.58 229 59 66 ];
+        %tmp.59 = lgetv %crossSize.1;
+        symbol [ crossSize %tmp.59 229 69 78 ];
+        %tmp.60 = add %tmp.58 %tmp.59;
+        invoke %tmp.51 %tmp.52(%tmp.53, %tmp.56, %tmp.57, %tmp.60);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 230 8 ]
+        %tmp.61 = lgetv %dc;
+        symbol [ dc %tmp.61 230 8 10 ];
+        symbol [ drawCircle %tmp.62 230 11 21 ];
+        %tmp.62 = getv function %tmp.61 :drawCircle;
+        %tmp.63 = lgetv %centerX;
+        symbol [ centerX %tmp.63 230 22 29 ];
+        %tmp.64 = lgetv %centerY;
+        symbol [ centerY %tmp.64 230 31 38 ];
+        %tmp.65 = 15;
+        invoke %tmp.61 %tmp.62(%tmp.63, %tmp.64, %tmp.65);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 231 8 ]
+        %tmp.66 = lgetv %dc;
+        symbol [ dc %tmp.66 231 8 10 ];
+        symbol [ drawCircle %tmp.67 231 11 21 ];
+        %tmp.67 = getv function %tmp.66 :drawCircle;
+        %tmp.68 = lgetv %centerX;
+        symbol [ centerX %tmp.68 231 22 29 ];
+        %tmp.69 = lgetv %centerY;
+        symbol [ centerY %tmp.69 231 31 38 ];
+        %tmp.70 = 8;
+        invoke %tmp.66 %tmp.67(%tmp.68, %tmp.69, %tmp.70);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 234 8 ]
+        %tmp.71 = lgetv %dc;
+        symbol [ dc %tmp.71 234 8 10 ];
+        symbol [ setColor %tmp.72 234 11 19 ];
+        %tmp.72 = getv function %tmp.71 :setColor;
+        symbol [ Graphics %tmp.73 234 20 28 ];
+        %tmp.73 = getm $.Toybox.Graphics;
+        symbol [ COLOR_LT_GRAY %tmp.74 234 29 42 ];
+        %tmp.74 = getv %tmp.73 :COLOR_LT_GRAY;
+        symbol [ Graphics %tmp.75 234 44 52 ];
+        %tmp.75 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.76 234 53 70 ];
+        %tmp.76 = getv %tmp.75 :COLOR_TRANSPARENT;
+        invoke %tmp.71 %tmp.72(%tmp.74, %tmp.76);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 235 8 ]
+        %tmp.77 = lgetv %dc;
+        symbol [ dc %tmp.77 235 8 10 ];
+        symbol [ drawText %tmp.78 235 11 19 ];
+        %tmp.78 = getv function %tmp.77 :drawText;
+        %tmp.79 = 15;
+        %tmp.80 = lgetv %centerY;
+        symbol [ centerY %tmp.80 235 24 31 ];
+        %tmp.81 = 35;
+        %tmp.82 = sub %tmp.80 %tmp.81;
+        symbol [ Graphics %tmp.83 235 38 46 ];
+        %tmp.83 = getm $.Toybox.Graphics;
+        symbol [ FONT_XTINY %tmp.84 235 47 57 ];
+        %tmp.84 = getv %tmp.83 :FONT_XTINY;
+        %tmp.85 = "WIND";
+        symbol [ Graphics %tmp.86 235 67 75 ];
+        %tmp.86 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_LEFT %tmp.87 235 76 93 ];
+        %tmp.87 = getv %tmp.86 :TEXT_JUSTIFY_LEFT;
+        invoke %tmp.77 %tmp.78(%tmp.79, %tmp.82, %tmp.84, %tmp.85, %tmp.87);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 236 8 ]
+        %tmp.88 = lgetv %dc;
+        symbol [ dc %tmp.88 236 8 10 ];
+        symbol [ setColor %tmp.89 236 11 19 ];
+        %tmp.89 = getv function %tmp.88 :setColor;
+        symbol [ Graphics %tmp.90 236 20 28 ];
+        %tmp.90 = getm $.Toybox.Graphics;
+        symbol [ COLOR_WHITE %tmp.91 236 29 40 ];
+        %tmp.91 = getv %tmp.90 :COLOR_WHITE;
+        symbol [ Graphics %tmp.92 236 42 50 ];
+        %tmp.92 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.93 236 51 68 ];
+        %tmp.93 = getv %tmp.92 :COLOR_TRANSPARENT;
+        invoke %tmp.88 %tmp.89(%tmp.91, %tmp.93);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 237 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_237_8_242_8_if_stmt:
+        symbol [ _windSpeed %tmp.95 237 12 22 ];
+        %tmp.95 = getv ? :_windSpeed;
+        %tmp.96 = 0;
+        %tmp.97 = gt %tmp.95 %tmp.96;
+        bf %tmp.97 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_237_8_242_8_if_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_237_8_242_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_237_28_240_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 238 12 ]
+        %tmp.98 = lgetv %dc;
+        symbol [ dc %tmp.98 238 12 14 ];
+        symbol [ drawText %tmp.99 238 15 23 ];
+        %tmp.99 = getv function %tmp.98 :drawText;
+        %tmp.100 = 15;
+        %tmp.101 = lgetv %centerY;
+        symbol [ centerY %tmp.101 238 28 35 ];
+        %tmp.102 = 20;
+        %tmp.103 = sub %tmp.101 %tmp.102;
+        symbol [ Graphics %tmp.104 238 42 50 ];
+        %tmp.104 = getm $.Toybox.Graphics;
+        symbol [ FONT_TINY %tmp.105 238 51 60 ];
+        %tmp.105 = getv %tmp.104 :FONT_TINY;
+        symbol [ _windSpeed %tmp.107 238 62 72 ];
+        %tmp.107 = getv ? :_windSpeed;
+        symbol [ toString %tmp.108 238 73 81 ];
+        %tmp.108 = getv function %tmp.107 :toString;
+        %tmp.109 = invoke %tmp.107 %tmp.108();
+        %tmp.110 = " m/s";
+        %tmp.111 = add %tmp.109 %tmp.110;
+        symbol [ Graphics %tmp.112 238 94 102 ];
+        %tmp.112 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_LEFT %tmp.113 238 103 120 ];
+        %tmp.113 = getv %tmp.112 :TEXT_JUSTIFY_LEFT;
+        invoke %tmp.98 %tmp.99(%tmp.100, %tmp.103, %tmp.105, %tmp.111, %tmp.113);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 239 12 ]
+        %tmp.114 = lgetv %dc;
+        symbol [ dc %tmp.114 239 12 14 ];
+        symbol [ drawText %tmp.115 239 15 23 ];
+        %tmp.115 = getv function %tmp.114 :drawText;
+        %tmp.116 = 15;
+        %tmp.117 = lgetv %centerY;
+        symbol [ centerY %tmp.117 239 28 35 ];
+        %tmp.118 = 5;
+        %tmp.119 = sub %tmp.117 %tmp.118;
+        symbol [ Graphics %tmp.120 239 41 49 ];
+        %tmp.120 = getm $.Toybox.Graphics;
+        symbol [ FONT_XTINY %tmp.121 239 50 60 ];
+        %tmp.121 = getv %tmp.120 :FONT_XTINY;
+        symbol [ _windDirection %tmp.123 239 62 76 ];
+        %tmp.123 = getv ? :_windDirection;
+        symbol [ Graphics %tmp.124 239 78 86 ];
+        %tmp.124 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_LEFT %tmp.125 239 87 104 ];
+        %tmp.125 = getv %tmp.124 :TEXT_JUSTIFY_LEFT;
+        invoke %tmp.114 %tmp.115(%tmp.116, %tmp.119, %tmp.121, %tmp.123, %tmp.125);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_237_28_240_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_237_8_242_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_237_8_242_8_if_else_false:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_240_15_242_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 241 12 ]
+        %tmp.126 = lgetv %dc;
+        symbol [ dc %tmp.126 241 12 14 ];
+        symbol [ drawText %tmp.127 241 15 23 ];
+        %tmp.127 = getv function %tmp.126 :drawText;
+        %tmp.128 = 15;
+        %tmp.129 = lgetv %centerY;
+        symbol [ centerY %tmp.129 241 28 35 ];
+        %tmp.130 = 20;
+        %tmp.131 = sub %tmp.129 %tmp.130;
+        symbol [ Graphics %tmp.132 241 42 50 ];
+        %tmp.132 = getm $.Toybox.Graphics;
+        symbol [ FONT_TINY %tmp.133 241 51 60 ];
+        %tmp.133 = getv %tmp.132 :FONT_TINY;
+        %tmp.134 = "--";
+        symbol [ Graphics %tmp.135 241 68 76 ];
+        %tmp.135 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_LEFT %tmp.136 241 77 94 ];
+        %tmp.136 = getv %tmp.135 :TEXT_JUSTIFY_LEFT;
+        invoke %tmp.126 %tmp.127(%tmp.128, %tmp.131, %tmp.133, %tmp.134, %tmp.136);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_240_15_242_8_stop:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_237_8_242_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 245 8 ]
+        %tmp.137 = lgetv %dc;
+        symbol [ dc %tmp.137 245 8 10 ];
+        symbol [ setColor %tmp.138 245 11 19 ];
+        %tmp.138 = getv function %tmp.137 :setColor;
+        symbol [ Graphics %tmp.139 245 20 28 ];
+        %tmp.139 = getm $.Toybox.Graphics;
+        symbol [ COLOR_LT_GRAY %tmp.140 245 29 42 ];
+        %tmp.140 = getv %tmp.139 :COLOR_LT_GRAY;
+        symbol [ Graphics %tmp.141 245 44 52 ];
+        %tmp.141 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.142 245 53 70 ];
+        %tmp.142 = getv %tmp.141 :COLOR_TRANSPARENT;
+        invoke %tmp.137 %tmp.138(%tmp.140, %tmp.142);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 246 8 ]
+        %tmp.143 = lgetv %dc;
+        symbol [ dc %tmp.143 246 8 10 ];
+        symbol [ drawText %tmp.144 246 11 19 ];
+        %tmp.144 = getv function %tmp.143 :drawText;
+        %tmp.145 = lgetv %width;
+        symbol [ width %tmp.145 246 20 25 ];
+        %tmp.146 = 15;
+        %tmp.147 = sub %tmp.145 %tmp.146;
+        %tmp.148 = lgetv %centerY;
+        symbol [ centerY %tmp.148 246 32 39 ];
+        %tmp.149 = 35;
+        %tmp.150 = sub %tmp.148 %tmp.149;
+        symbol [ Graphics %tmp.151 246 46 54 ];
+        %tmp.151 = getm $.Toybox.Graphics;
+        symbol [ FONT_XTINY %tmp.152 246 55 65 ];
+        %tmp.152 = getv %tmp.151 :FONT_XTINY;
+        %tmp.153 = "TEMP";
+        symbol [ Graphics %tmp.154 246 75 83 ];
+        %tmp.154 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_RIGHT %tmp.155 246 84 102 ];
+        %tmp.155 = getv %tmp.154 :TEXT_JUSTIFY_RIGHT;
+        invoke %tmp.143 %tmp.144(%tmp.147, %tmp.150, %tmp.152, %tmp.153, %tmp.155);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 247 8 ]
+        %tmp.156 = lgetv %dc;
+        symbol [ dc %tmp.156 247 8 10 ];
+        symbol [ setColor %tmp.157 247 11 19 ];
+        %tmp.157 = getv function %tmp.156 :setColor;
+        symbol [ Graphics %tmp.158 247 20 28 ];
+        %tmp.158 = getm $.Toybox.Graphics;
+        symbol [ COLOR_WHITE %tmp.159 247 29 40 ];
+        %tmp.159 = getv %tmp.158 :COLOR_WHITE;
+        symbol [ Graphics %tmp.160 247 42 50 ];
+        %tmp.160 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.161 247 51 68 ];
+        %tmp.161 = getv %tmp.160 :COLOR_TRANSPARENT;
+        invoke %tmp.156 %tmp.157(%tmp.159, %tmp.161);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 248 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_248_8_252_8_if_stmt:
+        symbol [ _temperature %tmp.163 248 12 24 ];
+        %tmp.163 = getv ? :_temperature;
+        %tmp.164 = 0;
+        %tmp.165 = ne %tmp.163 %tmp.164;
+        bf %tmp.165 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_248_8_252_8_if_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_248_8_252_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_248_31_250_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 249 12 ]
+        %tmp.166 = lgetv %dc;
+        symbol [ dc %tmp.166 249 12 14 ];
+        symbol [ drawText %tmp.167 249 15 23 ];
+        %tmp.167 = getv function %tmp.166 :drawText;
+        %tmp.168 = lgetv %width;
+        symbol [ width %tmp.168 249 24 29 ];
+        %tmp.169 = 15;
+        %tmp.170 = sub %tmp.168 %tmp.169;
+        %tmp.171 = lgetv %centerY;
+        symbol [ centerY %tmp.171 249 36 43 ];
+        %tmp.172 = 20;
+        %tmp.173 = sub %tmp.171 %tmp.172;
+        symbol [ Graphics %tmp.174 249 50 58 ];
+        %tmp.174 = getm $.Toybox.Graphics;
+        symbol [ FONT_TINY %tmp.175 249 59 68 ];
+        %tmp.175 = getv %tmp.174 :FONT_TINY;
+        symbol [ _temperature %tmp.177 249 70 82 ];
+        %tmp.177 = getv ? :_temperature;
+        symbol [ toString %tmp.178 249 83 91 ];
+        %tmp.178 = getv function %tmp.177 :toString;
+        %tmp.179 = invoke %tmp.177 %tmp.178();
+        %tmp.180 = "°";
+        %tmp.181 = add %tmp.179 %tmp.180;
+        symbol [ Graphics %tmp.182 249 101 109 ];
+        %tmp.182 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_RIGHT %tmp.183 249 110 128 ];
+        %tmp.183 = getv %tmp.182 :TEXT_JUSTIFY_RIGHT;
+        invoke %tmp.166 %tmp.167(%tmp.170, %tmp.173, %tmp.175, %tmp.181, %tmp.183);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_248_31_250_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_248_8_252_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_248_8_252_8_if_else_false:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_250_15_252_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 251 12 ]
+        %tmp.184 = lgetv %dc;
+        symbol [ dc %tmp.184 251 12 14 ];
+        symbol [ drawText %tmp.185 251 15 23 ];
+        %tmp.185 = getv function %tmp.184 :drawText;
+        %tmp.186 = lgetv %width;
+        symbol [ width %tmp.186 251 24 29 ];
+        %tmp.187 = 15;
+        %tmp.188 = sub %tmp.186 %tmp.187;
+        %tmp.189 = lgetv %centerY;
+        symbol [ centerY %tmp.189 251 36 43 ];
+        %tmp.190 = 20;
+        %tmp.191 = sub %tmp.189 %tmp.190;
+        symbol [ Graphics %tmp.192 251 50 58 ];
+        %tmp.192 = getm $.Toybox.Graphics;
+        symbol [ FONT_TINY %tmp.193 251 59 68 ];
+        %tmp.193 = getv %tmp.192 :FONT_TINY;
+        %tmp.194 = "--";
+        symbol [ Graphics %tmp.195 251 76 84 ];
+        %tmp.195 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_RIGHT %tmp.196 251 85 103 ];
+        %tmp.196 = getv %tmp.195 :TEXT_JUSTIFY_RIGHT;
+        invoke %tmp.184 %tmp.185(%tmp.188, %tmp.191, %tmp.193, %tmp.194, %tmp.196);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_250_15_252_8_stop:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_248_8_252_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 255 8 ]
+        %tmp.197 = lgetv %dc;
+        symbol [ dc %tmp.197 255 8 10 ];
+        symbol [ setColor %tmp.198 255 11 19 ];
+        %tmp.198 = getv function %tmp.197 :setColor;
+        symbol [ Graphics %tmp.199 255 20 28 ];
+        %tmp.199 = getm $.Toybox.Graphics;
+        symbol [ COLOR_DK_GRAY %tmp.200 255 29 42 ];
+        %tmp.200 = getv %tmp.199 :COLOR_DK_GRAY;
+        symbol [ Graphics %tmp.201 255 44 52 ];
+        %tmp.201 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.202 255 53 70 ];
+        %tmp.202 = getv %tmp.201 :COLOR_TRANSPARENT;
+        invoke %tmp.197 %tmp.198(%tmp.200, %tmp.202);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 256 8 ]
+        %tmp.203 = lgetv %dc;
+        symbol [ dc %tmp.203 256 8 10 ];
+        symbol [ drawText %tmp.204 256 11 19 ];
+        %tmp.204 = getv function %tmp.203 :drawText;
+        %tmp.205 = lgetv %centerX;
+        symbol [ centerX %tmp.205 256 20 27 ];
+        %tmp.206 = lgetv %height;
+        symbol [ height %tmp.206 256 29 35 ];
+        %tmp.207 = 25;
+        %tmp.208 = sub %tmp.206 %tmp.207;
+        symbol [ Graphics %tmp.209 256 42 50 ];
+        %tmp.209 = getm $.Toybox.Graphics;
+        symbol [ FONT_XTINY %tmp.210 256 51 61 ];
+        %tmp.210 = getv %tmp.209 :FONT_XTINY;
+        %tmp.211 = "Waiting for session...";
+        symbol [ Graphics %tmp.212 256 89 97 ];
+        %tmp.212 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.213 256 98 117 ];
+        %tmp.213 = getv %tmp.212 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.203 %tmp.204(%tmp.205, %tmp.208, %tmp.210, %tmp.211, %tmp.213);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_216_127_257_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 262; @symbol_functiondef = [drawActiveSession,262,21,38]; @symbol_param<0> = [dc,262,39,41]; @symbol_param<0>_type<0> = [Dc,262,45,47]; @symbol_param<1> = [width,262,49,54]; @symbol_param<1>_type<0> = [Number,262,58,64]; @symbol_param<2> = [height,262,66,72]; @symbol_param<2>_type<0> = [Number,262,76,82]; @symbol_param<3> = [centerX,262,84,91]; @symbol_param<3>_type<0> = [Number,262,95,101]; @symbol_param<4> = [centerY,262,103,110]; @symbol_param<4>_type<0> = [Number,262,114,120]; ]
+    private
+    function drawActiveSession(dc as Dc, width as Number, height as Number, centerX as Number, centerY as Number) as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_262_130_326_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 264 8 ]
+        %tmp.1 = lgetv %dc;
+        symbol [ dc %tmp.1 264 8 10 ];
+        symbol [ setColor %tmp.2 264 11 19 ];
+        %tmp.2 = getv function %tmp.1 :setColor;
+        symbol [ Graphics %tmp.3 264 20 28 ];
+        %tmp.3 = getm $.Toybox.Graphics;
+        symbol [ COLOR_DK_GREEN %tmp.4 264 29 43 ];
+        %tmp.4 = getv %tmp.3 :COLOR_DK_GREEN;
+        symbol [ Graphics %tmp.5 264 45 53 ];
+        %tmp.5 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.6 264 54 71 ];
+        %tmp.6 = getv %tmp.5 :COLOR_TRANSPARENT;
+        invoke %tmp.1 %tmp.2(%tmp.4, %tmp.6);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 265 8 ]
+        %tmp.7 = lgetv %dc;
+        symbol [ dc %tmp.7 265 8 10 ];
+        symbol [ fillRectangle %tmp.8 265 11 24 ];
+        %tmp.8 = getv function %tmp.7 :fillRectangle;
+        %tmp.9 = 0;
+        %tmp.10 = 0;
+        %tmp.11 = lgetv %width;
+        symbol [ width %tmp.11 265 31 36 ];
+        %tmp.12 = 26;
+        invoke %tmp.7 %tmp.8(%tmp.9, %tmp.10, %tmp.11, %tmp.12);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 266 8 ]
+        %tmp.13 = lgetv %dc;
+        symbol [ dc %tmp.13 266 8 10 ];
+        symbol [ setColor %tmp.14 266 11 19 ];
+        %tmp.14 = getv function %tmp.13 :setColor;
+        symbol [ Graphics %tmp.15 266 20 28 ];
+        %tmp.15 = getm $.Toybox.Graphics;
+        symbol [ COLOR_WHITE %tmp.16 266 29 40 ];
+        %tmp.16 = getv %tmp.15 :COLOR_WHITE;
+        symbol [ Graphics %tmp.17 266 42 50 ];
+        %tmp.17 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.18 266 51 68 ];
+        %tmp.18 = getv %tmp.17 :COLOR_TRANSPARENT;
+        invoke %tmp.13 %tmp.14(%tmp.16, %tmp.18);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 267 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_267_8_271_8_if_stmt:
+        symbol [ _distance %tmp.20 267 12 21 ];
+        %tmp.20 = getv ? :_distance;
+        %tmp.21 = 0;
+        %tmp.22 = gt %tmp.20 %tmp.21;
+        bf %tmp.22 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_267_8_271_8_if_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_267_8_271_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_267_27_269_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 268 12 ]
+        %tmp.23 = lgetv %dc;
+        symbol [ dc %tmp.23 268 12 14 ];
+        symbol [ drawText %tmp.24 268 15 23 ];
+        %tmp.24 = getv function %tmp.23 :drawText;
+        %tmp.25 = lgetv %centerX;
+        symbol [ centerX %tmp.25 268 24 31 ];
+        %tmp.26 = 5;
+        symbol [ Graphics %tmp.27 268 36 44 ];
+        %tmp.27 = getm $.Toybox.Graphics;
+        symbol [ FONT_SMALL %tmp.28 268 45 55 ];
+        %tmp.28 = getv %tmp.27 :FONT_SMALL;
+        symbol [ _distance %tmp.30 268 57 66 ];
+        %tmp.30 = getv ? :_distance;
+        symbol [ toString %tmp.31 268 67 75 ];
+        %tmp.31 = getv function %tmp.30 :toString;
+        %tmp.32 = invoke %tmp.30 %tmp.31();
+        %tmp.33 = "m";
+        %tmp.34 = add %tmp.32 %tmp.33;
+        symbol [ Graphics %tmp.35 268 85 93 ];
+        %tmp.35 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.36 268 94 113 ];
+        %tmp.36 = getv %tmp.35 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.23 %tmp.24(%tmp.25, %tmp.26, %tmp.28, %tmp.34, %tmp.36);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_267_27_269_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_267_8_271_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_267_8_271_8_if_else_false:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_269_15_271_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 270 12 ]
+        %tmp.37 = lgetv %dc;
+        symbol [ dc %tmp.37 270 12 14 ];
+        symbol [ drawText %tmp.38 270 15 23 ];
+        %tmp.38 = getv function %tmp.37 :drawText;
+        %tmp.39 = lgetv %centerX;
+        symbol [ centerX %tmp.39 270 24 31 ];
+        %tmp.40 = 5;
+        symbol [ Graphics %tmp.41 270 36 44 ];
+        %tmp.41 = getm $.Toybox.Graphics;
+        symbol [ FONT_SMALL %tmp.42 270 45 55 ];
+        %tmp.42 = getv %tmp.41 :FONT_SMALL;
+        %tmp.43 = "ACTIVE";
+        symbol [ Graphics %tmp.44 270 67 75 ];
+        %tmp.44 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.45 270 76 95 ];
+        %tmp.45 = getv %tmp.44 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.37 %tmp.38(%tmp.39, %tmp.40, %tmp.42, %tmp.43, %tmp.45);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_269_15_271_8_stop:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_267_8_271_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 274 8 ]
+        %tmp.46 = lgetv %dc;
+        symbol [ dc %tmp.46 274 8 10 ];
+        symbol [ setColor %tmp.47 274 11 19 ];
+        %tmp.47 = getv function %tmp.46 :setColor;
+        symbol [ Graphics %tmp.48 274 20 28 ];
+        %tmp.48 = getm $.Toybox.Graphics;
+        symbol [ COLOR_YELLOW %tmp.49 274 29 41 ];
+        %tmp.49 = getv %tmp.48 :COLOR_YELLOW;
+        symbol [ Graphics %tmp.50 274 43 51 ];
+        %tmp.50 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.51 274 52 69 ];
+        %tmp.51 = getv %tmp.50 :COLOR_TRANSPARENT;
+        invoke %tmp.46 %tmp.47(%tmp.49, %tmp.51);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 275 8 ]
+        %tmp.52 = lgetv %dc;
+        symbol [ dc %tmp.52 275 8 10 ];
+        symbol [ drawText %tmp.53 275 11 19 ];
+        %tmp.53 = getv function %tmp.52 :drawText;
+        %tmp.54 = lgetv %centerX;
+        symbol [ centerX %tmp.54 275 20 27 ];
+        %tmp.55 = 32;
+        symbol [ Graphics %tmp.56 275 33 41 ];
+        %tmp.56 = getm $.Toybox.Graphics;
+        symbol [ FONT_TINY %tmp.57 275 42 51 ];
+        %tmp.57 = getv %tmp.56 :FONT_TINY;
+        %tmp.58 = self;
+        symbol [ formatTime %tmp.59 275 53 63 ];
+        %tmp.59 = getv function %tmp.58 :formatTime;
+        symbol [ _elapsedSeconds %tmp.61 275 64 79 ];
+        %tmp.61 = getv ? :_elapsedSeconds;
+        %tmp.62 = invoke %tmp.58 %tmp.59(%tmp.61);
+        symbol [ Graphics %tmp.63 275 82 90 ];
+        %tmp.63 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.64 275 91 110 ];
+        %tmp.64 = getv %tmp.63 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.52 %tmp.53(%tmp.54, %tmp.55, %tmp.57, %tmp.62, %tmp.64);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 280 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_262_130_326_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_262_130_326_4_stop" ]
+        %shotY.1 = local;
+        symbol [ shotY %shotY.1 280 12 17 ];
+        %tmp.65 = lgetv %centerY;
+        symbol [ centerY %tmp.65 280 20 27 ];
+        %tmp.66 = 5;
+        %tmp.67 = sub %tmp.65 %tmp.66;
+        lputv %shotY.1 %tmp.67;
+        symbol [ shotY %shotY.1 280 12 17 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 283 8 ]
+        %tmp.68 = lgetv %dc;
+        symbol [ dc %tmp.68 283 8 10 ];
+        symbol [ setColor %tmp.69 283 11 19 ];
+        %tmp.69 = getv function %tmp.68 :setColor;
+        symbol [ Graphics %tmp.70 283 20 28 ];
+        %tmp.70 = getm $.Toybox.Graphics;
+        symbol [ COLOR_WHITE %tmp.71 283 29 40 ];
+        %tmp.71 = getv %tmp.70 :COLOR_WHITE;
+        symbol [ Graphics %tmp.72 283 42 50 ];
+        %tmp.72 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.73 283 51 68 ];
+        %tmp.73 = getv %tmp.72 :COLOR_TRANSPARENT;
+        invoke %tmp.68 %tmp.69(%tmp.71, %tmp.73);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 284 8 ]
+        %tmp.74 = lgetv %dc;
+        symbol [ dc %tmp.74 284 8 10 ];
+        symbol [ drawText %tmp.75 284 11 19 ];
+        %tmp.75 = getv function %tmp.74 :drawText;
+        %tmp.76 = lgetv %centerX;
+        symbol [ centerX %tmp.76 284 20 27 ];
+        %tmp.77 = lgetv %shotY.1;
+        symbol [ shotY %tmp.77 284 29 34 ];
+        %tmp.78 = 25;
+        %tmp.79 = sub %tmp.77 %tmp.78;
+        symbol [ Graphics %tmp.80 284 41 49 ];
+        %tmp.80 = getm $.Toybox.Graphics;
+        symbol [ FONT_NUMBER_HOT %tmp.81 284 50 65 ];
+        %tmp.81 = getv %tmp.80 :FONT_NUMBER_HOT;
+        symbol [ _shotsFired %tmp.83 284 67 78 ];
+        %tmp.83 = getv ? :_shotsFired;
+        symbol [ toString %tmp.84 284 79 87 ];
+        %tmp.84 = getv function %tmp.83 :toString;
+        %tmp.85 = invoke %tmp.83 %tmp.84();
+        symbol [ Graphics %tmp.86 284 91 99 ];
+        %tmp.86 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.87 284 100 119 ];
+        %tmp.87 = getv %tmp.86 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.74 %tmp.75(%tmp.76, %tmp.79, %tmp.81, %tmp.85, %tmp.87);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 287 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_8_310_8_if_stmt:
+        symbol [ _maxBullets %tmp.89 287 12 23 ];
+        %tmp.89 = getv ? :_maxBullets;
+        %tmp.90 = 0;
+        %tmp.91 = gt %tmp.89 %tmp.90;
+        bf %tmp.91 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_8_310_8_if_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_8_310_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_29_307_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 288 12 ]
+        %tmp.92 = lgetv %dc;
+        symbol [ dc %tmp.92 288 12 14 ];
+        symbol [ setColor %tmp.93 288 15 23 ];
+        %tmp.93 = getv function %tmp.92 :setColor;
+        symbol [ Graphics %tmp.94 288 24 32 ];
+        %tmp.94 = getm $.Toybox.Graphics;
+        symbol [ COLOR_LT_GRAY %tmp.95 288 33 46 ];
+        %tmp.95 = getv %tmp.94 :COLOR_LT_GRAY;
+        symbol [ Graphics %tmp.96 288 48 56 ];
+        %tmp.96 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.97 288 57 74 ];
+        %tmp.97 = getv %tmp.96 :COLOR_TRANSPARENT;
+        invoke %tmp.92 %tmp.93(%tmp.95, %tmp.97);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 289 12 ]
+        %tmp.98 = lgetv %dc;
+        symbol [ dc %tmp.98 289 12 14 ];
+        symbol [ drawText %tmp.99 289 15 23 ];
+        %tmp.99 = getv function %tmp.98 :drawText;
+        %tmp.100 = lgetv %centerX;
+        symbol [ centerX %tmp.100 289 24 31 ];
+        %tmp.101 = lgetv %shotY.1;
+        symbol [ shotY %tmp.101 289 33 38 ];
+        %tmp.102 = 30;
+        %tmp.103 = add %tmp.101 %tmp.102;
+        symbol [ Graphics %tmp.104 289 45 53 ];
+        %tmp.104 = getm $.Toybox.Graphics;
+        symbol [ FONT_SMALL %tmp.105 289 54 64 ];
+        %tmp.105 = getv %tmp.104 :FONT_SMALL;
+        %tmp.106 = "/ ";
+        symbol [ _maxBullets %tmp.108 289 73 84 ];
+        %tmp.108 = getv ? :_maxBullets;
+        symbol [ toString %tmp.109 289 85 93 ];
+        %tmp.109 = getv function %tmp.108 :toString;
+        %tmp.110 = invoke %tmp.108 %tmp.109();
+        %tmp.111 = add %tmp.106 %tmp.110;
+        symbol [ Graphics %tmp.112 289 97 105 ];
+        %tmp.112 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.113 289 106 125 ];
+        %tmp.113 = getv %tmp.112 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.98 %tmp.99(%tmp.100, %tmp.103, %tmp.105, %tmp.111, %tmp.113);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 292 12 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_29_307_8_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_29_307_8_stop" ]
+        %barWidth.2 = local;
+        symbol [ barWidth %barWidth.2 292 16 24 ];
+        %tmp.114 = lgetv %width;
+        symbol [ width %tmp.114 292 27 32 ];
+        %tmp.115 = 40;
+        %tmp.116 = sub %tmp.114 %tmp.115;
+        lputv %barWidth.2 %tmp.116;
+        symbol [ barWidth %barWidth.2 292 16 24 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 293 12 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_29_307_8_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_29_307_8_stop" ]
+        %barHeight.3 = local;
+        symbol [ barHeight %barHeight.3 293 16 25 ];
+        %tmp.117 = 6;
+        lputv %barHeight.3 %tmp.117;
+        symbol [ barHeight %barHeight.3 293 16 25 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 294 12 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_29_307_8_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_29_307_8_stop" ]
+        %barY.4 = local;
+        symbol [ barY %barY.4 294 16 20 ];
+        %tmp.118 = lgetv %shotY.1;
+        symbol [ shotY %tmp.118 294 23 28 ];
+        %tmp.119 = 55;
+        %tmp.120 = add %tmp.118 %tmp.119;
+        lputv %barY.4 %tmp.120;
+        symbol [ barY %barY.4 294 16 20 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 295 12 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_29_307_8_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_29_307_8_stop" ]
+        %barX.5 = local;
+        symbol [ barX %barX.5 295 16 20 ];
+        %tmp.121 = 20;
+        lputv %barX.5 %tmp.121;
+        symbol [ barX %barX.5 295 16 20 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 298 12 ]
+        %tmp.122 = lgetv %dc;
+        symbol [ dc %tmp.122 298 12 14 ];
+        symbol [ setColor %tmp.123 298 15 23 ];
+        %tmp.123 = getv function %tmp.122 :setColor;
+        symbol [ Graphics %tmp.124 298 24 32 ];
+        %tmp.124 = getm $.Toybox.Graphics;
+        symbol [ COLOR_DK_GRAY %tmp.125 298 33 46 ];
+        %tmp.125 = getv %tmp.124 :COLOR_DK_GRAY;
+        symbol [ Graphics %tmp.126 298 48 56 ];
+        %tmp.126 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.127 298 57 74 ];
+        %tmp.127 = getv %tmp.126 :COLOR_TRANSPARENT;
+        invoke %tmp.122 %tmp.123(%tmp.125, %tmp.127);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 299 12 ]
+        %tmp.128 = lgetv %dc;
+        symbol [ dc %tmp.128 299 12 14 ];
+        symbol [ fillRectangle %tmp.129 299 15 28 ];
+        %tmp.129 = getv function %tmp.128 :fillRectangle;
+        %tmp.130 = lgetv %barX.5;
+        symbol [ barX %tmp.130 299 29 33 ];
+        %tmp.131 = lgetv %barY.4;
+        symbol [ barY %tmp.131 299 35 39 ];
+        %tmp.132 = lgetv %barWidth.2;
+        symbol [ barWidth %tmp.132 299 41 49 ];
+        %tmp.133 = lgetv %barHeight.3;
+        symbol [ barHeight %tmp.133 299 51 60 ];
+        invoke %tmp.128 %tmp.129(%tmp.130, %tmp.131, %tmp.132, %tmp.133);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 302 12 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_29_307_8_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_29_307_8_stop" ]
+        %fillWidth.6 = local;
+        symbol [ fillWidth %fillWidth.6 302 16 25 ];
+        %tmp.134 = lgetv %barWidth.2;
+        symbol [ barWidth %tmp.134 302 29 37 ];
+        symbol [ _shotsFired %tmp.136 302 40 51 ];
+        %tmp.136 = getv ? :_shotsFired;
+        %tmp.137 = mul %tmp.134 %tmp.136;
+        symbol [ _maxBullets %tmp.139 302 55 66 ];
+        %tmp.139 = getv ? :_maxBullets;
+        %tmp.140 = div %tmp.137 %tmp.139;
+        lputv %fillWidth.6 %tmp.140;
+        symbol [ fillWidth %fillWidth.6 302 16 25 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 303 12 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_303_12_303_62_if_stmt:
+        %tmp.141 = lgetv %fillWidth.6;
+        symbol [ fillWidth %tmp.141 303 16 25 ];
+        %tmp.142 = lgetv %barWidth.2;
+        symbol [ barWidth %tmp.142 303 28 36 ];
+        %tmp.143 = gt %tmp.141 %tmp.142;
+        bf %tmp.143 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_303_12_303_62_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_303_12_303_62_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_303_38_303_62_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 303 40 ]
+        %tmp.144 = lgetv %barWidth.2;
+        symbol [ barWidth %tmp.144 303 52 60 ];
+        lputv %fillWidth.6 %tmp.144;
+        symbol [ fillWidth %fillWidth.6 303 40 49 ];
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_303_38_303_62_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_303_12_303_62_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_303_12_303_62_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 304 12 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_29_307_8_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_29_307_8_stop" ]
+        %fillColor.7 = local;
+        symbol [ fillColor %fillColor.7 304 16 25 ];
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_304_28_304_89_begin:
+        symbol [ _shotsFired %tmp.146 304 29 40 ];
+        %tmp.146 = getv ? :_shotsFired;
+        symbol [ _maxBullets %tmp.148 304 44 55 ];
+        %tmp.148 = getv ? :_maxBullets;
+        %tmp.149 = gte %tmp.146 %tmp.148;
+        bf %tmp.149 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_304_28_304_89_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_304_28_304_89_true:
+        symbol [ Graphics %tmp.150 304 59 67 ];
+        %tmp.150 = getm $.Toybox.Graphics;
+        symbol [ COLOR_RED %tmp.151 304 68 77 ];
+        %tmp.151 = getv %tmp.150 :COLOR_RED;
+        push %tmp.151;
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_304_28_304_89_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_304_28_304_89_else_false:
+        symbol [ Graphics %tmp.152 304 80 88 ];
+        %tmp.152 = getm $.Toybox.Graphics;
+        symbol [ COLOR_GREEN %tmp.153 304 89 100 ];
+        %tmp.153 = getv %tmp.152 :COLOR_GREEN;
+        push %tmp.153;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_304_28_304_89_end:
+        %tmp.154 = phi [%tmp.149 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_304_28_304_89_begin] [%tmp.151 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_304_28_304_89_true] [%tmp.153 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_304_28_304_89_else_false] [%tmp.154 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_304_28_304_89_end];
+        lputv %fillColor.7 %tmp.154;
+        symbol [ fillColor %fillColor.7 304 16 25 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 305 12 ]
+        %tmp.155 = lgetv %dc;
+        symbol [ dc %tmp.155 305 12 14 ];
+        symbol [ setColor %tmp.156 305 15 23 ];
+        %tmp.156 = getv function %tmp.155 :setColor;
+        %tmp.157 = lgetv %fillColor.7;
+        symbol [ fillColor %tmp.157 305 24 33 ];
+        symbol [ Graphics %tmp.158 305 35 43 ];
+        %tmp.158 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.159 305 44 61 ];
+        %tmp.159 = getv %tmp.158 :COLOR_TRANSPARENT;
+        invoke %tmp.155 %tmp.156(%tmp.157, %tmp.159);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 306 12 ]
+        %tmp.160 = lgetv %dc;
+        symbol [ dc %tmp.160 306 12 14 ];
+        symbol [ fillRectangle %tmp.161 306 15 28 ];
+        %tmp.161 = getv function %tmp.160 :fillRectangle;
+        %tmp.162 = lgetv %barX.5;
+        symbol [ barX %tmp.162 306 29 33 ];
+        %tmp.163 = lgetv %barY.4;
+        symbol [ barY %tmp.163 306 35 39 ];
+        %tmp.164 = lgetv %fillWidth.6;
+        symbol [ fillWidth %tmp.164 306 41 50 ];
+        %tmp.165 = lgetv %barHeight.3;
+        symbol [ barHeight %tmp.165 306 52 61 ];
+        invoke %tmp.160 %tmp.161(%tmp.162, %tmp.163, %tmp.164, %tmp.165);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_29_307_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_8_310_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_8_310_8_if_else_false:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_307_15_310_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 308 12 ]
+        %tmp.166 = lgetv %dc;
+        symbol [ dc %tmp.166 308 12 14 ];
+        symbol [ setColor %tmp.167 308 15 23 ];
+        %tmp.167 = getv function %tmp.166 :setColor;
+        symbol [ Graphics %tmp.168 308 24 32 ];
+        %tmp.168 = getm $.Toybox.Graphics;
+        symbol [ COLOR_LT_GRAY %tmp.169 308 33 46 ];
+        %tmp.169 = getv %tmp.168 :COLOR_LT_GRAY;
+        symbol [ Graphics %tmp.170 308 48 56 ];
+        %tmp.170 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.171 308 57 74 ];
+        %tmp.171 = getv %tmp.170 :COLOR_TRANSPARENT;
+        invoke %tmp.166 %tmp.167(%tmp.169, %tmp.171);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 309 12 ]
+        %tmp.172 = lgetv %dc;
+        symbol [ dc %tmp.172 309 12 14 ];
+        symbol [ drawText %tmp.173 309 15 23 ];
+        %tmp.173 = getv function %tmp.172 :drawText;
+        %tmp.174 = lgetv %centerX;
+        symbol [ centerX %tmp.174 309 24 31 ];
+        %tmp.175 = lgetv %shotY.1;
+        symbol [ shotY %tmp.175 309 33 38 ];
+        %tmp.176 = 30;
+        %tmp.177 = add %tmp.175 %tmp.176;
+        symbol [ Graphics %tmp.178 309 45 53 ];
+        %tmp.178 = getm $.Toybox.Graphics;
+        symbol [ FONT_XTINY %tmp.179 309 54 64 ];
+        %tmp.179 = getv %tmp.178 :FONT_XTINY;
+        %tmp.180 = "SHOTS";
+        symbol [ Graphics %tmp.181 309 75 83 ];
+        %tmp.181 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.182 309 84 103 ];
+        %tmp.182 = getv %tmp.181 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.172 %tmp.173(%tmp.174, %tmp.177, %tmp.179, %tmp.180, %tmp.182);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_307_15_310_8_stop:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_287_8_310_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 313 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_313_8_320_8_if_stmt:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_313_12_313_46_begin:
+        symbol [ _maxBullets %tmp.184 313 12 23 ];
+        %tmp.184 = getv ? :_maxBullets;
+        %tmp.185 = 0;
+        %tmp.186 = gt %tmp.184 %tmp.185;
+        bf %tmp.186 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_313_8_320_8_if_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_313_31_313_46_true:
+        symbol [ _shotsFired %tmp.188 313 31 42 ];
+        %tmp.188 = getv ? :_shotsFired;
+        symbol [ _maxBullets %tmp.190 313 46 57 ];
+        %tmp.190 = getv ? :_maxBullets;
+        %tmp.191 = gte %tmp.188 %tmp.190;
+        push %tmp.191;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_313_31_313_46_end:
+        %tmp.192 = phi [%tmp.186 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_313_12_313_46_begin] [%tmp.191 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_313_31_313_46_true] [%tmp.192 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_313_31_313_46_end];
+        bf %tmp.192 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_313_8_320_8_if_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_313_8_320_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_313_59_317_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 315 12 ]
+        %tmp.193 = lgetv %dc;
+        symbol [ dc %tmp.193 315 12 14 ];
+        symbol [ setColor %tmp.194 315 15 23 ];
+        %tmp.194 = getv function %tmp.193 :setColor;
+        symbol [ Graphics %tmp.195 315 24 32 ];
+        %tmp.195 = getm $.Toybox.Graphics;
+        symbol [ COLOR_RED %tmp.196 315 33 42 ];
+        %tmp.196 = getv %tmp.195 :COLOR_RED;
+        symbol [ Graphics %tmp.197 315 44 52 ];
+        %tmp.197 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.198 315 53 70 ];
+        %tmp.198 = getv %tmp.197 :COLOR_TRANSPARENT;
+        invoke %tmp.193 %tmp.194(%tmp.196, %tmp.198);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 316 12 ]
+        %tmp.199 = lgetv %dc;
+        symbol [ dc %tmp.199 316 12 14 ];
+        symbol [ drawText %tmp.200 316 15 23 ];
+        %tmp.200 = getv function %tmp.199 :drawText;
+        %tmp.201 = lgetv %centerX;
+        symbol [ centerX %tmp.201 316 24 31 ];
+        %tmp.202 = lgetv %height;
+        symbol [ height %tmp.202 316 33 39 ];
+        %tmp.203 = 20;
+        %tmp.204 = sub %tmp.202 %tmp.203;
+        symbol [ Graphics %tmp.205 316 46 54 ];
+        %tmp.205 = getm $.Toybox.Graphics;
+        symbol [ FONT_XTINY %tmp.206 316 55 65 ];
+        %tmp.206 = getv %tmp.205 :FONT_XTINY;
+        %tmp.207 = "MAX REACHED - Results sent!";
+        symbol [ Graphics %tmp.208 316 98 106 ];
+        %tmp.208 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.209 316 107 126 ];
+        %tmp.209 = getv %tmp.208 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.199 %tmp.200(%tmp.201, %tmp.204, %tmp.206, %tmp.207, %tmp.209);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_313_59_317_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_313_8_320_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_313_8_320_8_if_else_false:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_317_15_320_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 318 12 ]
+        %tmp.210 = lgetv %dc;
+        symbol [ dc %tmp.210 318 12 14 ];
+        symbol [ setColor %tmp.211 318 15 23 ];
+        %tmp.211 = getv function %tmp.210 :setColor;
+        symbol [ Graphics %tmp.212 318 24 32 ];
+        %tmp.212 = getm $.Toybox.Graphics;
+        symbol [ COLOR_DK_GRAY %tmp.213 318 33 46 ];
+        %tmp.213 = getv %tmp.212 :COLOR_DK_GRAY;
+        symbol [ Graphics %tmp.214 318 48 56 ];
+        %tmp.214 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.215 318 57 74 ];
+        %tmp.215 = getv %tmp.214 :COLOR_TRANSPARENT;
+        invoke %tmp.210 %tmp.211(%tmp.213, %tmp.215);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 319 12 ]
+        %tmp.216 = lgetv %dc;
+        symbol [ dc %tmp.216 319 12 14 ];
+        symbol [ drawText %tmp.217 319 15 23 ];
+        %tmp.217 = getv function %tmp.216 :drawText;
+        %tmp.218 = lgetv %centerX;
+        symbol [ centerX %tmp.218 319 24 31 ];
+        %tmp.219 = lgetv %height;
+        symbol [ height %tmp.219 319 33 39 ];
+        %tmp.220 = 20;
+        %tmp.221 = sub %tmp.219 %tmp.220;
+        symbol [ Graphics %tmp.222 319 46 54 ];
+        %tmp.222 = getm $.Toybox.Graphics;
+        symbol [ FONT_XTINY %tmp.223 319 55 65 ];
+        %tmp.223 = getv %tmp.222 :FONT_XTINY;
+        %tmp.224 = "TAP to count shot";
+        symbol [ Graphics %tmp.225 319 88 96 ];
+        %tmp.225 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.226 319 97 116 ];
+        %tmp.226 = getv %tmp.225 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.216 %tmp.217(%tmp.218, %tmp.221, %tmp.223, %tmp.224, %tmp.226);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_317_15_320_8_stop:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_313_8_320_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 323 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_262_130_326_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_262_130_326_4_stop" ]
+        %pulse.8 = local;
+        symbol [ pulse %pulse.8 323 12 17 ];
+        symbol [ _elapsedSeconds %tmp.228 323 21 36 ];
+        %tmp.228 = getv ? :_elapsedSeconds;
+        %tmp.229 = 2;
+        %tmp.230 = mod %tmp.228 %tmp.229;
+        %tmp.231 = 0;
+        %tmp.232 = eq %tmp.230 %tmp.231;
+        lputv %pulse.8 %tmp.232;
+        symbol [ pulse %pulse.8 323 12 17 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 324 8 ]
+        %tmp.233 = lgetv %dc;
+        symbol [ dc %tmp.233 324 8 10 ];
+        symbol [ setColor %tmp.234 324 11 19 ];
+        %tmp.234 = getv function %tmp.233 :setColor;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_324_20_324_58_begin:
+        %tmp.235 = lgetv %pulse.8;
+        symbol [ pulse %tmp.235 324 20 25 ];
+        bf %tmp.235 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_324_20_324_58_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_324_20_324_58_true:
+        symbol [ Graphics %tmp.236 324 28 36 ];
+        %tmp.236 = getm $.Toybox.Graphics;
+        symbol [ COLOR_RED %tmp.237 324 37 46 ];
+        %tmp.237 = getv %tmp.236 :COLOR_RED;
+        push %tmp.237;
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_324_20_324_58_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_324_20_324_58_else_false:
+        symbol [ Graphics %tmp.238 324 49 57 ];
+        %tmp.238 = getm $.Toybox.Graphics;
+        symbol [ COLOR_DK_RED %tmp.239 324 58 70 ];
+        %tmp.239 = getv %tmp.238 :COLOR_DK_RED;
+        push %tmp.239;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_324_20_324_58_end:
+        %tmp.240 = phi [%tmp.235 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_324_20_324_58_begin] [%tmp.237 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_324_20_324_58_true] [%tmp.239 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_324_20_324_58_else_false] [%tmp.240 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_324_20_324_58_end];
+        symbol [ Graphics %tmp.241 324 72 80 ];
+        %tmp.241 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.242 324 81 98 ];
+        %tmp.242 = getv %tmp.241 :COLOR_TRANSPARENT;
+        invoke %tmp.233 %tmp.234(%tmp.240, %tmp.242);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 325 8 ]
+        %tmp.243 = lgetv %dc;
+        symbol [ dc %tmp.243 325 8 10 ];
+        symbol [ fillCircle %tmp.244 325 11 21 ];
+        %tmp.244 = getv function %tmp.243 :fillCircle;
+        %tmp.245 = 12;
+        %tmp.246 = 12;
+        %tmp.247 = 5;
+        invoke %tmp.243 %tmp.244(%tmp.245, %tmp.246, %tmp.247);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_262_130_326_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 331; @symbol_functiondef = [drawSessionEnded,331,21,37]; @symbol_param<0> = [dc,331,38,40]; @symbol_param<0>_type<0> = [Dc,331,44,46]; @symbol_param<1> = [width,331,48,53]; @symbol_param<1>_type<0> = [Number,331,57,63]; @symbol_param<2> = [height,331,65,71]; @symbol_param<2>_type<0> = [Number,331,75,81]; @symbol_param<3> = [centerX,331,83,90]; @symbol_param<3>_type<0> = [Number,331,94,100]; @symbol_param<4> = [centerY,331,102,109]; @symbol_param<4>_type<0> = [Number,331,113,119]; ]
+    private
+    function drawSessionEnded(dc as Dc, width as Number, height as Number, centerX as Number, centerY as Number) as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_331_129_377_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 333 8 ]
+        %tmp.1 = lgetv %dc;
+        symbol [ dc %tmp.1 333 8 10 ];
+        symbol [ setColor %tmp.2 333 11 19 ];
+        %tmp.2 = getv function %tmp.1 :setColor;
+        symbol [ Graphics %tmp.3 333 20 28 ];
+        %tmp.3 = getm $.Toybox.Graphics;
+        symbol [ COLOR_BLUE %tmp.4 333 29 39 ];
+        %tmp.4 = getv %tmp.3 :COLOR_BLUE;
+        symbol [ Graphics %tmp.5 333 41 49 ];
+        %tmp.5 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.6 333 50 67 ];
+        %tmp.6 = getv %tmp.5 :COLOR_TRANSPARENT;
+        invoke %tmp.1 %tmp.2(%tmp.4, %tmp.6);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 334 8 ]
+        %tmp.7 = lgetv %dc;
+        symbol [ dc %tmp.7 334 8 10 ];
+        symbol [ fillRectangle %tmp.8 334 11 24 ];
+        %tmp.8 = getv function %tmp.7 :fillRectangle;
+        %tmp.9 = 0;
+        %tmp.10 = 0;
+        %tmp.11 = lgetv %width;
+        symbol [ width %tmp.11 334 31 36 ];
+        %tmp.12 = 26;
+        invoke %tmp.7 %tmp.8(%tmp.9, %tmp.10, %tmp.11, %tmp.12);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 335 8 ]
+        %tmp.13 = lgetv %dc;
+        symbol [ dc %tmp.13 335 8 10 ];
+        symbol [ setColor %tmp.14 335 11 19 ];
+        %tmp.14 = getv function %tmp.13 :setColor;
+        symbol [ Graphics %tmp.15 335 20 28 ];
+        %tmp.15 = getm $.Toybox.Graphics;
+        symbol [ COLOR_WHITE %tmp.16 335 29 40 ];
+        %tmp.16 = getv %tmp.15 :COLOR_WHITE;
+        symbol [ Graphics %tmp.17 335 42 50 ];
+        %tmp.17 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.18 335 51 68 ];
+        %tmp.18 = getv %tmp.17 :COLOR_TRANSPARENT;
+        invoke %tmp.13 %tmp.14(%tmp.16, %tmp.18);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 336 8 ]
+        %tmp.19 = lgetv %dc;
+        symbol [ dc %tmp.19 336 8 10 ];
+        symbol [ drawText %tmp.20 336 11 19 ];
+        %tmp.20 = getv function %tmp.19 :drawText;
+        %tmp.21 = lgetv %centerX;
+        symbol [ centerX %tmp.21 336 20 27 ];
+        %tmp.22 = 5;
+        symbol [ Graphics %tmp.23 336 32 40 ];
+        %tmp.23 = getm $.Toybox.Graphics;
+        symbol [ FONT_SMALL %tmp.24 336 41 51 ];
+        %tmp.24 = getv %tmp.23 :FONT_SMALL;
+        %tmp.25 = "COMPLETE";
+        symbol [ Graphics %tmp.26 336 65 73 ];
+        %tmp.26 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.27 336 74 93 ];
+        %tmp.27 = getv %tmp.26 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.19 %tmp.20(%tmp.21, %tmp.22, %tmp.24, %tmp.25, %tmp.27);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 339 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_331_129_377_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_331_129_377_4_stop" ]
+        %statsY.1 = local;
+        symbol [ statsY %statsY.1 339 12 18 ];
+        %tmp.28 = 40;
+        lputv %statsY.1 %tmp.28;
+        symbol [ statsY %statsY.1 339 12 18 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 340 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_331_129_377_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_331_129_377_4_stop" ]
+        %lineHeight.2 = local;
+        symbol [ lineHeight %lineHeight.2 340 12 22 ];
+        %tmp.29 = 32;
+        lputv %lineHeight.2 %tmp.29;
+        symbol [ lineHeight %lineHeight.2 340 12 22 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 343 8 ]
+        %tmp.30 = lgetv %dc;
+        symbol [ dc %tmp.30 343 8 10 ];
+        symbol [ setColor %tmp.31 343 11 19 ];
+        %tmp.31 = getv function %tmp.30 :setColor;
+        symbol [ Graphics %tmp.32 343 20 28 ];
+        %tmp.32 = getm $.Toybox.Graphics;
+        symbol [ COLOR_LT_GRAY %tmp.33 343 29 42 ];
+        %tmp.33 = getv %tmp.32 :COLOR_LT_GRAY;
+        symbol [ Graphics %tmp.34 343 44 52 ];
+        %tmp.34 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.35 343 53 70 ];
+        %tmp.35 = getv %tmp.34 :COLOR_TRANSPARENT;
+        invoke %tmp.30 %tmp.31(%tmp.33, %tmp.35);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 344 8 ]
+        %tmp.36 = lgetv %dc;
+        symbol [ dc %tmp.36 344 8 10 ];
+        symbol [ drawText %tmp.37 344 11 19 ];
+        %tmp.37 = getv function %tmp.36 :drawText;
+        %tmp.38 = lgetv %centerX;
+        symbol [ centerX %tmp.38 344 20 27 ];
+        %tmp.39 = lgetv %statsY.1;
+        symbol [ statsY %tmp.39 344 29 35 ];
+        symbol [ Graphics %tmp.40 344 37 45 ];
+        %tmp.40 = getm $.Toybox.Graphics;
+        symbol [ FONT_XTINY %tmp.41 344 46 56 ];
+        %tmp.41 = getv %tmp.40 :FONT_XTINY;
+        %tmp.42 = "TIME";
+        symbol [ Graphics %tmp.43 344 66 74 ];
+        %tmp.43 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.44 344 75 94 ];
+        %tmp.44 = getv %tmp.43 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.36 %tmp.37(%tmp.38, %tmp.39, %tmp.41, %tmp.42, %tmp.44);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 345 8 ]
+        %tmp.45 = lgetv %dc;
+        symbol [ dc %tmp.45 345 8 10 ];
+        symbol [ setColor %tmp.46 345 11 19 ];
+        %tmp.46 = getv function %tmp.45 :setColor;
+        symbol [ Graphics %tmp.47 345 20 28 ];
+        %tmp.47 = getm $.Toybox.Graphics;
+        symbol [ COLOR_WHITE %tmp.48 345 29 40 ];
+        %tmp.48 = getv %tmp.47 :COLOR_WHITE;
+        symbol [ Graphics %tmp.49 345 42 50 ];
+        %tmp.49 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.50 345 51 68 ];
+        %tmp.50 = getv %tmp.49 :COLOR_TRANSPARENT;
+        invoke %tmp.45 %tmp.46(%tmp.48, %tmp.50);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 346 8 ]
+        %tmp.51 = lgetv %dc;
+        symbol [ dc %tmp.51 346 8 10 ];
+        symbol [ drawText %tmp.52 346 11 19 ];
+        %tmp.52 = getv function %tmp.51 :drawText;
+        %tmp.53 = lgetv %centerX;
+        symbol [ centerX %tmp.53 346 20 27 ];
+        %tmp.54 = lgetv %statsY.1;
+        symbol [ statsY %tmp.54 346 29 35 ];
+        %tmp.55 = 12;
+        %tmp.56 = add %tmp.54 %tmp.55;
+        symbol [ Graphics %tmp.57 346 42 50 ];
+        %tmp.57 = getm $.Toybox.Graphics;
+        symbol [ FONT_MEDIUM %tmp.58 346 51 62 ];
+        %tmp.58 = getv %tmp.57 :FONT_MEDIUM;
+        %tmp.59 = self;
+        symbol [ formatTime %tmp.60 346 64 74 ];
+        %tmp.60 = getv function %tmp.59 :formatTime;
+        symbol [ _elapsedSeconds %tmp.62 346 75 90 ];
+        %tmp.62 = getv ? :_elapsedSeconds;
+        %tmp.63 = invoke %tmp.59 %tmp.60(%tmp.62);
+        symbol [ Graphics %tmp.64 346 93 101 ];
+        %tmp.64 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.65 346 102 121 ];
+        %tmp.65 = getv %tmp.64 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.51 %tmp.52(%tmp.53, %tmp.56, %tmp.58, %tmp.63, %tmp.65);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 349 8 ]
+        %tmp.66 = lgetv %statsY.1;
+        symbol [ statsY %tmp.66 349 8 14 ];
+        %tmp.67 = lgetv %lineHeight.2;
+        symbol [ lineHeight %tmp.67 349 18 28 ];
+        %tmp.68 = 10;
+        %tmp.69 = add %tmp.67 %tmp.68;
+        %tmp.70 = add %tmp.66 %tmp.69;
+        lputv %statsY.1 %tmp.70;
+        symbol [ statsY %statsY.1 349 8 14 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 350 8 ]
+        %tmp.71 = lgetv %dc;
+        symbol [ dc %tmp.71 350 8 10 ];
+        symbol [ setColor %tmp.72 350 11 19 ];
+        %tmp.72 = getv function %tmp.71 :setColor;
+        symbol [ Graphics %tmp.73 350 20 28 ];
+        %tmp.73 = getm $.Toybox.Graphics;
+        symbol [ COLOR_LT_GRAY %tmp.74 350 29 42 ];
+        %tmp.74 = getv %tmp.73 :COLOR_LT_GRAY;
+        symbol [ Graphics %tmp.75 350 44 52 ];
+        %tmp.75 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.76 350 53 70 ];
+        %tmp.76 = getv %tmp.75 :COLOR_TRANSPARENT;
+        invoke %tmp.71 %tmp.72(%tmp.74, %tmp.76);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 351 8 ]
+        %tmp.77 = lgetv %dc;
+        symbol [ dc %tmp.77 351 8 10 ];
+        symbol [ drawText %tmp.78 351 11 19 ];
+        %tmp.78 = getv function %tmp.77 :drawText;
+        %tmp.79 = lgetv %centerX;
+        symbol [ centerX %tmp.79 351 20 27 ];
+        %tmp.80 = lgetv %statsY.1;
+        symbol [ statsY %tmp.80 351 29 35 ];
+        symbol [ Graphics %tmp.81 351 37 45 ];
+        %tmp.81 = getm $.Toybox.Graphics;
+        symbol [ FONT_XTINY %tmp.82 351 46 56 ];
+        %tmp.82 = getv %tmp.81 :FONT_XTINY;
+        %tmp.83 = "SHOTS FIRED";
+        symbol [ Graphics %tmp.84 351 73 81 ];
+        %tmp.84 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.85 351 82 101 ];
+        %tmp.85 = getv %tmp.84 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.77 %tmp.78(%tmp.79, %tmp.80, %tmp.82, %tmp.83, %tmp.85);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 352 8 ]
+        %tmp.86 = lgetv %dc;
+        symbol [ dc %tmp.86 352 8 10 ];
+        symbol [ setColor %tmp.87 352 11 19 ];
+        %tmp.87 = getv function %tmp.86 :setColor;
+        symbol [ Graphics %tmp.88 352 20 28 ];
+        %tmp.88 = getm $.Toybox.Graphics;
+        symbol [ COLOR_GREEN %tmp.89 352 29 40 ];
+        %tmp.89 = getv %tmp.88 :COLOR_GREEN;
+        symbol [ Graphics %tmp.90 352 42 50 ];
+        %tmp.90 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.91 352 51 68 ];
+        %tmp.91 = getv %tmp.90 :COLOR_TRANSPARENT;
+        invoke %tmp.86 %tmp.87(%tmp.89, %tmp.91);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 353 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_331_129_377_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_331_129_377_4_stop" ]
+        %shotsText.3 = local;
+        symbol [ shotsText %shotsText.3 353 12 21 ];
+        symbol [ _shotsFired %tmp.93 353 24 35 ];
+        %tmp.93 = getv ? :_shotsFired;
+        symbol [ toString %tmp.94 353 36 44 ];
+        %tmp.94 = getv function %tmp.93 :toString;
+        %tmp.95 = invoke %tmp.93 %tmp.94();
+        lputv %shotsText.3 %tmp.95;
+        symbol [ shotsText %shotsText.3 353 12 21 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 354 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_354_8_356_8_if_stmt:
+        symbol [ _maxBullets %tmp.97 354 12 23 ];
+        %tmp.97 = getv ? :_maxBullets;
+        %tmp.98 = 0;
+        %tmp.99 = gt %tmp.97 %tmp.98;
+        bf %tmp.99 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_354_8_356_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_354_8_356_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_354_29_356_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 355 12 ]
+        symbol [ _shotsFired %tmp.101 355 24 35 ];
+        %tmp.101 = getv ? :_shotsFired;
+        symbol [ toString %tmp.102 355 36 44 ];
+        %tmp.102 = getv function %tmp.101 :toString;
+        %tmp.103 = invoke %tmp.101 %tmp.102();
+        %tmp.104 = " / ";
+        %tmp.105 = add %tmp.103 %tmp.104;
+        symbol [ _maxBullets %tmp.107 355 57 68 ];
+        %tmp.107 = getv ? :_maxBullets;
+        symbol [ toString %tmp.108 355 69 77 ];
+        %tmp.108 = getv function %tmp.107 :toString;
+        %tmp.109 = invoke %tmp.107 %tmp.108();
+        %tmp.110 = add %tmp.105 %tmp.109;
+        lputv %shotsText.3 %tmp.110;
+        symbol [ shotsText %shotsText.3 355 12 21 ];
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_354_29_356_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_354_8_356_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_354_8_356_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 357 8 ]
+        %tmp.111 = lgetv %dc;
+        symbol [ dc %tmp.111 357 8 10 ];
+        symbol [ drawText %tmp.112 357 11 19 ];
+        %tmp.112 = getv function %tmp.111 :drawText;
+        %tmp.113 = lgetv %centerX;
+        symbol [ centerX %tmp.113 357 20 27 ];
+        %tmp.114 = lgetv %statsY.1;
+        symbol [ statsY %tmp.114 357 29 35 ];
+        %tmp.115 = 12;
+        %tmp.116 = add %tmp.114 %tmp.115;
+        symbol [ Graphics %tmp.117 357 42 50 ];
+        %tmp.117 = getm $.Toybox.Graphics;
+        symbol [ FONT_MEDIUM %tmp.118 357 51 62 ];
+        %tmp.118 = getv %tmp.117 :FONT_MEDIUM;
+        %tmp.119 = lgetv %shotsText.3;
+        symbol [ shotsText %tmp.119 357 64 73 ];
+        symbol [ Graphics %tmp.120 357 75 83 ];
+        %tmp.120 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.121 357 84 103 ];
+        %tmp.121 = getv %tmp.120 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.111 %tmp.112(%tmp.113, %tmp.116, %tmp.118, %tmp.119, %tmp.121);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 360 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_360_8_366_8_if_stmt:
+        symbol [ _distance %tmp.123 360 12 21 ];
+        %tmp.123 = getv ? :_distance;
+        %tmp.124 = 0;
+        %tmp.125 = gt %tmp.123 %tmp.124;
+        bf %tmp.125 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_360_8_366_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_360_8_366_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_360_27_366_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 361 12 ]
+        %tmp.126 = lgetv %statsY.1;
+        symbol [ statsY %tmp.126 361 12 18 ];
+        %tmp.127 = lgetv %lineHeight.2;
+        symbol [ lineHeight %tmp.127 361 22 32 ];
+        %tmp.128 = add %tmp.126 %tmp.127;
+        lputv %statsY.1 %tmp.128;
+        symbol [ statsY %statsY.1 361 12 18 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 362 12 ]
+        %tmp.129 = lgetv %dc;
+        symbol [ dc %tmp.129 362 12 14 ];
+        symbol [ setColor %tmp.130 362 15 23 ];
+        %tmp.130 = getv function %tmp.129 :setColor;
+        symbol [ Graphics %tmp.131 362 24 32 ];
+        %tmp.131 = getm $.Toybox.Graphics;
+        symbol [ COLOR_LT_GRAY %tmp.132 362 33 46 ];
+        %tmp.132 = getv %tmp.131 :COLOR_LT_GRAY;
+        symbol [ Graphics %tmp.133 362 48 56 ];
+        %tmp.133 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.134 362 57 74 ];
+        %tmp.134 = getv %tmp.133 :COLOR_TRANSPARENT;
+        invoke %tmp.129 %tmp.130(%tmp.132, %tmp.134);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 363 12 ]
+        %tmp.135 = lgetv %dc;
+        symbol [ dc %tmp.135 363 12 14 ];
+        symbol [ drawText %tmp.136 363 15 23 ];
+        %tmp.136 = getv function %tmp.135 :drawText;
+        %tmp.137 = lgetv %centerX;
+        symbol [ centerX %tmp.137 363 24 31 ];
+        %tmp.138 = lgetv %statsY.1;
+        symbol [ statsY %tmp.138 363 33 39 ];
+        symbol [ Graphics %tmp.139 363 41 49 ];
+        %tmp.139 = getm $.Toybox.Graphics;
+        symbol [ FONT_XTINY %tmp.140 363 50 60 ];
+        %tmp.140 = getv %tmp.139 :FONT_XTINY;
+        %tmp.141 = "DISTANCE";
+        symbol [ Graphics %tmp.142 363 74 82 ];
+        %tmp.142 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.143 363 83 102 ];
+        %tmp.143 = getv %tmp.142 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.135 %tmp.136(%tmp.137, %tmp.138, %tmp.140, %tmp.141, %tmp.143);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 364 12 ]
+        %tmp.144 = lgetv %dc;
+        symbol [ dc %tmp.144 364 12 14 ];
+        symbol [ setColor %tmp.145 364 15 23 ];
+        %tmp.145 = getv function %tmp.144 :setColor;
+        symbol [ Graphics %tmp.146 364 24 32 ];
+        %tmp.146 = getm $.Toybox.Graphics;
+        symbol [ COLOR_WHITE %tmp.147 364 33 44 ];
+        %tmp.147 = getv %tmp.146 :COLOR_WHITE;
+        symbol [ Graphics %tmp.148 364 46 54 ];
+        %tmp.148 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.149 364 55 72 ];
+        %tmp.149 = getv %tmp.148 :COLOR_TRANSPARENT;
+        invoke %tmp.144 %tmp.145(%tmp.147, %tmp.149);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 365 12 ]
+        %tmp.150 = lgetv %dc;
+        symbol [ dc %tmp.150 365 12 14 ];
+        symbol [ drawText %tmp.151 365 15 23 ];
+        %tmp.151 = getv function %tmp.150 :drawText;
+        %tmp.152 = lgetv %centerX;
+        symbol [ centerX %tmp.152 365 24 31 ];
+        %tmp.153 = lgetv %statsY.1;
+        symbol [ statsY %tmp.153 365 33 39 ];
+        %tmp.154 = 12;
+        %tmp.155 = add %tmp.153 %tmp.154;
+        symbol [ Graphics %tmp.156 365 46 54 ];
+        %tmp.156 = getm $.Toybox.Graphics;
+        symbol [ FONT_SMALL %tmp.157 365 55 65 ];
+        %tmp.157 = getv %tmp.156 :FONT_SMALL;
+        symbol [ _distance %tmp.159 365 67 76 ];
+        %tmp.159 = getv ? :_distance;
+        symbol [ toString %tmp.160 365 77 85 ];
+        %tmp.160 = getv function %tmp.159 :toString;
+        %tmp.161 = invoke %tmp.159 %tmp.160();
+        %tmp.162 = "m";
+        %tmp.163 = add %tmp.161 %tmp.162;
+        symbol [ Graphics %tmp.164 365 95 103 ];
+        %tmp.164 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.165 365 104 123 ];
+        %tmp.165 = getv %tmp.164 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.150 %tmp.151(%tmp.152, %tmp.155, %tmp.157, %tmp.163, %tmp.165);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_360_27_366_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_360_8_366_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_360_8_366_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 369 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_369_8_372_8_if_stmt:
+        symbol [ _lastMsg %tmp.167 369 13 21 ];
+        %tmp.167 = getv ? :_lastMsg;
+        symbol [ equals %tmp.168 369 22 28 ];
+        %tmp.168 = getv function %tmp.167 :equals;
+        %tmp.169 = "";
+        %tmp.170 = invoke %tmp.167 %tmp.168(%tmp.169);
+        %tmp.171 = not %tmp.170;
+        bf %tmp.171 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_369_8_372_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_369_8_372_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_369_34_372_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 370 12 ]
+        %tmp.172 = lgetv %dc;
+        symbol [ dc %tmp.172 370 12 14 ];
+        symbol [ setColor %tmp.173 370 15 23 ];
+        %tmp.173 = getv function %tmp.172 :setColor;
+        symbol [ Graphics %tmp.174 370 24 32 ];
+        %tmp.174 = getm $.Toybox.Graphics;
+        symbol [ COLOR_GREEN %tmp.175 370 33 44 ];
+        %tmp.175 = getv %tmp.174 :COLOR_GREEN;
+        symbol [ Graphics %tmp.176 370 46 54 ];
+        %tmp.176 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.177 370 55 72 ];
+        %tmp.177 = getv %tmp.176 :COLOR_TRANSPARENT;
+        invoke %tmp.172 %tmp.173(%tmp.175, %tmp.177);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 371 12 ]
+        %tmp.178 = lgetv %dc;
+        symbol [ dc %tmp.178 371 12 14 ];
+        symbol [ drawText %tmp.179 371 15 23 ];
+        %tmp.179 = getv function %tmp.178 :drawText;
+        %tmp.180 = lgetv %centerX;
+        symbol [ centerX %tmp.180 371 24 31 ];
+        %tmp.181 = lgetv %height;
+        symbol [ height %tmp.181 371 33 39 ];
+        %tmp.182 = 35;
+        %tmp.183 = sub %tmp.181 %tmp.182;
+        symbol [ Graphics %tmp.184 371 46 54 ];
+        %tmp.184 = getm $.Toybox.Graphics;
+        symbol [ FONT_XTINY %tmp.185 371 55 65 ];
+        %tmp.185 = getv %tmp.184 :FONT_XTINY;
+        symbol [ _lastMsg %tmp.187 371 67 75 ];
+        %tmp.187 = getv ? :_lastMsg;
+        symbol [ Graphics %tmp.188 371 77 85 ];
+        %tmp.188 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.189 371 86 105 ];
+        %tmp.189 = getv %tmp.188 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.178 %tmp.179(%tmp.180, %tmp.183, %tmp.185, %tmp.187, %tmp.189);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_369_34_372_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_369_8_372_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_369_8_372_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 375 8 ]
+        %tmp.190 = lgetv %dc;
+        symbol [ dc %tmp.190 375 8 10 ];
+        symbol [ setColor %tmp.191 375 11 19 ];
+        %tmp.191 = getv function %tmp.190 :setColor;
+        symbol [ Graphics %tmp.192 375 20 28 ];
+        %tmp.192 = getm $.Toybox.Graphics;
+        symbol [ COLOR_DK_GRAY %tmp.193 375 29 42 ];
+        %tmp.193 = getv %tmp.192 :COLOR_DK_GRAY;
+        symbol [ Graphics %tmp.194 375 44 52 ];
+        %tmp.194 = getm $.Toybox.Graphics;
+        symbol [ COLOR_TRANSPARENT %tmp.195 375 53 70 ];
+        %tmp.195 = getv %tmp.194 :COLOR_TRANSPARENT;
+        invoke %tmp.190 %tmp.191(%tmp.193, %tmp.195);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc" 376 8 ]
+        %tmp.196 = lgetv %dc;
+        symbol [ dc %tmp.196 376 8 10 ];
+        symbol [ drawText %tmp.197 376 11 19 ];
+        %tmp.197 = getv function %tmp.196 :drawText;
+        %tmp.198 = lgetv %centerX;
+        symbol [ centerX %tmp.198 376 20 27 ];
+        %tmp.199 = lgetv %height;
+        symbol [ height %tmp.199 376 29 35 ];
+        %tmp.200 = 18;
+        %tmp.201 = sub %tmp.199 %tmp.200;
+        symbol [ Graphics %tmp.202 376 42 50 ];
+        %tmp.202 = getm $.Toybox.Graphics;
+        symbol [ FONT_XTINY %tmp.203 376 51 61 ];
+        %tmp.203 = getv %tmp.202 :FONT_XTINY;
+        %tmp.204 = "TAP to reset";
+        symbol [ Graphics %tmp.205 376 79 87 ];
+        %tmp.205 = getm $.Toybox.Graphics;
+        symbol [ TEXT_JUSTIFY_CENTER %tmp.206 376 88 107 ];
+        %tmp.206 = getv %tmp.205 :TEXT_JUSTIFY_CENTER;
+        invoke %tmp.196 %tmp.197(%tmp.198, %tmp.201, %tmp.203, %tmp.204, %tmp.206);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccView_mc_331_129_377_4_stop:
+    }
+}
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 1; ]
+<init> {
+}

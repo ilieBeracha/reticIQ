@@ -1,0 +1,826 @@
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 1; @symbol_importdef<0> = [Toybox,1,7,13]; @symbol_importdef<1> = [Application,1,14,25]; ]
+import Toybox.Application;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 2; @symbol_importdef<0> = [Toybox,2,7,13]; @symbol_importdef<1> = [Lang,2,14,18]; ]
+import Toybox.Lang;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 3; @symbol_importdef<0> = [Toybox,3,7,13]; @symbol_importdef<1> = [WatchUi,3,14,21]; ]
+import Toybox.WatchUi;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 4; @symbol_importdef<0> = [Toybox,4,7,13]; @symbol_importdef<1> = [Communications,4,14,28]; ]
+import Toybox.Communications;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 5; @symbol_importdef<0> = [Toybox,5,7,13]; @symbol_importdef<1> = [Time,5,14,18]; ]
+import Toybox.Time;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 6; @symbol_importdef<0> = [Toybox,6,7,13]; @symbol_importdef<1> = [System,6,14,20]; ]
+import Toybox.System;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 9; @position = 4; @symbol_vardef = [mainView,9,4,12]; @symbol_type<0> = [reticccView,9,16,27]; ]
+var mainView as reticccView or Null;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 12; @symbol_moduledef = [MessageTypes,12,7,19]; ]
+module MessageTypes {
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 12; ]
+    <init> {
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 13; @position = 10; @symbol_constdef = [PING,13,10,14]; ]
+    const PING = "PING";
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 14; @position = 10; @symbol_constdef = [PONG,14,10,14]; ]
+    const PONG = "PONG";
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 15; @position = 10; @symbol_constdef = [DATA,15,10,14]; ]
+    const DATA = "DATA";
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 16; @position = 10; @symbol_constdef = [ACK,16,10,13]; ]
+    const ACK = "ACK";
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 17; @position = 10; @symbol_constdef = [ERROR,17,10,15]; ]
+    const ERROR = "ERROR";
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 18; @position = 10; @symbol_constdef = [SESSION_START,18,10,23]; ]
+    const SESSION_START = "SESSION_START";
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 19; @position = 10; @symbol_constdef = [SESSION_END,19,10,21]; ]
+    const SESSION_END = "SESSION_END";
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 20; @position = 10; @symbol_constdef = [SESSION_RESULT,20,10,24]; ]
+    const SESSION_RESULT = "SESSION_RESULT";
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 21; @position = 10; @symbol_constdef = [WEATHER,21,10,17]; ]
+    const WEATHER = "WEATHER";
+}
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 24; @symbol_classdef = [reticccApp,24,6,16]; @symbol_extends<0> = [Application,24,25,36]; @symbol_extends<1> = [AppBase,24,37,44]; ]
+class reticccApp extends Application.AppBase {
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 24; ]
+    <init> {
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 24; ]
+    static
+    <init> {
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 26; @symbol_functiondef = [initialize,26,13,23]; ]
+    function initialize() as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_26_26_28_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 27 8 ]
+        symbol [ AppBase %tmp.2 27 8 15 ];
+        %tmp.2 = getv ? :AppBase;
+        symbol [ initialize %tmp.3 27 16 26 ];
+        %tmp.3 = getv function %tmp.2 :initialize;
+        invoke %tmp.2 %tmp.3();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_26_26_28_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 30; @symbol_functiondef = [onStart,30,13,20]; @symbol_param<0> = [state,30,21,26]; @symbol_param<0>_type<0> = [Dictionary,30,30,40]; ]
+    function onStart(state as Dictionary or Null) as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_30_51_33_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 31 8 ]
+        symbol [ Communications %tmp.1 31 8 22 ];
+        %tmp.1 = getm $.Toybox.Communications;
+        symbol [ registerForPhoneAppMessages %tmp.2 31 23 50 ];
+        %tmp.2 = getv function %tmp.1 :registerForPhoneAppMessages;
+        %tmp.3 = self;
+        symbol [ method %tmp.4 31 51 57 ];
+        %tmp.4 = getv function %tmp.3 :method;
+        %tmp.6 = const :onPhoneMessage;
+        symbol [ onPhoneMessage %tmp.6 31 59 73 const ];
+        %tmp.7 = invoke %tmp.3 %tmp.4(%tmp.6);
+        invoke %tmp.1 %tmp.2(%tmp.7);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 32 8 ]
+        symbol [ System %tmp.8 32 8 14 ];
+        %tmp.8 = getm $.Toybox.System;
+        symbol [ println %tmp.9 32 15 22 ];
+        %tmp.9 = getv function %tmp.8 :println;
+        %tmp.10 = "[RETIC] Registered for phone messages";
+        invoke %tmp.8 %tmp.9(%tmp.10);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_30_51_33_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 36; @symbol_functiondef = [onPhoneMessage,36,13,27]; @symbol_param<0> = [msg,36,28,31]; @symbol_param<0>_type<0> = [Communications,36,35,49]; @symbol_param<0>_type<1> = [PhoneAppMessage,36,50,65]; ]
+    function onPhoneMessage(msg as Communications.PhoneAppMessage) as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_36_75_58_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 37 8 ]
+        symbol [ System %tmp.1 37 8 14 ];
+        %tmp.1 = getm $.Toybox.System;
+        symbol [ println %tmp.2 37 15 22 ];
+        %tmp.2 = getv function %tmp.1 :println;
+        %tmp.3 = "[RETIC] === MESSAGE RECEIVED ===";
+        invoke %tmp.1 %tmp.2(%tmp.3);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 39 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_36_75_58_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_36_75_58_4_stop" ]
+        %data.1 = local;
+        symbol [ data %data.1 39 12 16 ];
+        %tmp.4 = lgetv %msg;
+        symbol [ msg %tmp.4 39 19 22 ];
+        symbol [ data %tmp.5 39 23 27 ];
+        %tmp.5 = getv %tmp.4 :data;
+        lputv %data.1 %tmp.5;
+        symbol [ data %data.1 39 12 16 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 40 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_40_8_43_8_if_stmt:
+        %tmp.6 = lgetv %data.1;
+        symbol [ data %tmp.6 40 12 16 ];
+        %tmp.7 = null;
+        %tmp.8 = eq %tmp.6 %tmp.7;
+        bf %tmp.8 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_40_8_43_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_40_8_43_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_40_26_43_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 41 12 ]
+        symbol [ System %tmp.9 41 12 18 ];
+        %tmp.9 = getm $.Toybox.System;
+        symbol [ println %tmp.10 41 19 26 ];
+        %tmp.10 = getv function %tmp.9 :println;
+        %tmp.11 = "[RETIC] ERROR: null data";
+        invoke %tmp.9 %tmp.10(%tmp.11);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 42 12 ]
+        ret ?;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_40_26_43_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_40_8_43_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_40_8_43_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 45 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_45_8_55_8_if_stmt:
+        %tmp.12 = lgetv %data.1;
+        symbol [ data %tmp.12 45 12 16 ];
+        symbol [ Dictionary %tmp.14 45 28 38 ];
+        %tmp.14 = getv ? :Dictionary;
+        %tmp.15 = isa %tmp.12 %tmp.14;
+        bf %tmp.15 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_45_8_55_8_if_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_45_8_55_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_45_40_52_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 46 12 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_45_40_52_8_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_45_40_52_8_stop" ]
+        %dict.2 = local;
+        symbol [ dict %dict.2 46 16 20 ];
+        %tmp.16 = lgetv %data.1;
+        symbol [ data %tmp.16 46 23 27 ];
+        %tmp.17 = as %tmp.16 { (Dictionary) };
+        %tmp.18 = as %tmp.17 Dictionary;
+        symbol [ Dictionary %tmp.18 46 31 41 ];
+        lputv %dict.2 %tmp.18;
+        symbol [ dict %dict.2 46 16 20 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 47 12 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_45_40_52_8_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_45_40_52_8_stop" ]
+        %msgType.3 = local;
+        symbol [ msgType %msgType.3 47 16 23 ];
+        %tmp.19 = lgetv %dict.2;
+        symbol [ dict %tmp.19 47 26 30 ];
+        symbol [ get %tmp.20 47 31 34 ];
+        %tmp.20 = getv function %tmp.19 :get;
+        %tmp.21 = "type";
+        %tmp.22 = invoke %tmp.19 %tmp.20(%tmp.21);
+        lputv %msgType.3 %tmp.22;
+        symbol [ msgType %msgType.3 47 16 23 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 48 12 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_45_40_52_8_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_45_40_52_8_stop" ]
+        %payload.4 = local;
+        symbol [ payload %payload.4 48 16 23 ];
+        %tmp.23 = lgetv %dict.2;
+        symbol [ dict %tmp.23 48 26 30 ];
+        symbol [ get %tmp.24 48 31 34 ];
+        %tmp.24 = getv function %tmp.23 :get;
+        %tmp.25 = "payload";
+        %tmp.26 = invoke %tmp.23 %tmp.24(%tmp.25);
+        lputv %payload.4 %tmp.26;
+        symbol [ payload %payload.4 48 16 23 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 50 12 ]
+        symbol [ System %tmp.27 50 12 18 ];
+        %tmp.27 = getm $.Toybox.System;
+        symbol [ println %tmp.28 50 19 26 ];
+        %tmp.28 = getv function %tmp.27 :println;
+        %tmp.29 = "[RETIC] Type: ";
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_50_47_50_86_begin:
+        %tmp.30 = lgetv %msgType.3;
+        symbol [ msgType %tmp.30 50 47 54 ];
+        %tmp.31 = null;
+        %tmp.32 = ne %tmp.30 %tmp.31;
+        bf %tmp.32 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_50_47_50_86_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_50_47_50_86_true:
+        %tmp.33 = lgetv %msgType.3;
+        symbol [ msgType %tmp.33 50 65 72 ];
+        %tmp.34 = as %tmp.33 { (!Null) };
+        symbol [ toString %tmp.35 50 73 81 ];
+        %tmp.35 = getv function %tmp.34 :toString;
+        %tmp.36 = invoke %tmp.34 %tmp.35();
+        push %tmp.36;
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_50_47_50_86_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_50_47_50_86_else_false:
+        %tmp.37 = "null";
+        push %tmp.37;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_50_47_50_86_end:
+        %tmp.38 = phi [%tmp.32 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_50_47_50_86_begin] [%tmp.36 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_50_47_50_86_true] [%tmp.37 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_50_47_50_86_else_false] [%tmp.38 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_50_47_50_86_end];
+        %tmp.39 = add %tmp.29 %tmp.38;
+        invoke %tmp.27 %tmp.28(%tmp.39);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 51 12 ]
+        %tmp.40 = self;
+        symbol [ handleMessage %tmp.41 51 12 25 ];
+        %tmp.41 = getv function %tmp.40 :handleMessage;
+        %tmp.42 = lgetv %msgType.3;
+        symbol [ msgType %tmp.42 51 26 33 ];
+        %tmp.43 = lgetv %payload.4;
+        symbol [ payload %tmp.43 51 35 42 ];
+        invoke %tmp.40 %tmp.41(%tmp.42, %tmp.43);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_45_40_52_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_45_8_55_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_45_8_55_8_if_else_false:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_52_15_55_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 53 12 ]
+        symbol [ System %tmp.44 53 12 18 ];
+        %tmp.44 = getm $.Toybox.System;
+        symbol [ println %tmp.45 53 19 26 ];
+        %tmp.45 = getv function %tmp.44 :println;
+        %tmp.46 = "[RETIC] Non-dict message: ";
+        %tmp.47 = lgetv %data.1;
+        symbol [ data %tmp.47 53 58 62 ];
+        %tmp.48 = as %tmp.47 { (!Dictionary) };
+        symbol [ toString %tmp.49 53 63 71 ];
+        %tmp.49 = getv function %tmp.48 :toString;
+        %tmp.50 = invoke %tmp.48 %tmp.49();
+        %tmp.51 = add %tmp.46 %tmp.50;
+        invoke %tmp.44 %tmp.45(%tmp.51);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 54 12 ]
+        %tmp.52 = self;
+        symbol [ sendMessage %tmp.53 54 12 23 ];
+        %tmp.53 = getv function %tmp.52 :sendMessage;
+        symbol [ MessageTypes %tmp.55 54 24 36 ];
+        %tmp.55 = getv ? :MessageTypes;
+        symbol [ ACK %tmp.56 54 37 40 ];
+        %tmp.56 = getv %tmp.55 :ACK;
+        %tmp.57 = newd 1;
+        %tmp.58 = "received";
+        %tmp.59 = "ok";
+        %tmp.60 = dup %tmp.57;
+        %tmp.61 = aputv %tmp.60 %tmp.58 %tmp.59;
+        invoke %tmp.52 %tmp.53(%tmp.56, %tmp.61);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_52_15_55_8_stop:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_45_8_55_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 57 8 ]
+        symbol [ WatchUi %tmp.62 57 8 15 ];
+        %tmp.62 = getm $.Toybox.WatchUi;
+        symbol [ requestUpdate %tmp.63 57 16 29 ];
+        %tmp.63 = getv function %tmp.62 :requestUpdate;
+        invoke %tmp.62 %tmp.63();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_36_75_58_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 61; @symbol_functiondef = [handleMessage,61,13,26]; @symbol_param<0> = [msgType,61,27,34]; @symbol_param<0>_type<0> = [Object,61,38,44]; @symbol_param<1> = [payload,61,47,54]; @symbol_param<1>_type<0> = [Object,61,58,64]; ]
+    function handleMessage(msgType as Object or Null, payload as Object or Null) as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_61_75_98_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 62 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_62_8_64_8_if_stmt:
+        %tmp.1 = lgetv %msgType;
+        symbol [ msgType %tmp.1 62 12 19 ];
+        %tmp.2 = null;
+        %tmp.3 = eq %tmp.1 %tmp.2;
+        bf %tmp.3 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_62_8_64_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_62_8_64_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_62_29_64_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 63 12 ]
+        ret ?;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_62_29_64_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_62_8_64_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_62_8_64_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 66 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_61_75_98_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_61_75_98_4_stop" ]
+        %typeStr.1 = local;
+        symbol [ typeStr %typeStr.1 66 12 19 ];
+        %tmp.4 = lgetv %msgType;
+        symbol [ msgType %tmp.4 66 22 29 ];
+        symbol [ toString %tmp.5 66 30 38 ];
+        %tmp.5 = getv function %tmp.4 :toString;
+        %tmp.6 = invoke %tmp.4 %tmp.5();
+        lputv %typeStr.1 %tmp.6;
+        symbol [ typeStr %typeStr.1 66 12 19 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 67 8 ]
+        symbol [ System %tmp.7 67 8 14 ];
+        %tmp.7 = getm $.Toybox.System;
+        symbol [ println %tmp.8 67 15 22 ];
+        %tmp.8 = getv function %tmp.7 :println;
+        %tmp.9 = "[RETIC] Handling: ";
+        %tmp.10 = lgetv %typeStr.1;
+        symbol [ typeStr %tmp.10 67 46 53 ];
+        %tmp.11 = add %tmp.9 %tmp.10;
+        invoke %tmp.7 %tmp.8(%tmp.11);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 69 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_69_8_97_8_if_stmt:
+        %tmp.12 = lgetv %typeStr.1;
+        symbol [ typeStr %tmp.12 69 12 19 ];
+        symbol [ equals %tmp.13 69 20 26 ];
+        %tmp.13 = getv function %tmp.12 :equals;
+        symbol [ MessageTypes %tmp.15 69 27 39 ];
+        %tmp.15 = getv ? :MessageTypes;
+        symbol [ PING %tmp.16 69 40 44 ];
+        %tmp.16 = getv %tmp.15 :PING;
+        %tmp.17 = invoke %tmp.12 %tmp.13(%tmp.16);
+        bf %tmp.17 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_69_8_97_8_if_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_69_8_97_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_69_47_72_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 70 12 ]
+        %tmp.18 = self;
+        symbol [ sendMessage %tmp.19 70 12 23 ];
+        %tmp.19 = getv function %tmp.18 :sendMessage;
+        symbol [ MessageTypes %tmp.21 70 24 36 ];
+        %tmp.21 = getv ? :MessageTypes;
+        symbol [ PONG %tmp.22 70 37 41 ];
+        %tmp.22 = getv %tmp.21 :PONG;
+        %tmp.23 = newd 1;
+        %tmp.24 = "timestamp";
+        symbol [ Time %tmp.25 70 59 63 ];
+        %tmp.25 = getm $.Toybox.Time;
+        symbol [ now %tmp.26 70 64 67 ];
+        %tmp.26 = getv function %tmp.25 :now;
+        %tmp.27 = invoke %tmp.25 %tmp.26();
+        symbol [ value %tmp.28 70 70 75 ];
+        %tmp.28 = getv function %tmp.27 :value;
+        %tmp.29 = invoke %tmp.27 %tmp.28();
+        %tmp.30 = dup %tmp.23;
+        %tmp.31 = aputv %tmp.30 %tmp.24 %tmp.29;
+        invoke %tmp.18 %tmp.19(%tmp.22, %tmp.31);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_69_47_72_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_69_8_97_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_69_8_97_8_if_false:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 72 15 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_72_15_97_8_if_stmt:
+        %tmp.32 = lgetv %typeStr.1;
+        symbol [ typeStr %tmp.32 72 19 26 ];
+        symbol [ equals %tmp.33 72 27 33 ];
+        %tmp.33 = getv function %tmp.32 :equals;
+        symbol [ MessageTypes %tmp.35 72 34 46 ];
+        %tmp.35 = getv ? :MessageTypes;
+        symbol [ SESSION_START %tmp.36 72 47 60 ];
+        %tmp.36 = getv %tmp.35 :SESSION_START;
+        %tmp.37 = invoke %tmp.32 %tmp.33(%tmp.36);
+        bf %tmp.37 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_72_15_97_8_if_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_72_15_97_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_72_63_78_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 73 12 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_12_76_12_if_stmt:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_16_73_74_begin:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_16_73_47_begin:
+        symbol [ mainView %tmp.39 73 16 24 ];
+        %tmp.39 = getv ? :mainView;
+        %tmp.40 = null;
+        %tmp.41 = ne %tmp.39 %tmp.40;
+        bf %tmp.41 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_12_76_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_36_73_47_true:
+        %tmp.42 = lgetv %payload;
+        symbol [ payload %tmp.42 73 36 43 ];
+        %tmp.43 = null;
+        %tmp.44 = ne %tmp.42 %tmp.43;
+        push %tmp.44;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_36_73_47_end:
+        %tmp.45 = phi [%tmp.41 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_16_73_47_begin] [%tmp.44 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_36_73_47_true] [%tmp.45 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_36_73_47_end];
+        bf %tmp.45 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_12_76_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_55_73_74_true:
+        %tmp.46 = lgetv %payload;
+        symbol [ payload %tmp.46 73 55 62 ];
+        %tmp.47 = as %tmp.46 { (!Null) };
+        symbol [ Dictionary %tmp.49 73 74 84 ];
+        %tmp.49 = getv ? :Dictionary;
+        %tmp.50 = isa %tmp.47 %tmp.49;
+        push %tmp.50;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_55_73_74_end:
+        %tmp.51 = phi [%tmp.45 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_16_73_74_begin] [%tmp.50 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_55_73_74_true] [%tmp.51 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_55_73_74_end];
+        bf %tmp.51 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_12_76_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_12_76_12_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_86_76_12_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 74 16 ]
+        symbol [ mainView %tmp.53 74 16 24 ];
+        %tmp.53 = getv ? :mainView;
+        %tmp.54 = as %tmp.53 { (!Null) };
+        symbol [ startSession %tmp.55 74 25 37 ];
+        %tmp.55 = getv function %tmp.54 :startSession;
+        %tmp.56 = lgetv %payload;
+        symbol [ payload %tmp.56 74 38 45 ];
+        %tmp.57 = as %tmp.56 { (Dictionary) && (!Null) };
+        %tmp.58 = as %tmp.57 Dictionary;
+        symbol [ Dictionary %tmp.58 74 49 59 ];
+        invoke %tmp.54 %tmp.55(%tmp.58);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 75 16 ]
+        %tmp.59 = self;
+        symbol [ sendMessage %tmp.60 75 16 27 ];
+        %tmp.60 = getv function %tmp.59 :sendMessage;
+        symbol [ MessageTypes %tmp.62 75 28 40 ];
+        %tmp.62 = getv ? :MessageTypes;
+        symbol [ ACK %tmp.63 75 41 44 ];
+        %tmp.63 = getv %tmp.62 :ACK;
+        %tmp.64 = newd 1;
+        %tmp.65 = "status";
+        %tmp.66 = "session_started";
+        %tmp.67 = dup %tmp.64;
+        %tmp.68 = aputv %tmp.67 %tmp.65 %tmp.66;
+        invoke %tmp.59 %tmp.60(%tmp.63, %tmp.68);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_86_76_12_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_12_76_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_12_76_12_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_72_63_78_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_72_15_97_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_72_15_97_8_if_false:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 78 15 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_78_15_97_8_if_stmt:
+        %tmp.69 = lgetv %typeStr.1;
+        symbol [ typeStr %tmp.69 78 19 26 ];
+        symbol [ equals %tmp.70 78 27 33 ];
+        %tmp.70 = getv function %tmp.69 :equals;
+        symbol [ MessageTypes %tmp.72 78 34 46 ];
+        %tmp.72 = getv ? :MessageTypes;
+        symbol [ SESSION_END %tmp.73 78 47 58 ];
+        %tmp.73 = getv %tmp.72 :SESSION_END;
+        %tmp.74 = invoke %tmp.69 %tmp.70(%tmp.73);
+        bf %tmp.74 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_78_15_97_8_if_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_78_15_97_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_78_61_84_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 79 12 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_12_82_12_if_stmt:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_16_79_74_begin:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_16_79_47_begin:
+        symbol [ mainView %tmp.76 79 16 24 ];
+        %tmp.76 = getv ? :mainView;
+        %tmp.77 = null;
+        %tmp.78 = ne %tmp.76 %tmp.77;
+        bf %tmp.78 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_12_82_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_36_79_47_true:
+        %tmp.79 = lgetv %payload;
+        symbol [ payload %tmp.79 79 36 43 ];
+        %tmp.80 = null;
+        %tmp.81 = ne %tmp.79 %tmp.80;
+        push %tmp.81;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_36_79_47_end:
+        %tmp.82 = phi [%tmp.78 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_16_79_47_begin] [%tmp.81 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_36_79_47_true] [%tmp.82 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_36_79_47_end];
+        bf %tmp.82 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_12_82_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_55_79_74_true:
+        %tmp.83 = lgetv %payload;
+        symbol [ payload %tmp.83 79 55 62 ];
+        %tmp.84 = as %tmp.83 { (!Null) };
+        symbol [ Dictionary %tmp.86 79 74 84 ];
+        %tmp.86 = getv ? :Dictionary;
+        %tmp.87 = isa %tmp.84 %tmp.86;
+        push %tmp.87;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_55_79_74_end:
+        %tmp.88 = phi [%tmp.82 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_16_79_74_begin] [%tmp.87 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_55_79_74_true] [%tmp.88 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_55_79_74_end];
+        bf %tmp.88 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_12_82_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_12_82_12_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_86_82_12_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 80 16 ]
+        symbol [ mainView %tmp.90 80 16 24 ];
+        %tmp.90 = getv ? :mainView;
+        %tmp.91 = as %tmp.90 { (!Null) };
+        symbol [ endSession %tmp.92 80 25 35 ];
+        %tmp.92 = getv function %tmp.91 :endSession;
+        %tmp.93 = lgetv %payload;
+        symbol [ payload %tmp.93 80 36 43 ];
+        %tmp.94 = as %tmp.93 { (Dictionary) && (!Null) };
+        %tmp.95 = as %tmp.94 Dictionary;
+        symbol [ Dictionary %tmp.95 80 47 57 ];
+        invoke %tmp.91 %tmp.92(%tmp.95);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 81 16 ]
+        %tmp.96 = self;
+        symbol [ sendMessage %tmp.97 81 16 27 ];
+        %tmp.97 = getv function %tmp.96 :sendMessage;
+        symbol [ MessageTypes %tmp.99 81 28 40 ];
+        %tmp.99 = getv ? :MessageTypes;
+        symbol [ ACK %tmp.100 81 41 44 ];
+        %tmp.100 = getv %tmp.99 :ACK;
+        %tmp.101 = newd 1;
+        %tmp.102 = "status";
+        %tmp.103 = "session_ended";
+        %tmp.104 = dup %tmp.101;
+        %tmp.105 = aputv %tmp.104 %tmp.102 %tmp.103;
+        invoke %tmp.96 %tmp.97(%tmp.100, %tmp.105);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_86_82_12_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_12_82_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_79_12_82_12_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_78_61_84_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_78_15_97_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_78_15_97_8_if_false:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 84 15 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_84_15_97_8_if_stmt:
+        %tmp.106 = lgetv %typeStr.1;
+        symbol [ typeStr %tmp.106 84 19 26 ];
+        symbol [ equals %tmp.107 84 27 33 ];
+        %tmp.107 = getv function %tmp.106 :equals;
+        symbol [ MessageTypes %tmp.109 84 34 46 ];
+        %tmp.109 = getv ? :MessageTypes;
+        symbol [ WEATHER %tmp.110 84 47 54 ];
+        %tmp.110 = getv %tmp.109 :WEATHER;
+        %tmp.111 = invoke %tmp.106 %tmp.107(%tmp.110);
+        bf %tmp.111 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_84_15_97_8_if_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_84_15_97_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_84_57_95_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 86 12 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_12_93_12_if_stmt:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_16_86_74_begin:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_16_86_47_begin:
+        symbol [ mainView %tmp.113 86 16 24 ];
+        %tmp.113 = getv ? :mainView;
+        %tmp.114 = null;
+        %tmp.115 = ne %tmp.113 %tmp.114;
+        bf %tmp.115 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_12_93_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_36_86_47_true:
+        %tmp.116 = lgetv %payload;
+        symbol [ payload %tmp.116 86 36 43 ];
+        %tmp.117 = null;
+        %tmp.118 = ne %tmp.116 %tmp.117;
+        push %tmp.118;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_36_86_47_end:
+        %tmp.119 = phi [%tmp.115 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_16_86_47_begin] [%tmp.118 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_36_86_47_true] [%tmp.119 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_36_86_47_end];
+        bf %tmp.119 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_12_93_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_55_86_74_true:
+        %tmp.120 = lgetv %payload;
+        symbol [ payload %tmp.120 86 55 62 ];
+        %tmp.121 = as %tmp.120 { (!Null) };
+        symbol [ Dictionary %tmp.123 86 74 84 ];
+        %tmp.123 = getv ? :Dictionary;
+        %tmp.124 = isa %tmp.121 %tmp.123;
+        push %tmp.124;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_55_86_74_end:
+        %tmp.125 = phi [%tmp.119 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_16_86_74_begin] [%tmp.124 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_55_86_74_true] [%tmp.125 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_55_86_74_end];
+        bf %tmp.125 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_12_93_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_12_93_12_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_86_93_12_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 87 16 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_86_93_12_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_86_93_12_stop" ]
+        %p.2 = local;
+        symbol [ p %p.2 87 20 21 ];
+        %tmp.126 = lgetv %payload;
+        symbol [ payload %tmp.126 87 24 31 ];
+        %tmp.127 = as %tmp.126 { (Dictionary) && (!Null) };
+        %tmp.128 = as %tmp.127 Dictionary;
+        symbol [ Dictionary %tmp.128 87 35 45 ];
+        lputv %p.2 %tmp.128;
+        symbol [ p %p.2 87 20 21 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 88 16 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_86_93_12_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_86_93_12_stop" ]
+        %wind.3 = local;
+        symbol [ wind %wind.3 88 20 24 ];
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_88_27_88_89_begin:
+        %tmp.129 = lgetv %p.2;
+        symbol [ p %tmp.129 88 27 28 ];
+        symbol [ get %tmp.130 88 29 32 ];
+        %tmp.130 = getv function %tmp.129 :get;
+        %tmp.131 = "windSpeed";
+        %tmp.132 = invoke %tmp.129 %tmp.130(%tmp.131);
+        %tmp.133 = null;
+        %tmp.134 = ne %tmp.132 %tmp.133;
+        bf %tmp.134 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_88_27_88_89_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_88_27_88_89_true:
+        %tmp.135 = lgetv %p.2;
+        symbol [ p %tmp.135 88 57 58 ];
+        symbol [ get %tmp.136 88 59 62 ];
+        %tmp.136 = getv function %tmp.135 :get;
+        %tmp.137 = "windSpeed";
+        %tmp.138 = invoke %tmp.135 %tmp.136(%tmp.137);
+        %tmp.139 = as %tmp.138 Number;
+        symbol [ Number %tmp.139 88 79 85 ];
+        push %tmp.139;
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_88_27_88_89_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_88_27_88_89_else_false:
+        %tmp.140 = 0;
+        push %tmp.140;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_88_27_88_89_end:
+        %tmp.141 = phi [%tmp.134 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_88_27_88_89_begin] [%tmp.139 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_88_27_88_89_true] [%tmp.140 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_88_27_88_89_else_false] [%tmp.141 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_88_27_88_89_end];
+        lputv %wind.3 %tmp.141;
+        symbol [ wind %wind.3 88 20 24 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 89 16 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_86_93_12_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_86_93_12_stop" ]
+        %windDir.4 = local;
+        symbol [ windDir %windDir.4 89 20 27 ];
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_89_30_89_99_begin:
+        %tmp.142 = lgetv %p.2;
+        symbol [ p %tmp.142 89 30 31 ];
+        symbol [ get %tmp.143 89 32 35 ];
+        %tmp.143 = getv function %tmp.142 :get;
+        %tmp.144 = "windDirection";
+        %tmp.145 = invoke %tmp.142 %tmp.143(%tmp.144);
+        %tmp.146 = null;
+        %tmp.147 = ne %tmp.145 %tmp.146;
+        bf %tmp.147 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_89_30_89_99_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_89_30_89_99_true:
+        %tmp.148 = lgetv %p.2;
+        symbol [ p %tmp.148 89 63 64 ];
+        symbol [ get %tmp.149 89 65 68 ];
+        %tmp.149 = getv function %tmp.148 :get;
+        %tmp.150 = "windDirection";
+        %tmp.151 = invoke %tmp.148 %tmp.149(%tmp.150);
+        symbol [ toString %tmp.152 89 86 94 ];
+        %tmp.152 = getv function %tmp.151 :toString;
+        %tmp.153 = invoke %tmp.151 %tmp.152();
+        push %tmp.153;
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_89_30_89_99_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_89_30_89_99_else_false:
+        %tmp.154 = "";
+        push %tmp.154;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_89_30_89_99_end:
+        %tmp.155 = phi [%tmp.147 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_89_30_89_99_begin] [%tmp.153 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_89_30_89_99_true] [%tmp.154 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_89_30_89_99_else_false] [%tmp.155 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_89_30_89_99_end];
+        lputv %windDir.4 %tmp.155;
+        symbol [ windDir %windDir.4 89 20 27 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 90 16 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_86_93_12_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_86_93_12_stop" ]
+        %temp.5 = local;
+        symbol [ temp %temp.5 90 20 24 ];
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_90_27_90_93_begin:
+        %tmp.156 = lgetv %p.2;
+        symbol [ p %tmp.156 90 27 28 ];
+        symbol [ get %tmp.157 90 29 32 ];
+        %tmp.157 = getv function %tmp.156 :get;
+        %tmp.158 = "temperature";
+        %tmp.159 = invoke %tmp.156 %tmp.157(%tmp.158);
+        %tmp.160 = null;
+        %tmp.161 = ne %tmp.159 %tmp.160;
+        bf %tmp.161 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_90_27_90_93_else_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_90_27_90_93_true:
+        %tmp.162 = lgetv %p.2;
+        symbol [ p %tmp.162 90 59 60 ];
+        symbol [ get %tmp.163 90 61 64 ];
+        %tmp.163 = getv function %tmp.162 :get;
+        %tmp.164 = "temperature";
+        %tmp.165 = invoke %tmp.162 %tmp.163(%tmp.164);
+        %tmp.166 = as %tmp.165 Number;
+        symbol [ Number %tmp.166 90 83 89 ];
+        push %tmp.166;
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_90_27_90_93_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_90_27_90_93_else_false:
+        %tmp.167 = 0;
+        push %tmp.167;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_90_27_90_93_end:
+        %tmp.168 = phi [%tmp.161 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_90_27_90_93_begin] [%tmp.166 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_90_27_90_93_true] [%tmp.167 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_90_27_90_93_else_false] [%tmp.168 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_90_27_90_93_end];
+        lputv %temp.5 %tmp.168;
+        symbol [ temp %temp.5 90 20 24 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 91 16 ]
+        symbol [ mainView %tmp.170 91 16 24 ];
+        %tmp.170 = getv ? :mainView;
+        symbol [ setWeather %tmp.171 91 25 35 ];
+        %tmp.171 = getv function %tmp.170 :setWeather;
+        %tmp.172 = lgetv %wind.3;
+        symbol [ wind %tmp.172 91 36 40 ];
+        %tmp.173 = lgetv %windDir.4;
+        symbol [ windDir %tmp.173 91 42 49 ];
+        %tmp.174 = lgetv %temp.5;
+        symbol [ temp %tmp.174 91 51 55 ];
+        invoke %tmp.170 %tmp.171(%tmp.172, %tmp.173, %tmp.174);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 92 16 ]
+        %tmp.175 = self;
+        symbol [ sendMessage %tmp.176 92 16 27 ];
+        %tmp.176 = getv function %tmp.175 :sendMessage;
+        symbol [ MessageTypes %tmp.178 92 28 40 ];
+        %tmp.178 = getv ? :MessageTypes;
+        symbol [ ACK %tmp.179 92 41 44 ];
+        %tmp.179 = getv %tmp.178 :ACK;
+        %tmp.180 = newd 1;
+        %tmp.181 = "status";
+        %tmp.182 = "weather_updated";
+        %tmp.183 = dup %tmp.180;
+        %tmp.184 = aputv %tmp.183 %tmp.181 %tmp.182;
+        invoke %tmp.175 %tmp.176(%tmp.179, %tmp.184);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_86_93_12_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_12_93_12_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_86_12_93_12_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_84_57_95_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_84_15_97_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_84_15_97_8_if_false:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 95 15 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_95_15_97_8_if_stmt:
+        %tmp.185 = lgetv %typeStr.1;
+        symbol [ typeStr %tmp.185 95 19 26 ];
+        symbol [ equals %tmp.186 95 27 33 ];
+        %tmp.186 = getv function %tmp.185 :equals;
+        symbol [ MessageTypes %tmp.188 95 34 46 ];
+        %tmp.188 = getv ? :MessageTypes;
+        symbol [ DATA %tmp.189 95 47 51 ];
+        %tmp.189 = getv %tmp.188 :DATA;
+        %tmp.190 = invoke %tmp.185 %tmp.186(%tmp.189);
+        bf %tmp.190 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_95_15_97_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_95_15_97_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_95_54_97_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 96 12 ]
+        %tmp.191 = self;
+        symbol [ sendMessage %tmp.192 96 12 23 ];
+        %tmp.192 = getv function %tmp.191 :sendMessage;
+        symbol [ MessageTypes %tmp.194 96 24 36 ];
+        %tmp.194 = getv ? :MessageTypes;
+        symbol [ ACK %tmp.195 96 37 40 ];
+        %tmp.195 = getv %tmp.194 :ACK;
+        %tmp.196 = newd 1;
+        %tmp.197 = "status";
+        %tmp.198 = "received";
+        %tmp.199 = dup %tmp.196;
+        %tmp.200 = aputv %tmp.199 %tmp.197 %tmp.198;
+        invoke %tmp.191 %tmp.192(%tmp.195, %tmp.200);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_95_54_97_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_95_15_97_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_95_15_97_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_84_15_97_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_78_15_97_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_72_15_97_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_69_8_97_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_61_75_98_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 101; @symbol_functiondef = [sendMessage,101,13,24]; @symbol_param<0> = [msgType,101,25,32]; @symbol_param<0>_type<0> = [String,101,36,42]; @symbol_param<1> = [payload,101,44,51]; @symbol_param<1>_type<0> = [Dictionary,101,55,65]; ]
+    function sendMessage(msgType as String, payload as Dictionary) as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_101_75_110_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 102 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_101_75_110_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_101_75_110_4_stop" ]
+        %message.1 = local;
+        symbol [ message %message.1 102 12 19 ];
+        %tmp.1 = newd 2;
+        %tmp.2 = "type";
+        %tmp.3 = lgetv %msgType;
+        symbol [ msgType %tmp.3 103 22 29 ];
+        %tmp.4 = dup %tmp.1;
+        %tmp.5 = aputv %tmp.4 %tmp.2 %tmp.3;
+        %tmp.6 = "payload";
+        %tmp.7 = lgetv %payload;
+        symbol [ payload %tmp.7 104 25 32 ];
+        %tmp.8 = dup %tmp.5;
+        %tmp.9 = aputv %tmp.8 %tmp.6 %tmp.7;
+        lputv %message.1 %tmp.9;
+        symbol [ message %message.1 102 12 19 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 107 8 ]
+        symbol [ System %tmp.10 107 8 14 ];
+        %tmp.10 = getm $.Toybox.System;
+        symbol [ println %tmp.11 107 15 22 ];
+        %tmp.11 = getv function %tmp.10 :println;
+        %tmp.12 = "[RETIC] Sending: ";
+        %tmp.13 = lgetv %msgType;
+        symbol [ msgType %tmp.13 107 45 52 ];
+        %tmp.14 = add %tmp.12 %tmp.13;
+        invoke %tmp.10 %tmp.11(%tmp.14);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 108 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_101_75_110_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_101_75_110_4_stop" ]
+        %listener.2 = local;
+        symbol [ listener %listener.2 108 12 20 ];
+        symbol [ CommListener %tmp.18 108 27 39 ];
+        %tmp.18 = getv ? :CommListener;
+        %tmp.15 = newc %tmp.18 ();
+        lputv %listener.2 %tmp.15;
+        symbol [ listener %listener.2 108 12 20 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 109 8 ]
+        symbol [ Communications %tmp.19 109 8 22 ];
+        %tmp.19 = getm $.Toybox.Communications;
+        symbol [ transmit %tmp.20 109 23 31 ];
+        %tmp.20 = getv function %tmp.19 :transmit;
+        %tmp.21 = lgetv %message.1;
+        symbol [ message %tmp.21 109 32 39 ];
+        %tmp.22 = null;
+        %tmp.23 = lgetv %listener.2;
+        symbol [ listener %tmp.23 109 47 55 ];
+        invoke %tmp.19 %tmp.20(%tmp.21, %tmp.22, %tmp.23);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_101_75_110_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 112; @symbol_functiondef = [onStop,112,13,19]; @symbol_param<0> = [state,112,20,25]; @symbol_param<0>_type<0> = [Dictionary,112,29,39]; ]
+    function onStop(state as Dictionary or Null) as Void {
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 115; @symbol_functiondef = [getInitialView,115,13,27]; @symbol_return<0> = [Views,115,34,39]; @symbol_return<1> = [Views,115,45,50]; @symbol_return<2> = [InputDelegates,115,52,66]; ]
+    function getInitialView() as [Views] or [Views, InputDelegates] {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_115_68_118_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 116 8 ]
+        symbol [ reticccView %tmp.4 116 23 34 ];
+        %tmp.4 = getv ? :reticccView;
+        %tmp.1 = newc %tmp.4 ();
+        symbol [ mainView ? 116 8 16 ];
+        putv self :mainView %tmp.1;
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 117 8 ]
+        %tmp.5 = newa 2;
+        symbol [ mainView %tmp.7 117 16 24 ];
+        %tmp.7 = getv ? :mainView;
+        %tmp.8 = dup %tmp.5;
+        %tmp.9 = aputv %tmp.8 0 %tmp.7;
+        symbol [ reticccDelegate %tmp.13 117 30 45 ];
+        %tmp.13 = getv ? :reticccDelegate;
+        %tmp.10 = newc %tmp.13 ();
+        %tmp.14 = dup %tmp.9;
+        %tmp.15 = aputv %tmp.14 1 %tmp.10;
+        ret %tmp.15;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_115_68_118_4_stop:
+    }
+}
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 122; @symbol_classdef = [CommListener,122,6,18]; @symbol_extends<0> = [Communications,122,27,41]; @symbol_extends<1> = [ConnectionListener,122,42,60]; ]
+class CommListener extends Communications.ConnectionListener {
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 122; ]
+    <init> {
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 122; ]
+    static
+    <init> {
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 123; @symbol_functiondef = [initialize,123,13,23]; ]
+    function initialize() as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_123_26_125_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 124 8 ]
+        symbol [ ConnectionListener %tmp.2 124 8 26 ];
+        %tmp.2 = getv ? :ConnectionListener;
+        symbol [ initialize %tmp.3 124 27 37 ];
+        %tmp.3 = getv function %tmp.2 :initialize;
+        invoke %tmp.2 %tmp.3();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_123_26_125_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 127; @symbol_functiondef = [onComplete,127,13,23]; ]
+    function onComplete() as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_127_34_129_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 128 8 ]
+        symbol [ System %tmp.1 128 8 14 ];
+        %tmp.1 = getm $.Toybox.System;
+        symbol [ println %tmp.2 128 15 22 ];
+        %tmp.2 = getv function %tmp.1 :println;
+        %tmp.3 = "[RETIC] Message sent OK";
+        invoke %tmp.1 %tmp.2(%tmp.3);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_127_34_129_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 131; @symbol_functiondef = [onError,131,13,20]; ]
+    function onError() as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_131_31_133_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 132 8 ]
+        symbol [ System %tmp.1 132 8 14 ];
+        %tmp.1 = getm $.Toybox.System;
+        symbol [ println %tmp.2 132 15 22 ];
+        %tmp.2 = getv function %tmp.1 :println;
+        %tmp.3 = "[RETIC] Message send FAILED";
+        invoke %tmp.1 %tmp.2(%tmp.3);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_131_31_133_4_stop:
+    }
+}
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 1; ]
+<init> {
+}
