@@ -27,8 +27,11 @@ module Rez {
         class MainMenu extends WatchUi.Menu {
             function initialize() {
                 Menu.initialize();
-                addItem((WatchUi.loadResource($.Rez.Strings.menu_label_1) as String), :item_1);
-                addItem((WatchUi.loadResource($.Rez.Strings.menu_label_2) as String), :item_2);
+                addItem("Primary Mode", :mock_session);
+                addItem("Timer Mode", :mock_timer);
+                addItem("Mock Environment", :mock_env);
+                addItem("Mock Personal", :mock_personal);
+                addItem("Load All Mock", :mock_all);
             }
         }
     } // Menus

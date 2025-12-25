@@ -108,6 +108,91 @@ class reticccApp extends Application.AppBase {
         var listener = new CommListener();
         Communications.transmit(message, null, listener);
     }
+    
+    // =========================================================================
+    // MOCK DATA FOR SIMULATOR TESTING
+    // =========================================================================
+    
+    // Start a mock PRIMARY mode session (timed drill - shot counter)
+    function startMockSession() as Void {
+        if (mainView != null) {
+            var mockData = {
+                "sessionId" => "MOCK-001",
+                "drillName" => "Bill Drill",
+                "drillGoal" => "6 shots under par",
+                "drillType" => "timed",
+                "inputMethod" => "manual",
+                "watchMode" => "primary",        // Shot counter mode
+                "distance" => 7,
+                "rounds" => 6,
+                "timeLimit" => 0,
+                "parTime" => 2.0,
+                "strings" => 1
+            };
+            mainView.startSession(mockData);
+            System.println("[MOCK] PRIMARY mode session started");
+        }
+    }
+    
+    // Start a mock SUPPLEMENTARY mode session (zeroing drill - timer only)
+    function startMockSupplementarySession() as Void {
+        if (mainView != null) {
+            var mockData = {
+                "sessionId" => "MOCK-002",
+                "drillName" => "5-Shot Group",
+                "drillGoal" => "Tight grouping",
+                "drillType" => "grouping",
+                "inputMethod" => "scan",
+                "watchMode" => "supplementary",  // Timer only mode
+                "distance" => 100,
+                "rounds" => 0,                    // No limit
+                "timeLimit" => 0,
+                "parTime" => 0,
+                "strings" => 1
+            };
+            mainView.startSession(mockData);
+            System.println("[MOCK] SUPPLEMENTARY mode session started");
+        }
+    }
+    
+    // Set mock environment data
+    function setMockEnvironment() as Void {
+        if (mainView != null) {
+            var mockEnv = {
+                "windSpeed" => 5,
+                "windDirection" => "NW",
+                "windAngle" => 315,
+                "temperature" => 22,
+                "humidity" => 65,
+                "pressure" => 1013,
+                "lightLevel" => 75,
+                "altitude" => 450
+            };
+            mainView.setEnvironment(mockEnv);
+            System.println("[MOCK] Environment data set");
+        }
+    }
+    
+    // Set mock personal data
+    function setMockPersonal() as Void {
+        if (mainView != null) {
+            var mockPersonal = {
+                "name" => "Shooter",
+                "totalSessions" => 42,
+                "totalShots" => 1250,
+                "bestAccuracy" => 94
+            };
+            mainView.setPersonalData(mockPersonal);
+            System.println("[MOCK] Personal data set");
+        }
+    }
+    
+    // Load all mock data at once
+    function loadAllMockData() as Void {
+        setMockEnvironment();
+        setMockPersonal();
+        startMockSession();
+    }
 
     function onStop(state as Dictionary?) as Void {
     }

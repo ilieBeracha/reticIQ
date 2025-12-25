@@ -13,50 +13,98 @@ class reticccDelegate extends WatchUi.BehaviorDelegate {
         return true;
     }
 
-    // Handle tap/select - add shot during session, reset when ended
+    // Handle tap/select - behavior depends on watch mode
+    // PRIMARY mode: Add shot, enforce limits
+    // SUPPLEMENTARY mode: Record split time (optional)
     function onSelect() as Boolean {
         if (mainView != null) {
             var state = mainView.getState();
             
             if (state == STATE_SESSION_ACTIVE) {
-                // During session - count shot
-                var added = mainView.addShot();
-                if (added) {
-                    // Vibrate to confirm shot counted
+                // Only handle on main page
+                if (mainView.getCurrentPage() == PAGE_MAIN) {
+                    var result = mainView.addShot();
+                    
                     if (Attention has :vibrate) {
-                        var vibeData = [new Attention.VibeProfile(50, 100)];
-                        Attention.vibrate(vibeData);
+                        if (result == :completed) {
+                            // Session complete! Long vibration
+                            var vibeData = [
+                                new Attention.VibeProfile(100, 500)  // Long strong pulse
+                            ];
+                            Attention.vibrate(vibeData);
+                        } else if (result == :added) {
+                            // Shot recorded - short double pulse
+                            var vibeData = [
+                                new Attention.VibeProfile(100, 50),
+                                new Attention.VibeProfile(0, 30),
+                                new Attention.VibeProfile(50, 30)
+                            ];
+                            Attention.vibrate(vibeData);
+                        } else if (result == :blocked) {
+                            // At max - error vibration (triple short)
+                            var vibeData = [
+                                new Attention.VibeProfile(50, 30),
+                                new Attention.VibeProfile(0, 50),
+                                new Attention.VibeProfile(50, 30),
+                                new Attention.VibeProfile(0, 50),
+                                new Attention.VibeProfile(50, 30)
+                            ];
+                            Attention.vibrate(vibeData);
+                        }
                     }
                 }
             } else if (state == STATE_SESSION_ENDED) {
-                // Session ended - reset to idle
                 mainView.resetToIdle();
             }
         }
         return true;
     }
 
-    // Handle back button - finish session early (send results)
+    // Handle back button - finish session early
     function onBack() as Boolean {
         if (mainView != null) {
             var state = mainView.getState();
             
             if (state == STATE_SESSION_ACTIVE) {
-                // During session - finish early and send results
+                // End session early (completed = false)
+                if (Attention has :vibrate) {
+                    // Double short pulse for early end
+                    var vibeData = [
+                        new Attention.VibeProfile(50, 50),
+                        new Attention.VibeProfile(0, 50),
+                        new Attention.VibeProfile(50, 50)
+                    ];
+                    Attention.vibrate(vibeData);
+                }
                 mainView.finishSession();
-                return true;  // Don't exit app
+                return true;
             } else if (state == STATE_SESSION_ENDED) {
-                // Already ended - reset
                 mainView.resetToIdle();
                 return true;
             }
         }
-        // In idle state - let back exit the app (return false)
-        return false;
+        return false;  // Let back exit app in idle
     }
 
     // Handle screen tap (for touch devices)
     function onTap(evt as WatchUi.ClickEvent) as Boolean {
-        return onSelect();  // Same as button press
+        return onSelect();
+    }
+    
+    // Handle UP/DOWN for page navigation during session
+    function onNextPage() as Boolean {
+        if (mainView != null && mainView.getState() == STATE_SESSION_ACTIVE) {
+            mainView.pageDown();
+            return true;
+        }
+        return false;
+    }
+    
+    function onPreviousPage() as Boolean {
+        if (mainView != null && mainView.getState() == STATE_SESSION_ACTIVE) {
+            mainView.pageUp();
+            return true;
+        }
+        return false;
     }
 }

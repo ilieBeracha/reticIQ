@@ -4,71 +4,235 @@ import Toybox.Lang;
 import Toybox.System;
 [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc"; @line = 3; @symbol_importdef<0> = [Toybox,3,7,13]; @symbol_importdef<1> = [WatchUi,3,14,21]; ]
 import Toybox.WatchUi;
-[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc"; @line = 5; @symbol_classdef = [reticccMenuDelegate,5,6,25]; @symbol_extends<0> = [WatchUi,5,34,41]; @symbol_extends<1> = [MenuInputDelegate,5,42,59]; ]
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc"; @line = 4; @symbol_importdef<0> = [Toybox,4,7,13]; @symbol_importdef<1> = [Application,4,14,25]; ]
+import Toybox.Application;
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc"; @line = 6; @symbol_classdef = [reticccMenuDelegate,6,6,25]; @symbol_extends<0> = [WatchUi,6,34,41]; @symbol_extends<1> = [MenuInputDelegate,6,42,59]; ]
 class reticccMenuDelegate extends WatchUi.MenuInputDelegate {
-    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc"; @line = 5; ]
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc"; @line = 6; ]
     <init> {
     }
-    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc"; @line = 5; ]
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc"; @line = 6; ]
     static
     <init> {
     }
-    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc"; @line = 7; @symbol_functiondef = [initialize,7,13,23]; ]
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc"; @line = 8; @symbol_functiondef = [initialize,8,13,23]; ]
     function initialize() as Void {
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_7_26_9_4_start:
-[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 8 8 ]
-        symbol [ MenuInputDelegate %tmp.2 8 8 25 ];
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_8_26_10_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 9 8 ]
+        symbol [ MenuInputDelegate %tmp.2 9 8 25 ];
         %tmp.2 = getv ? :MenuInputDelegate;
-        symbol [ initialize %tmp.3 8 26 36 ];
+        symbol [ initialize %tmp.3 9 26 36 ];
         %tmp.3 = getv function %tmp.2 :initialize;
         invoke %tmp.2 %tmp.3();
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_7_26_9_4_stop:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_8_26_10_4_stop:
     }
-    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc"; @line = 11; @symbol_functiondef = [onMenuItem,11,13,23]; @symbol_param<0> = [item,11,24,28]; @symbol_param<0>_type<0> = [Symbol,11,32,38]; ]
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc"; @line = 12; @symbol_functiondef = [onMenuItem,12,13,23]; @symbol_param<0> = [item,12,24,28]; @symbol_param<0>_type<0> = [Symbol,12,32,38]; ]
     function onMenuItem(item as Symbol) as Void {
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_11_48_17_4_start:
-[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 12 8 ]
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_12_8_16_8_if_stmt:
-        %tmp.1 = lgetv %item;
-        symbol [ item %tmp.1 12 12 16 ];
-        %tmp.3 = const :item_1;
-        symbol [ item_1 %tmp.3 12 21 27 const ];
-        %tmp.4 = eq %tmp.1 %tmp.3;
-        bf %tmp.4 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_12_8_16_8_if_false;
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_12_8_16_8_if_true:
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_12_29_14_8_start:
-[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 13 12 ]
-        symbol [ System %tmp.5 13 12 18 ];
-        %tmp.5 = getm $.Toybox.System;
-        symbol [ println %tmp.6 13 19 26 ];
-        %tmp.6 = getv function %tmp.5 :println;
-        %tmp.7 = "item 1";
-        invoke %tmp.5 %tmp.6(%tmp.7);
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_12_29_14_8_stop:
-        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_12_8_16_8_if_end;
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_12_8_16_8_if_false:
-[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 14 15 ]
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_14_15_16_8_if_stmt:
-        %tmp.8 = lgetv %item;
-        symbol [ item %tmp.8 14 19 23 ];
-        %tmp.10 = const :item_2;
-        symbol [ item_2 %tmp.10 14 28 34 const ];
-        %tmp.11 = eq %tmp.8 %tmp.10;
-        bf %tmp.11 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_14_15_16_8_if_end;
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_14_15_16_8_if_true:
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_14_36_16_8_start:
-[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 15 12 ]
-        symbol [ System %tmp.12 15 12 18 ];
-        %tmp.12 = getm $.Toybox.System;
-        symbol [ println %tmp.13 15 19 26 ];
-        %tmp.13 = getv function %tmp.12 :println;
-        %tmp.14 = "item 2";
-        invoke %tmp.12 %tmp.13(%tmp.14);
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_14_36_16_8_stop:
-        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_14_15_16_8_if_end;
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_14_15_16_8_if_end:
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_12_8_16_8_if_end:
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_11_48_17_4_stop:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_12_48_47_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 13 8 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_12_48_47_4_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_12_48_47_4_stop" ]
+        %app.1 = local;
+        symbol [ app %app.1 13 12 15 ];
+        symbol [ Application %tmp.1 13 18 29 ];
+        %tmp.1 = getm $.Toybox.Application;
+        symbol [ getApp %tmp.2 13 30 36 ];
+        %tmp.2 = getv function %tmp.1 :getApp;
+        %tmp.3 = invoke %tmp.1 %tmp.2();
+        %tmp.4 = as %tmp.3 reticccApp;
+        symbol [ reticccApp %tmp.4 13 42 52 ];
+        lputv %app.1 %tmp.4;
+        symbol [ app %app.1 13 12 15 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 15 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_15_8_44_8_if_stmt:
+        %tmp.5 = lgetv %item;
+        symbol [ item %tmp.5 15 12 16 ];
+        %tmp.7 = const :mock_session;
+        symbol [ mock_session %tmp.7 15 21 33 const ];
+        %tmp.8 = eq %tmp.5 %tmp.7;
+        bf %tmp.8 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_15_8_44_8_if_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_15_8_44_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_15_35_21_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 17 12 ]
+        %tmp.9 = lgetv %app.1;
+        symbol [ app %tmp.9 17 12 15 ];
+        symbol [ startMockSession %tmp.10 17 16 32 ];
+        %tmp.10 = getv function %tmp.9 :startMockSession;
+        invoke %tmp.9 %tmp.10();
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 18 12 ]
+        symbol [ System %tmp.11 18 12 18 ];
+        %tmp.11 = getm $.Toybox.System;
+        symbol [ println %tmp.12 18 19 26 ];
+        %tmp.12 = getv function %tmp.11 :println;
+        %tmp.13 = "[MENU] Primary mode session started";
+        invoke %tmp.11 %tmp.12(%tmp.13);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 19 12 ]
+        symbol [ WatchUi %tmp.14 19 12 19 ];
+        %tmp.14 = getm $.Toybox.WatchUi;
+        symbol [ popView %tmp.15 19 20 27 ];
+        %tmp.15 = getv function %tmp.14 :popView;
+        symbol [ WatchUi %tmp.16 19 28 35 ];
+        %tmp.16 = getm $.Toybox.WatchUi;
+        symbol [ SLIDE_DOWN %tmp.17 19 36 46 ];
+        %tmp.17 = getv %tmp.16 :SLIDE_DOWN;
+        invoke %tmp.14 %tmp.15(%tmp.17);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_15_35_21_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_15_8_44_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_15_8_44_8_if_false:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 21 15 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_21_15_44_8_if_stmt:
+        %tmp.18 = lgetv %item;
+        symbol [ item %tmp.18 21 19 23 ];
+        %tmp.20 = const :mock_timer;
+        symbol [ mock_timer %tmp.20 21 28 38 const ];
+        %tmp.21 = eq %tmp.18 %tmp.20;
+        bf %tmp.21 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_21_15_44_8_if_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_21_15_44_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_21_40_27_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 23 12 ]
+        %tmp.22 = lgetv %app.1;
+        symbol [ app %tmp.22 23 12 15 ];
+        symbol [ startMockSupplementarySession %tmp.23 23 16 45 ];
+        %tmp.23 = getv function %tmp.22 :startMockSupplementarySession;
+        invoke %tmp.22 %tmp.23();
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 24 12 ]
+        symbol [ System %tmp.24 24 12 18 ];
+        %tmp.24 = getm $.Toybox.System;
+        symbol [ println %tmp.25 24 19 26 ];
+        %tmp.25 = getv function %tmp.24 :println;
+        %tmp.26 = "[MENU] Supplementary mode session started";
+        invoke %tmp.24 %tmp.25(%tmp.26);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 25 12 ]
+        symbol [ WatchUi %tmp.27 25 12 19 ];
+        %tmp.27 = getm $.Toybox.WatchUi;
+        symbol [ popView %tmp.28 25 20 27 ];
+        %tmp.28 = getv function %tmp.27 :popView;
+        symbol [ WatchUi %tmp.29 25 28 35 ];
+        %tmp.29 = getm $.Toybox.WatchUi;
+        symbol [ SLIDE_DOWN %tmp.30 25 36 46 ];
+        %tmp.30 = getv %tmp.29 :SLIDE_DOWN;
+        invoke %tmp.27 %tmp.28(%tmp.30);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_21_40_27_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_21_15_44_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_21_15_44_8_if_false:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 27 15 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_27_15_44_8_if_stmt:
+        %tmp.31 = lgetv %item;
+        symbol [ item %tmp.31 27 19 23 ];
+        %tmp.33 = const :mock_env;
+        symbol [ mock_env %tmp.33 27 28 36 const ];
+        %tmp.34 = eq %tmp.31 %tmp.33;
+        bf %tmp.34 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_27_15_44_8_if_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_27_15_44_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_27_38_33_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 29 12 ]
+        %tmp.35 = lgetv %app.1;
+        symbol [ app %tmp.35 29 12 15 ];
+        symbol [ setMockEnvironment %tmp.36 29 16 34 ];
+        %tmp.36 = getv function %tmp.35 :setMockEnvironment;
+        invoke %tmp.35 %tmp.36();
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 30 12 ]
+        symbol [ System %tmp.37 30 12 18 ];
+        %tmp.37 = getm $.Toybox.System;
+        symbol [ println %tmp.38 30 19 26 ];
+        %tmp.38 = getv function %tmp.37 :println;
+        %tmp.39 = "[MENU] Mock environment loaded";
+        invoke %tmp.37 %tmp.38(%tmp.39);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 31 12 ]
+        symbol [ WatchUi %tmp.40 31 12 19 ];
+        %tmp.40 = getm $.Toybox.WatchUi;
+        symbol [ popView %tmp.41 31 20 27 ];
+        %tmp.41 = getv function %tmp.40 :popView;
+        symbol [ WatchUi %tmp.42 31 28 35 ];
+        %tmp.42 = getm $.Toybox.WatchUi;
+        symbol [ SLIDE_DOWN %tmp.43 31 36 46 ];
+        %tmp.43 = getv %tmp.42 :SLIDE_DOWN;
+        invoke %tmp.40 %tmp.41(%tmp.43);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_27_38_33_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_27_15_44_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_27_15_44_8_if_false:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 33 15 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_33_15_44_8_if_stmt:
+        %tmp.44 = lgetv %item;
+        symbol [ item %tmp.44 33 19 23 ];
+        %tmp.46 = const :mock_personal;
+        symbol [ mock_personal %tmp.46 33 28 41 const ];
+        %tmp.47 = eq %tmp.44 %tmp.46;
+        bf %tmp.47 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_33_15_44_8_if_false;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_33_15_44_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_33_43_39_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 35 12 ]
+        %tmp.48 = lgetv %app.1;
+        symbol [ app %tmp.48 35 12 15 ];
+        symbol [ setMockPersonal %tmp.49 35 16 31 ];
+        %tmp.49 = getv function %tmp.48 :setMockPersonal;
+        invoke %tmp.48 %tmp.49();
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 36 12 ]
+        symbol [ System %tmp.50 36 12 18 ];
+        %tmp.50 = getm $.Toybox.System;
+        symbol [ println %tmp.51 36 19 26 ];
+        %tmp.51 = getv function %tmp.50 :println;
+        %tmp.52 = "[MENU] Mock personal loaded";
+        invoke %tmp.50 %tmp.51(%tmp.52);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 37 12 ]
+        symbol [ WatchUi %tmp.53 37 12 19 ];
+        %tmp.53 = getm $.Toybox.WatchUi;
+        symbol [ popView %tmp.54 37 20 27 ];
+        %tmp.54 = getv function %tmp.53 :popView;
+        symbol [ WatchUi %tmp.55 37 28 35 ];
+        %tmp.55 = getm $.Toybox.WatchUi;
+        symbol [ SLIDE_DOWN %tmp.56 37 36 46 ];
+        %tmp.56 = getv %tmp.55 :SLIDE_DOWN;
+        invoke %tmp.53 %tmp.54(%tmp.56);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_33_43_39_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_33_15_44_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_33_15_44_8_if_false:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 39 15 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_39_15_44_8_if_stmt:
+        %tmp.57 = lgetv %item;
+        symbol [ item %tmp.57 39 19 23 ];
+        %tmp.59 = const :mock_all;
+        symbol [ mock_all %tmp.59 39 28 36 const ];
+        %tmp.60 = eq %tmp.57 %tmp.59;
+        bf %tmp.60 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_39_15_44_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_39_15_44_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_39_38_44_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 41 12 ]
+        %tmp.61 = lgetv %app.1;
+        symbol [ app %tmp.61 41 12 15 ];
+        symbol [ loadAllMockData %tmp.62 41 16 31 ];
+        %tmp.62 = getv function %tmp.61 :loadAllMockData;
+        invoke %tmp.61 %tmp.62();
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 42 12 ]
+        symbol [ System %tmp.63 42 12 18 ];
+        %tmp.63 = getm $.Toybox.System;
+        symbol [ println %tmp.64 42 19 26 ];
+        %tmp.64 = getv function %tmp.63 :println;
+        %tmp.65 = "[MENU] All mock data loaded";
+        invoke %tmp.63 %tmp.64(%tmp.65);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 43 12 ]
+        symbol [ WatchUi %tmp.66 43 12 19 ];
+        %tmp.66 = getm $.Toybox.WatchUi;
+        symbol [ popView %tmp.67 43 20 27 ];
+        %tmp.67 = getv function %tmp.66 :popView;
+        symbol [ WatchUi %tmp.68 43 28 35 ];
+        %tmp.68 = getm $.Toybox.WatchUi;
+        symbol [ SLIDE_DOWN %tmp.69 43 36 46 ];
+        %tmp.69 = getv %tmp.68 :SLIDE_DOWN;
+        invoke %tmp.66 %tmp.67(%tmp.69);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_39_38_44_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_39_15_44_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_39_15_44_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_33_15_44_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_27_15_44_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_21_15_44_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_15_8_44_8_if_end:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc" 46 8 ]
+        symbol [ WatchUi %tmp.70 46 8 15 ];
+        %tmp.70 = getm $.Toybox.WatchUi;
+        symbol [ requestUpdate %tmp.71 46 16 29 ];
+        %tmp.71 = getv function %tmp.70 :requestUpdate;
+        invoke %tmp.70 %tmp.71();
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccMenuDelegate_mc_12_48_47_4_stop:
     }
 }
 [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccMenuDelegate.mc"; @line = 1; ]
