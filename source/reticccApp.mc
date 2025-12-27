@@ -193,6 +193,29 @@ class reticccApp extends Application.AppBase {
         setMockPersonal();
         startMockSession();
     }
+    
+    // Start a mock session with auto-detection enabled
+    function startMockAutoDetectSession() as Void {
+        if (mainView != null) {
+            var mockData = {
+                "sessionId" => "MOCK-AUTO-001",
+                "drillName" => "Auto Detect",
+                "drillGoal" => "Test shot detection",
+                "drillType" => "timed",
+                "inputMethod" => "auto",
+                "watchMode" => "primary",
+                "distance" => 25,
+                "rounds" => 10,
+                "timeLimit" => 0,
+                "parTime" => 0,
+                "strings" => 1,
+                "autoDetect" => true,           // Enable auto-detection
+                "sensitivity" => 3.5            // Medium sensitivity (3.5G)
+            };
+            mainView.startSession(mockData);
+            System.println("[MOCK] Auto-detect session started");
+        }
+    }
 
     function onStop(state as Dictionary?) as Void {
     }

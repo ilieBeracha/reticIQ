@@ -24,6 +24,25 @@ class reticccMenuDelegate extends WatchUi.MenuInputDelegate {
             System.println("[MENU] Supplementary mode session started");
             WatchUi.popView(WatchUi.SLIDE_DOWN);
             
+        } else if (item == :mock_auto) {
+            // Start session with auto shot detection
+            app.startMockAutoDetectSession();
+            System.println("[MENU] Auto-detect session started");
+            WatchUi.popView(WatchUi.SLIDE_DOWN);
+            
+        } else if (item == :sim_shot) {
+            // Simulate a shot (for testing auto-detect in simulator)
+            if (mainView != null) {
+                var detector = mainView.getShotDetector();
+                if (detector != null) {
+                    detector.simulateShot();
+                    System.println("[MENU] Shot simulation triggered");
+                } else {
+                    System.println("[MENU] No shot detector found!");
+                }
+            }
+            WatchUi.popView(WatchUi.SLIDE_DOWN);
+            
         } else if (item == :mock_env) {
             // Load mock environment data
             app.setMockEnvironment();

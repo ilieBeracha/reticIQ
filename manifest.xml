@@ -5,7 +5,7 @@
         Use "Monkey C: Edit Application" from the Visual Studio Code command palette
         to update the application attributes.
     -->
-    <iq:application id="bd8df375-4ed5-4ff3-bcf4-b752426e1628" type="watch-app" name="@Strings.AppName" entry="reticccApp" launcherIcon="@Drawables.id_monkey" minApiLevel="3.2.0">
+    <iq:application id="467f4bb7-cd3c-45c4-a39b-9bb78260c9ed" type="watch-app" name="@Strings.AppName" entry="reticccApp" launcherIcon="@Drawables.id_monkey" minApiLevel="3.2.0">
         <!--
             Use the following from the Visual Studio Code comand palette to edit
             the build targets:
@@ -25,6 +25,7 @@
         -->
         <iq:permissions>
             <iq:uses-permission id="Communications"/>
+            <iq:uses-permission id="Sensor"/>
         </iq:permissions>
         <!--
             Use "Monkey C: Edit Languages" from the Visual Studio Code command

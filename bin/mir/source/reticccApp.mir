@@ -1065,76 +1065,168 @@ _Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_191_39_195_4_start:
         invoke %tmp.5 %tmp.6();
 _Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_191_39_195_4_stop:
     }
-    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 197; @symbol_functiondef = [onStop,197,13,19]; @symbol_param<0> = [state,197,20,25]; @symbol_param<0>_type<0> = [Dictionary,197,29,39]; ]
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 198; @symbol_functiondef = [startMockAutoDetectSession,198,13,39]; ]
+    function startMockAutoDetectSession() as Void {
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_198_50_218_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 199 8 ]
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_199_8_217_8_if_stmt:
+        symbol [ mainView %tmp.2 199 12 20 ];
+        %tmp.2 = getv ? :mainView;
+        %tmp.3 = null;
+        %tmp.4 = ne %tmp.2 %tmp.3;
+        bf %tmp.4 @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_199_8_217_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_199_8_217_8_if_true:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_199_30_217_8_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 200 12 ]
+        [ "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_199_30_217_8_start" "_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_199_30_217_8_stop" ]
+        %mockData.1 = local;
+        symbol [ mockData %mockData.1 200 16 24 ];
+        %tmp.5 = newd 13;
+        %tmp.6 = "sessionId";
+        %tmp.7 = "MOCK-AUTO-001";
+        %tmp.8 = dup %tmp.5;
+        %tmp.9 = aputv %tmp.8 %tmp.6 %tmp.7;
+        %tmp.10 = "drillName";
+        %tmp.11 = "Auto Detect";
+        %tmp.12 = dup %tmp.9;
+        %tmp.13 = aputv %tmp.12 %tmp.10 %tmp.11;
+        %tmp.14 = "drillGoal";
+        %tmp.15 = "Test shot detection";
+        %tmp.16 = dup %tmp.13;
+        %tmp.17 = aputv %tmp.16 %tmp.14 %tmp.15;
+        %tmp.18 = "drillType";
+        %tmp.19 = "timed";
+        %tmp.20 = dup %tmp.17;
+        %tmp.21 = aputv %tmp.20 %tmp.18 %tmp.19;
+        %tmp.22 = "inputMethod";
+        %tmp.23 = "auto";
+        %tmp.24 = dup %tmp.21;
+        %tmp.25 = aputv %tmp.24 %tmp.22 %tmp.23;
+        %tmp.26 = "watchMode";
+        %tmp.27 = "primary";
+        %tmp.28 = dup %tmp.25;
+        %tmp.29 = aputv %tmp.28 %tmp.26 %tmp.27;
+        %tmp.30 = "distance";
+        %tmp.31 = 25;
+        %tmp.32 = dup %tmp.29;
+        %tmp.33 = aputv %tmp.32 %tmp.30 %tmp.31;
+        %tmp.34 = "rounds";
+        %tmp.35 = 10;
+        %tmp.36 = dup %tmp.33;
+        %tmp.37 = aputv %tmp.36 %tmp.34 %tmp.35;
+        %tmp.38 = "timeLimit";
+        %tmp.39 = 0;
+        %tmp.40 = dup %tmp.37;
+        %tmp.41 = aputv %tmp.40 %tmp.38 %tmp.39;
+        %tmp.42 = "parTime";
+        %tmp.43 = 0;
+        %tmp.44 = dup %tmp.41;
+        %tmp.45 = aputv %tmp.44 %tmp.42 %tmp.43;
+        %tmp.46 = "strings";
+        %tmp.47 = 1;
+        %tmp.48 = dup %tmp.45;
+        %tmp.49 = aputv %tmp.48 %tmp.46 %tmp.47;
+        %tmp.50 = "autoDetect";
+        %tmp.51 = true;
+        %tmp.52 = dup %tmp.49;
+        %tmp.53 = aputv %tmp.52 %tmp.50 %tmp.51;
+        %tmp.54 = "sensitivity";
+        %tmp.55 = 3.5;
+        %tmp.56 = dup %tmp.53;
+        %tmp.57 = aputv %tmp.56 %tmp.54 %tmp.55;
+        lputv %mockData.1 %tmp.57;
+        symbol [ mockData %mockData.1 200 16 24 ];
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 215 12 ]
+        symbol [ mainView %tmp.59 215 12 20 ];
+        %tmp.59 = getv ? :mainView;
+        %tmp.60 = as %tmp.59 { (!Null) };
+        symbol [ startSession %tmp.61 215 21 33 ];
+        %tmp.61 = getv function %tmp.60 :startSession;
+        %tmp.62 = lgetv %mockData.1;
+        symbol [ mockData %tmp.62 215 34 42 ];
+        invoke %tmp.60 %tmp.61(%tmp.62);
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 216 12 ]
+        symbol [ System %tmp.63 216 12 18 ];
+        %tmp.63 = getm $.Toybox.System;
+        symbol [ println %tmp.64 216 19 26 ];
+        %tmp.64 = getv function %tmp.63 :println;
+        %tmp.65 = "[MOCK] Auto-detect session started";
+        invoke %tmp.63 %tmp.64(%tmp.65);
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_199_30_217_8_stop:
+        goto @_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_199_8_217_8_if_end;
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_199_8_217_8_if_end:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_198_50_218_4_stop:
+    }
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 220; @symbol_functiondef = [onStop,220,13,19]; @symbol_param<0> = [state,220,20,25]; @symbol_param<0>_type<0> = [Dictionary,220,29,39]; ]
     function onStop(state as Dictionary or Null) as Void {
     }
-    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 200; @symbol_functiondef = [getInitialView,200,13,27]; @symbol_return<0> = [Views,200,34,39]; @symbol_return<1> = [Views,200,45,50]; @symbol_return<2> = [InputDelegates,200,52,66]; ]
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 223; @symbol_functiondef = [getInitialView,223,13,27]; @symbol_return<0> = [Views,223,34,39]; @symbol_return<1> = [Views,223,45,50]; @symbol_return<2> = [InputDelegates,223,52,66]; ]
     function getInitialView() as [Views] or [Views, InputDelegates] {
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_200_68_203_4_start:
-[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 201 8 ]
-        symbol [ reticccView %tmp.4 201 23 34 ];
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_223_68_226_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 224 8 ]
+        symbol [ reticccView %tmp.4 224 23 34 ];
         %tmp.4 = getv ? :reticccView;
         %tmp.1 = newc %tmp.4 ();
-        symbol [ mainView ? 201 8 16 ];
+        symbol [ mainView ? 224 8 16 ];
         putv self :mainView %tmp.1;
-[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 202 8 ]
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 225 8 ]
         %tmp.5 = newa 2;
-        symbol [ mainView %tmp.7 202 16 24 ];
+        symbol [ mainView %tmp.7 225 16 24 ];
         %tmp.7 = getv ? :mainView;
         %tmp.8 = dup %tmp.5;
         %tmp.9 = aputv %tmp.8 0 %tmp.7;
-        symbol [ reticccDelegate %tmp.13 202 30 45 ];
+        symbol [ reticccDelegate %tmp.13 225 30 45 ];
         %tmp.13 = getv ? :reticccDelegate;
         %tmp.10 = newc %tmp.13 ();
         %tmp.14 = dup %tmp.9;
         %tmp.15 = aputv %tmp.14 1 %tmp.10;
         ret %tmp.15;
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_200_68_203_4_stop:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_223_68_226_4_stop:
     }
 }
-[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 207; @symbol_classdef = [CommListener,207,6,18]; @symbol_extends<0> = [Communications,207,27,41]; @symbol_extends<1> = [ConnectionListener,207,42,60]; ]
+[ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 230; @symbol_classdef = [CommListener,230,6,18]; @symbol_extends<0> = [Communications,230,27,41]; @symbol_extends<1> = [ConnectionListener,230,42,60]; ]
 class CommListener extends Communications.ConnectionListener {
-    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 207; ]
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 230; ]
     <init> {
     }
-    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 207; ]
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 230; ]
     static
     <init> {
     }
-    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 208; @symbol_functiondef = [initialize,208,13,23]; ]
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 231; @symbol_functiondef = [initialize,231,13,23]; ]
     function initialize() as Void {
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_208_26_210_4_start:
-[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 209 8 ]
-        symbol [ ConnectionListener %tmp.2 209 8 26 ];
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_231_26_233_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 232 8 ]
+        symbol [ ConnectionListener %tmp.2 232 8 26 ];
         %tmp.2 = getv ? :ConnectionListener;
-        symbol [ initialize %tmp.3 209 27 37 ];
+        symbol [ initialize %tmp.3 232 27 37 ];
         %tmp.3 = getv function %tmp.2 :initialize;
         invoke %tmp.2 %tmp.3();
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_208_26_210_4_stop:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_231_26_233_4_stop:
     }
-    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 212; @symbol_functiondef = [onComplete,212,13,23]; ]
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 235; @symbol_functiondef = [onComplete,235,13,23]; ]
     function onComplete() as Void {
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_212_34_214_4_start:
-[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 213 8 ]
-        symbol [ System %tmp.1 213 8 14 ];
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_235_34_237_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 236 8 ]
+        symbol [ System %tmp.1 236 8 14 ];
         %tmp.1 = getm $.Toybox.System;
-        symbol [ println %tmp.2 213 15 22 ];
+        symbol [ println %tmp.2 236 15 22 ];
         %tmp.2 = getv function %tmp.1 :println;
         %tmp.3 = "[RETIC] Message sent OK";
         invoke %tmp.1 %tmp.2(%tmp.3);
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_212_34_214_4_stop:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_235_34_237_4_stop:
     }
-    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 216; @symbol_functiondef = [onError,216,13,20]; ]
+    [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 239; @symbol_functiondef = [onError,239,13,20]; ]
     function onError() as Void {
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_216_31_218_4_start:
-[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 217 8 ]
-        symbol [ System %tmp.1 217 8 14 ];
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_239_31_241_4_start:
+[ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 240 8 ]
+        symbol [ System %tmp.1 240 8 14 ];
         %tmp.1 = getm $.Toybox.System;
-        symbol [ println %tmp.2 217 15 22 ];
+        symbol [ println %tmp.2 240 15 22 ];
         %tmp.2 = getv function %tmp.1 :println;
         %tmp.3 = "[RETIC] Message send FAILED";
         invoke %tmp.1 %tmp.2(%tmp.3);
-_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_216_31_218_4_stop:
+_Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_239_31_241_4_stop:
     }
 }
 [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc"; @line = 1; ]

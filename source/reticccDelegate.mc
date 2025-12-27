@@ -91,6 +91,41 @@ class reticccDelegate extends WatchUi.BehaviorDelegate {
         return onSelect();
     }
     
+    // Handle long press (hold) - remove last shot (undo for false positives)
+    function onHold(evt as WatchUi.ClickEvent) as Boolean {
+        if (mainView != null) {
+            var state = mainView.getState();
+            
+            if (state == STATE_SESSION_ACTIVE) {
+                if (mainView.getCurrentPage() == PAGE_MAIN) {
+                    var result = mainView.removeLastShot();
+                    
+                    if (Attention has :vibrate) {
+                        if (result == :removed) {
+                            // Shot removed - triple short pulse for undo
+                            var vibeData = [
+                                new Attention.VibeProfile(50, 30),
+                                new Attention.VibeProfile(0, 30),
+                                new Attention.VibeProfile(50, 30),
+                                new Attention.VibeProfile(0, 30),
+                                new Attention.VibeProfile(50, 30)
+                            ];
+                            Attention.vibrate(vibeData);
+                        } else if (result == :blocked) {
+                            // Can't remove (no shots) - error vibration
+                            var vibeData = [
+                                new Attention.VibeProfile(50, 100)
+                            ];
+                            Attention.vibrate(vibeData);
+                        }
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     // Handle UP/DOWN for page navigation during session
     function onNextPage() as Boolean {
         if (mainView != null && mainView.getState() == STATE_SESSION_ACTIVE) {

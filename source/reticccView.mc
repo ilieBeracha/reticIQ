@@ -4,6 +4,9 @@ import Toybox.Lang;
 import Toybox.System;
 import Toybox.Timer;
 import Toybox.Time;
+import Toybox.Weather;
+import Toybox.Math;
+import Toybox.Attention;
 
 // Session state enum
 enum SessionState {
@@ -89,12 +92,71 @@ class reticccView extends WatchUi.View {
     
     // Temperature has been set flag (to distinguish 0°C from no data)
     private var _hasTemperature as Boolean = false;
+    private var _hasHumidity as Boolean = false;
+    private var _hasPressure as Boolean = false;
     
-    // Debug
+    // Debug/status tracking
     private var _lastMsg as String = "";
+    
+    // Auto shot detection
+    private var _shotDetector as ShotDetector?;
+    private var _autoDetectEnabled as Boolean = false;
+    private var _manualOverrides as Number = 0;  // Track manual shot additions/removals
+    
+    // =========================================================================
+    // DYNAMIC FONT SELECTION - Pick best font for available space
+    // Per Travis Vitek (Garmin) recommendations
+    // =========================================================================
+    
+    // Select the largest font that fits text within given dimensions
+    private function selectFontForText(dc as Dc, maxWidth as Number, maxHeight as Number, sampleText as String) as FontDefinition {
+        // Try fonts from largest to smallest
+        var fonts = [
+            Graphics.FONT_NUMBER_HOT,
+            Graphics.FONT_NUMBER_THAI_HOT,
+            Graphics.FONT_NUMBER_MEDIUM,
+            Graphics.FONT_NUMBER_MILD,
+            Graphics.FONT_LARGE,
+            Graphics.FONT_MEDIUM,
+            Graphics.FONT_SMALL,
+            Graphics.FONT_TINY,
+            Graphics.FONT_XTINY
+        ];
+        
+        for (var i = 0; i < fonts.size(); i++) {
+            var font = fonts[i];
+            var dims = dc.getTextDimensions(sampleText, font);
+            if (dims[0] <= maxWidth && dims[1] <= maxHeight) {
+                return font;
+            }
+        }
+        
+        // Fallback to smallest
+        return Graphics.FONT_XTINY;
+    }
+    
+    // Get a font size suitable for the display (based on screen width)
+    private function getDisplaySizeClass(dc as Dc) as Symbol {
+        var width = dc.getWidth();
+        if (width >= 280) {
+            return :large;      // Fenix 8 47mm+, Forerunner 965
+        } else if (width >= 240) {
+            return :medium;     // Fenix 8 43mm, Instinct 2
+        } else if (width >= 200) {
+            return :small;      // Forerunner 55, older devices
+        } else {
+            return :tiny;       // Edge devices, etc
+        }
+    }
 
     function initialize() {
         View.initialize();
+        // Fetch initial weather data from Garmin
+        fetchWeatherFromWatch();
+        
+        // Initialize shot detector
+        _shotDetector = new ShotDetector();
+        _shotDetector.setOnShotDetected(method(:onAutoShotDetected));
     }
 
     function onLayout(dc as Dc) as Void {
@@ -102,13 +164,83 @@ class reticccView extends WatchUi.View {
 
     function onShow() as Void {
         _timer = new Timer.Timer();
-        _timer.start(method(:onTimerTick), 1000, true);
+        // Use 100ms updates for smooth timer display in supplementary mode
+        _timer.start(method(:onTimerTick), 100, true);
+        // Refresh weather data when view is shown
+        fetchWeatherFromWatch();
     }
     
     function onHide() as Void {
         if (_timer != null) {
             _timer.stop();
             _timer = null;
+        }
+        
+        // Stop shot detection when view is hidden
+        if (_shotDetector != null) {
+            _shotDetector.stopMonitoring();
+        }
+    }
+    
+    // =========================================================================
+    // WEATHER - Fetch from Garmin Watch Weather API
+    // =========================================================================
+    function fetchWeatherFromWatch() as Void {
+        // Get current weather conditions from Garmin (API 3.2.0+)
+        var conditions = Weather.getCurrentConditions();
+        
+        if (conditions != null) {
+            // Temperature in Celsius
+            if (conditions.temperature != null) {
+                _temperature = conditions.temperature.toNumber();
+                _hasTemperature = true;
+            }
+            
+            // Wind speed in m/s
+            if (conditions.windSpeed != null) {
+                _windSpeed = conditions.windSpeed.toNumber();
+            }
+            
+            // Wind bearing (degrees) - convert to cardinal direction
+            if (conditions.windBearing != null) {
+                _windAngle = conditions.windBearing;
+                _windDirection = bearingToCardinal(conditions.windBearing);
+            }
+            
+            // Humidity (0-100%)
+            if (conditions has :relativeHumidity && conditions.relativeHumidity != null) {
+                _humidity = conditions.relativeHumidity;
+                _hasHumidity = true;
+            }
+            
+            // Pressure in Pascals - convert to hPa (millibars)
+            // Not available on all devices (e.g., Instinct 2)
+            if (conditions has :pressure && conditions.pressure != null) {
+                _pressure = (conditions.pressure / 100).toNumber();  // Pa to hPa
+                _hasPressure = true;
+            }
+        }
+    }
+    
+    // Convert wind bearing (degrees) to cardinal direction
+    private function bearingToCardinal(bearing as Number) as String {
+        // North = 0, East = 90, South = 180, West = 270
+        if (bearing >= 337.5 || bearing < 22.5) {
+            return "N";
+        } else if (bearing >= 22.5 && bearing < 67.5) {
+            return "NE";
+        } else if (bearing >= 67.5 && bearing < 112.5) {
+            return "E";
+        } else if (bearing >= 112.5 && bearing < 157.5) {
+            return "SE";
+        } else if (bearing >= 157.5 && bearing < 202.5) {
+            return "S";
+        } else if (bearing >= 202.5 && bearing < 247.5) {
+            return "SW";
+        } else if (bearing >= 247.5 && bearing < 292.5) {
+            return "W";
+        } else {
+            return "NW";
         }
     }
     
@@ -167,6 +299,7 @@ class reticccView extends WatchUi.View {
         _lastShotTime = _startTime;
         _splitTimes = [];
         _currentPage = PAGE_MAIN;
+        _manualOverrides = 0;
         
         // Extract session data
         _sessionId = data.get("sessionId") != null ? data.get("sessionId").toString() : "";
@@ -195,7 +328,41 @@ class reticccView extends WatchUi.View {
             _maxBullets = data.get("bullets") as Number;
         }
         
-        System.println("[RETIC] Session started - Mode: " + watchModeStr + ", Rounds: " + _maxBullets + ", Par: " + _parTime);
+        // Parse auto-detect settings from payload
+        _autoDetectEnabled = (_watchMode == WATCH_MODE_PRIMARY);
+        if (data.get("autoDetect") != null) {
+            var autoDetectVal = data.get("autoDetect");
+            if (autoDetectVal instanceof Boolean) {
+                _autoDetectEnabled = autoDetectVal;
+            }
+        }
+        
+        System.println("[RETIC] autoDetect: " + _autoDetectEnabled);
+        System.println("[RETIC] watchMode: " + _watchMode);
+        System.println("[RETIC] shotDetector exists: " + (_shotDetector != null));
+        
+        // Set sensitivity if provided
+        if (data.get("sensitivity") != null && _shotDetector != null) {
+            var sensitivityVal = data.get("sensitivity");
+            if (sensitivityVal instanceof Float) {
+                _shotDetector.setThreshold(sensitivityVal);
+            } else if (sensitivityVal instanceof Number) {
+                _shotDetector.setThreshold(sensitivityVal.toFloat());
+            }
+        }
+        
+        // Start auto-detection if enabled and in PRIMARY mode
+        if (_autoDetectEnabled && _watchMode == WATCH_MODE_PRIMARY && _shotDetector != null) {
+            System.println("[RETIC] Starting shot detector...");
+            _shotDetector.setEnabled(true);
+            _shotDetector.resetDetections();
+            _shotDetector.startMonitoring();
+            System.println("[RETIC] Auto shot detection ENABLED");
+        } else {
+            System.println("[RETIC] Auto shot detection NOT started");
+        }
+        
+        System.println("[RETIC] Session started - Mode: " + watchModeStr + ", Rounds: " + _maxBullets + ", Par: " + _parTime + ", AutoDetect: " + _autoDetectEnabled);
         _lastMsg = "Session started";
         WatchUi.requestUpdate();
     }
@@ -224,6 +391,11 @@ class reticccView extends WatchUi.View {
         // In SUPPLEMENTARY mode, no limit enforcement - always allow taps
         
         _shotsFired++;
+        
+        // Track manual override if auto-detect is enabled
+        if (_autoDetectEnabled) {
+            _manualOverrides++;
+        }
         
         // Record split time
         var now = System.getTimer();
@@ -277,6 +449,89 @@ class reticccView extends WatchUi.View {
         WatchUi.requestUpdate();
     }
     
+    // Callback when shot detector detects a shot automatically
+    function onAutoShotDetected() as Void {
+        if (_state != STATE_SESSION_ACTIVE) {
+            return;
+        }
+        
+        // In PRIMARY mode, auto-detected shots count toward limit
+        if (_watchMode == WATCH_MODE_PRIMARY) {
+            // Check if we're already at max
+            if (_maxBullets > 0 && _shotsFired >= _maxBullets) {
+                return;  // Don't add more shots
+            }
+            
+            _shotsFired++;
+            
+            // Record split time
+            var now = System.getTimer();
+            if (_lastShotTime > 0 && _lastShotTime != _startTime) {
+                var splitMs = now - _lastShotTime;
+                _splitTimes.add(splitMs);
+            }
+            _lastShotTime = now;
+            
+            // Trigger visual flash feedback
+            _shotFlashActive = true;
+            if (_shotFlashTimer != null) {
+                _shotFlashTimer.stop();
+            }
+            _shotFlashTimer = new Timer.Timer();
+            _shotFlashTimer.start(method(:onShotFlashEnd), 200, false);
+            
+            WatchUi.requestUpdate();
+            
+            // Check if we've reached max bullets
+            if (_maxBullets > 0 && _shotsFired >= _maxBullets) {
+                _sessionCompleted = true;
+                sendResultsToPhone();
+            }
+        }
+    }
+    
+    // Remove last shot (undo) - for correcting false positives from auto-detect
+    function removeLastShot() as Symbol {
+        if (_state != STATE_SESSION_ACTIVE) {
+            return :inactive;
+        }
+        
+        if (_shotsFired <= 0) {
+            return :blocked;
+        }
+        
+        _shotsFired--;
+        _manualOverrides++;  // Track correction
+        
+        // Remove last split time if any
+        if (_splitTimes.size() > 0) {
+            _splitTimes = _splitTimes.slice(0, _splitTimes.size() - 1) as Array<Number>;
+        }
+        
+        // Visual feedback - different flash
+        _shotFlashActive = true;
+        if (_shotFlashTimer != null) {
+            _shotFlashTimer.stop();
+        }
+        _shotFlashTimer = new Timer.Timer();
+        _shotFlashTimer.start(method(:onShotFlashEnd), 200, false);
+        
+        // Haptic feedback (triple short pulse for undo)
+        if (Attention has :vibrate) {
+            var vibeData = [
+                new Attention.VibeProfile(50, 30),
+                new Attention.VibeProfile(0, 30),
+                new Attention.VibeProfile(50, 30),
+                new Attention.VibeProfile(0, 30),
+                new Attention.VibeProfile(50, 30)
+            ];
+            Attention.vibrate(vibeData);
+        }
+        
+        WatchUi.requestUpdate();
+        return :removed;
+    }
+    
     // Calculate average split time in ms
     private function calculateAvgSplit() as Number {
         if (_splitTimes.size() == 0) {
@@ -299,9 +554,20 @@ class reticccView extends WatchUi.View {
     function sendResultsToPhone() as Void {
         var app = Application.getApp() as reticccApp;
         
+        // Stop shot detection
+        if (_shotDetector != null) {
+            _shotDetector.stopMonitoring();
+        }
+        
         // Calculate final elapsed time with precision
         var finalElapsedMs = System.getTimer() - _startTime;
         var elapsedSecs = finalElapsedMs.toFloat() / 1000.0;
+        
+        // Get detection threshold
+        var detectionThreshold = 0.0;
+        if (_shotDetector != null) {
+            detectionThreshold = _shotDetector.getThreshold();
+        }
         
         var results = {
             "sessionId" => _sessionId,
@@ -310,10 +576,13 @@ class reticccView extends WatchUi.View {
             "completed" => _sessionCompleted,        // True only if max rounds reached
             "distance" => _distance,
             "splitTimes" => _splitTimes,             // Array of ms between shots
-            "avgSplit" => calculateAvgSplit()        // Average split in ms
+            "avgSplit" => calculateAvgSplit(),       // Average split in ms
+            "autoDetected" => _autoDetectEnabled,    // Whether auto-detection was used
+            "detectionSensitivity" => detectionThreshold,  // Threshold used
+            "manualOverrides" => _manualOverrides    // How many shots were manually added/removed
         };
         
-        System.println("[RETIC] Sending results - Shots: " + _shotsFired + ", Time: " + elapsedSecs + "s, Completed: " + _sessionCompleted);
+        System.println("[RETIC] Sending results - Shots: " + _shotsFired + ", Time: " + elapsedSecs + "s, Completed: " + _sessionCompleted + ", AutoDetect: " + _autoDetectEnabled);
         app.sendMessage("SESSION_RESULT", results);
         
         // Move to ended state
@@ -326,6 +595,12 @@ class reticccView extends WatchUi.View {
     function finishSession() as Void {
         if (_state == STATE_SESSION_ACTIVE) {
             _sessionCompleted = false;  // Manual end = not completed
+            
+            // Stop shot detection
+            if (_shotDetector != null) {
+                _shotDetector.stopMonitoring();
+            }
+            
             sendResultsToPhone();
         }
     }
@@ -343,6 +618,15 @@ class reticccView extends WatchUi.View {
         _splitTimes = [];
         _lastShotTime = 0;
         _parTime = 0;
+        _autoDetectEnabled = false;
+        _manualOverrides = 0;
+        
+        // Stop shot detection
+        if (_shotDetector != null) {
+            _shotDetector.stopMonitoring();
+            _shotDetector.setEnabled(false);
+        }
+        
         WatchUi.requestUpdate();
     }
 
@@ -370,8 +654,14 @@ class reticccView extends WatchUi.View {
             _temperature = data.get("temperature") as Number; 
             _hasTemperature = true;
         }
-        if (data.get("humidity") != null) { _humidity = data.get("humidity") as Number; }
-        if (data.get("pressure") != null) { _pressure = data.get("pressure") as Number; }
+        if (data.get("humidity") != null) { 
+            _humidity = data.get("humidity") as Number; 
+            _hasHumidity = true;
+        }
+        if (data.get("pressure") != null) { 
+            _pressure = data.get("pressure") as Number; 
+            _hasPressure = true;
+        }
         if (data.get("lightLevel") != null) { _lightLevel = data.get("lightLevel") as Number; }
         if (data.get("altitude") != null) { _altitude = data.get("altitude") as Number; }
         WatchUi.requestUpdate();
@@ -384,6 +674,16 @@ class reticccView extends WatchUi.View {
         if (data.get("totalShots") != null) { _totalShots = data.get("totalShots") as Number; }
         if (data.get("bestAccuracy") != null) { _bestAccuracy = data.get("bestAccuracy") as Number; }
         WatchUi.requestUpdate();
+    }
+    
+    // Get shot detector for external access (calibration, settings)
+    function getShotDetector() as ShotDetector? {
+        return _shotDetector;
+    }
+    
+    // Check if auto-detection is currently enabled for session
+    function isAutoDetectEnabled() as Boolean {
+        return _autoDetectEnabled;
     }
     
     // Page navigation (called from delegate) - wraps around
@@ -461,64 +761,88 @@ class reticccView extends WatchUi.View {
     }
     
     // =========================================================================
-    // IDLE SCREEN - Minimal sniper info (wind, weather)
+    // IDLE SCREEN - RETICLE branded tactical display
     // =========================================================================
     private function drawIdleScreen(dc as Dc, width as Number, height as Number, centerX as Number, centerY as Number) as Void {
-        var margin = width / 10;  // Proportional margin
-        var colOffset = width / 4;  // Proportional column spacing
-        
-        // App name at top center
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, margin, Graphics.FONT_TINY, "reticIQ", Graphics.TEXT_JUSTIFY_CENTER);
-        
-        // Connection indicator (top right, proportional)
+        // Connection status indicator (top center area - safe zone)
         dc.setColor(_connected ? Graphics.COLOR_GREEN : Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.fillCircle(width - margin - 5, margin + 5, 5);
+        dc.fillCircle(centerX + width / 5, height / 6, 3);
         
-        // Crosshair icon in center (proportional size) - use thicker pen
-        var crossSize = width / 10;
+        // =====================================================================
+        // RETICLE LOGO - Centered, safe zone
+        // =====================================================================
+        var logoY = height * 35 / 100;
+        var reticleSize = width / 10;  // Small
         
-        // Set pen width for thicker crosshair (API 3.2.0+)
-        if (dc has :setPenWidth) {
-            dc.setPenWidth(2);
-        }
+        // Draw reticle/scope crosshair logo
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         
+        // Outer circle
+        dc.drawCircle(centerX, logoY, reticleSize);
+        
+        // Crosshair lines (with gap in center)
+        var gapSize = reticleSize / 3;
+        dc.drawLine(centerX, logoY - reticleSize, centerX, logoY - gapSize);
+        dc.drawLine(centerX, logoY + gapSize, centerX, logoY + reticleSize);
+        dc.drawLine(centerX - reticleSize, logoY, centerX - gapSize, logoY);
+        dc.drawLine(centerX + gapSize, logoY, centerX + reticleSize, logoY);
+        
+        // Center dot
+        dc.fillCircle(centerX, logoY, 2);
+        
+        // =====================================================================
+        // Company name - center
+        // =====================================================================
+        var nameY = centerY;
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, nameY, Graphics.FONT_SMALL, "RETICLE", Graphics.TEXT_JUSTIFY_CENTER);
+        
+        // Tagline
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawLine(centerX - crossSize, centerY, centerX + crossSize, centerY);
-        dc.drawLine(centerX, centerY - crossSize, centerX, centerY + crossSize);
-        dc.drawCircle(centerX, centerY, crossSize * 0.6);
-        dc.drawCircle(centerX, centerY, crossSize * 0.3);
+        dc.drawText(centerX, nameY + dc.getFontHeight(Graphics.FONT_SMALL) + 4, Graphics.FONT_XTINY, "PRECISION TRAINING", Graphics.TEXT_JUSTIFY_CENTER);
         
-        // Reset pen width
+        // =====================================================================
+        // Bottom data: single line, centered safe zone
+        // =====================================================================
+        var bottomY = height * 78 / 100;
+        
+        // All data on one line, compact
+        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        var clockTime = System.getClockTime();
+        var timeStr = clockTime.hour.format("%02d") + ":" + clockTime.min.format("%02d");
+        var tempStr = _hasTemperature ? _temperature.toString() + "°" : "--";
+        var windStr = _windSpeed > 0 ? _windSpeed.toString() + _windDirection : "--";
+        
+        var dataLine = windStr + "  " + tempStr + "  " + timeStr;
+        dc.drawText(centerX, bottomY, Graphics.FONT_XTINY, dataLine, Graphics.TEXT_JUSTIFY_CENTER);
+    }
+    
+    // Draw wind direction arrow inside circle (kept for potential future use)
+    private function drawWindArrow(dc as Dc, cx as Number, cy as Number, radius as Number, angleDeg as Number) as Void {
+        // Convert to radians (0° = North = up, clockwise)
+        var angleRad = (angleDeg - 90) * Math.PI / 180.0;
+        
+        // Arrow tip (pointing in wind direction)
+        var tipX = cx + (radius * Math.cos(angleRad)).toNumber();
+        var tipY = cy + (radius * Math.sin(angleRad)).toNumber();
+        
+        // Arrow tail (opposite side)
+        var tailX = cx - (radius * 0.5 * Math.cos(angleRad)).toNumber();
+        var tailY = cy - (radius * 0.5 * Math.sin(angleRad)).toNumber();
+        
+        // Draw arrow line
+        if (dc has :setPenWidth) {
+            dc.setPenWidth(3);
+        }
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawLine(tailX, tailY, tipX, tipY);
+        
+        // Arrow head
+        dc.fillCircle(tipX, tipY, 4);
+        
         if (dc has :setPenWidth) {
             dc.setPenWidth(1);
         }
-        
-        // Wind info (left of center, proportional)
-        var infoY = centerY - height * 0.15;
-        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX - colOffset, infoY, Graphics.FONT_XTINY, "WIND", Graphics.TEXT_JUSTIFY_CENTER);
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        if (_windSpeed > 0) {
-            dc.drawText(centerX - colOffset, infoY + 15, Graphics.FONT_TINY, _windSpeed.toString() + " m/s", Graphics.TEXT_JUSTIFY_CENTER);
-            dc.drawText(centerX - colOffset, infoY + 30, Graphics.FONT_XTINY, _windDirection, Graphics.TEXT_JUSTIFY_CENTER);
-        } else {
-            dc.drawText(centerX - colOffset, infoY + 15, Graphics.FONT_TINY, "--", Graphics.TEXT_JUSTIFY_CENTER);
-        }
-        
-        // Temp (right of center, proportional) - fixed 0°C bug
-        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX + colOffset, infoY, Graphics.FONT_XTINY, "TEMP", Graphics.TEXT_JUSTIFY_CENTER);
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        if (_hasTemperature) {
-            dc.drawText(centerX + colOffset, infoY + 15, Graphics.FONT_TINY, _temperature.toString() + "°", Graphics.TEXT_JUSTIFY_CENTER);
-        } else {
-            dc.drawText(centerX + colOffset, infoY + 15, Graphics.FONT_TINY, "--", Graphics.TEXT_JUSTIFY_CENTER);
-        }
-        
-        // Status at bottom (proportional)
-        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, height - margin - 5, Graphics.FONT_XTINY, "Waiting for session...", Graphics.TEXT_JUSTIFY_CENTER);
     }
     
     // =========================================================================
@@ -550,54 +874,107 @@ class reticccView extends WatchUi.View {
     }
     
     // =========================================================================
-    // PRIMARY MODE - Clean 4-element layout
-    // TOP: distance | CENTER: shot count | LEFT: timer | RIGHT: max/par
+    // PRIMARY MODE - Shot Counter Screen
+    // Matches UI Mockup: drill name, distance, shot count (X / Y), timer, par
+    // Uses dynamic positioning: dc.getWidth() * percentage
     // =========================================================================
     private function drawPrimarySession(dc as Dc, width as Number, height as Number, centerX as Number, centerY as Number, margin as Number, safeWidth as Number, safeTop as Number, safeBottom as Number) as Void {
-        var fontHotH = dc.getFontHeight(Graphics.FONT_NUMBER_HOT);
+        // Get font heights for precise positioning
+        var fontSmallH = dc.getFontHeight(Graphics.FONT_SMALL);
+        var fontTinyH = dc.getFontHeight(Graphics.FONT_TINY);
+        
+        // Dynamic font selection for shot count
+        var shotCountText = _maxBullets > 0 
+            ? _shotsFired.toString() + " / " + _maxBullets.toString() 
+            : _shotsFired.toString();
+        var shotFont = selectFontForText(dc, (width * 7 / 10), (height / 4), shotCountText);
+        var fontHotH = dc.getFontHeight(shotFont);
         
         // =====================================================================
-        // 1. TOP - Distance or drill name
+        // 1. TOP ZONE - Drill name + Distance (proportional: 10-25% of height)
         // =====================================================================
+        var topY = height * 12 / 100;  // 12% from top
+        
+        // Drill name (with target icon emoji simulation)
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        var topText = _distance > 0 ? _distance.toString() + "m" : _drillName;
-        if (topText.length() > 10) { topText = topText.substring(0, 8) + ".."; }
-        dc.drawText(centerX, safeTop, Graphics.FONT_SMALL, topText, Graphics.TEXT_JUSTIFY_CENTER);
+        var drillText = _drillName;
+        if (drillText.length() > 14) { drillText = drillText.substring(0, 12) + ".."; }
+        dc.drawText(centerX, topY, Graphics.FONT_SMALL, drillText, Graphics.TEXT_JUSTIFY_CENTER);
         
-        // =====================================================================
-        // 2. CENTER - Big shot count (main focus)
-        // =====================================================================
-        var shotColor = _shotFlashActive ? Graphics.COLOR_YELLOW : Graphics.COLOR_WHITE;
-        dc.setColor(shotColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, centerY - (fontHotH / 2), Graphics.FONT_NUMBER_HOT, _shotsFired.toString(), Graphics.TEXT_JUSTIFY_CENTER);
-        
-        // =====================================================================
-        // 3. LEFT - Timer
-        // =====================================================================
-        var leftX = margin + 10;
-        dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
-        var timeRemaining = getTimeRemaining();
-        var timeText = (_timeLimit > 0 && timeRemaining > 0) ? "-" + formatTime(timeRemaining) : formatTime(_elapsedSeconds);
-        dc.drawText(leftX, centerY - 8, Graphics.FONT_TINY, timeText, Graphics.TEXT_JUSTIFY_LEFT);
-        
-        // =====================================================================
-        // 4. RIGHT - Max bullets or Par time
-        // =====================================================================
-        var rightX = width - margin - 10;
-        if (_maxBullets > 0) {
+        // Distance below drill name
+        if (_distance > 0) {
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(rightX, centerY - 8, Graphics.FONT_TINY, "/" + _maxBullets.toString(), Graphics.TEXT_JUSTIFY_RIGHT);
-        } else if (_parTime > 0) {
-            dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(rightX, centerY - 8, Graphics.FONT_TINY, _parTime.format("%.1f") + "s", Graphics.TEXT_JUSTIFY_RIGHT);
+            dc.drawText(centerX, topY + fontSmallH + 2, Graphics.FONT_TINY, _distance.toString() + "m", Graphics.TEXT_JUSTIFY_CENTER);
         }
         
         // =====================================================================
-        // 5. BOTTOM - Status (only if complete)
+        // 2. CENTER ZONE - BIG shot count (proportional: 35-65% of height)
+        // Format: "3 / 6" for limited, "3" for unlimited
         // =====================================================================
+        var shotY = centerY - (fontHotH / 2);
+        
+        // Shot count - changes color when complete
+        var shotColor = Graphics.COLOR_WHITE;
+        if (_shotFlashActive) {
+            shotColor = Graphics.COLOR_LT_GRAY;
+        } else if (_maxBullets > 0 && _shotsFired >= _maxBullets) {
+            shotColor = Graphics.COLOR_WHITE;
+        }
+        dc.setColor(shotColor, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, shotY, shotFont, shotCountText, Graphics.TEXT_JUSTIFY_CENTER);
+        
+        // =====================================================================
+        // 3. BOTTOM ZONE - Timer and Par time (proportional: 70-90% of height)
+        // =====================================================================
+        var bottomY = height * 72 / 100;  // 72% from top
+        var timeOffsetX = width / 5;      // 20% offset
+        var parOffsetX = width / 20;      // 5% offset
+        
+        // Timer label + value
+        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX - timeOffsetX, bottomY, Graphics.FONT_XTINY, "Time:", Graphics.TEXT_JUSTIFY_RIGHT);
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        var timeRemaining = getTimeRemaining();
+        var timeText = (_timeLimit > 0 && timeRemaining > 0) 
+            ? "-" + formatTime(timeRemaining) 
+            : getElapsedTimeFormatted();
+        dc.drawText(centerX + parOffsetX, bottomY, Graphics.FONT_TINY, timeText, Graphics.TEXT_JUSTIFY_LEFT);
+        
+        // Par time (if set)
+        if (_parTime > 0) {
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX - timeOffsetX, bottomY + fontTinyH + 2, Graphics.FONT_XTINY, "Par:", Graphics.TEXT_JUSTIFY_RIGHT);
+            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX + parOffsetX, bottomY + fontTinyH + 2, Graphics.FONT_TINY, _parTime.format("%.1f") + "s", Graphics.TEXT_JUSTIFY_LEFT);
+        }
+        
+        // =====================================================================
+        // 4. HINT at bottom - "TAP TO ADD SHOT"
+        // =====================================================================
+        var hintY = height * 88 / 100;  // 88% from top
         if (_maxBullets > 0 && _shotsFired >= _maxBullets) {
-            dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(centerX, safeBottom - 20, Graphics.FONT_XTINY, "COMPLETE!", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, hintY, Graphics.FONT_XTINY, "COMPLETE!", Graphics.TEXT_JUSTIFY_CENTER);
+        } else {
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, hintY, Graphics.FONT_XTINY, "TAP TO ADD SHOT", Graphics.TEXT_JUSTIFY_CENTER);
+        }
+        
+        // =====================================================================
+        // DEBUG: Live G-force display (shows accelerometer status)
+        // =====================================================================
+        if (_autoDetectEnabled && _shotDetector != null) {
+            var mag = _shotDetector.getLastMagnitude();
+            var gText = "G: " + mag.format("%.2f");
+            // Yellow if value is updating, RED if above threshold
+            if (mag > _shotDetector.getThreshold()) {
+                dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
+            } else if (mag > 0.1) {
+                dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
+            } else {
+                dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            }
+            dc.drawText(centerX, height - margin - 10, Graphics.FONT_XTINY, gText, Graphics.TEXT_JUSTIFY_CENTER);
         }
     }
     
@@ -638,7 +1015,7 @@ class reticccView extends WatchUi.View {
         // =====================================================================
         // STEP 3: Draw TOP ZONE - Header + Distance
         // =====================================================================
-        dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         var headerText = _drillName;
         if (headerText.length() > 14) {
             headerText = headerText.substring(0, 12) + "..";
@@ -694,15 +1071,15 @@ class reticccView extends WatchUi.View {
                 var endAngle = 225 - sweepAngle;
                 
                 if (sweepAngle > 0) {
-                    var arcColor = Graphics.COLOR_BLUE;
-                    if (progress > 0.75) { arcColor = Graphics.COLOR_ORANGE; }
-                    if (progress > 0.9) { arcColor = Graphics.COLOR_RED; }
-                    if (_shotFlashActive) { arcColor = Graphics.COLOR_YELLOW; }
+                    var arcColor = Graphics.COLOR_LT_GRAY;
+                    if (progress > 0.75) { arcColor = Graphics.COLOR_WHITE; }
+                    if (progress > 0.9) { arcColor = Graphics.COLOR_WHITE; }
+                    if (_shotFlashActive) { arcColor = Graphics.COLOR_WHITE; }
                     dc.setColor(arcColor, Graphics.COLOR_TRANSPARENT);
                     dc.drawArc(centerX, middleCenterY, arcRadius, Graphics.ARC_COUNTER_CLOCKWISE, 225, endAngle);
                 }
             } else {
-                var accentColor = _shotFlashActive ? Graphics.COLOR_YELLOW : Graphics.COLOR_BLUE;
+                var accentColor = _shotFlashActive ? Graphics.COLOR_WHITE : Graphics.COLOR_LT_GRAY;
                 dc.setColor(accentColor, Graphics.COLOR_TRANSPARENT);
                 dc.drawArc(centerX, middleCenterY, arcRadius, Graphics.ARC_COUNTER_CLOCKWISE, 225, 180);
             }
@@ -715,7 +1092,7 @@ class reticccView extends WatchUi.View {
         // =====================================================================
         // STEP 6: Draw TIMER (big number)
         // =====================================================================
-        var timerColor = _shotFlashActive ? Graphics.COLOR_YELLOW : Graphics.COLOR_WHITE;
+        var timerColor = _shotFlashActive ? Graphics.COLOR_LT_GRAY : Graphics.COLOR_WHITE;
         dc.setColor(timerColor, Graphics.COLOR_TRANSPARENT);
         var secs = _elapsedMs / 1000;
         var tenths = (_elapsedMs % 1000) / 100;
@@ -736,7 +1113,7 @@ class reticccView extends WatchUi.View {
         if (_splitTimes.size() > 0) {
             var lastSplit = _splitTimes[_splitTimes.size() - 1];
             var splitSecs = lastSplit.toFloat() / 1000.0;
-            dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(centerX, splitY, Graphics.FONT_XTINY, "Split: " + splitSecs.format("%.2f") + "s", Graphics.TEXT_JUSTIFY_CENTER);
         }
         
@@ -757,7 +1134,7 @@ class reticccView extends WatchUi.View {
         var lineHeight = height / 8;  // Proportional line height
         
         // Header with shooter name if available
-        dc.setColor(Graphics.COLOR_PURPLE, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         if (!_shooterName.equals("")) {
             dc.drawText(centerX, safeTop, Graphics.FONT_SMALL, _shooterName, Graphics.TEXT_JUSTIFY_CENTER);
         } else {
@@ -766,13 +1143,15 @@ class reticccView extends WatchUi.View {
         
         var y = safeTop + lineHeight;
         
+        var labelValueGap = height / 14;  // Gap between label and value
+        
         // Drill name (truncate if too long)
         if (!_drillName.equals("")) {
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(centerX, y, Graphics.FONT_XTINY, "DRILL", Graphics.TEXT_JUSTIFY_CENTER);
             dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             var displayName = _drillName.length() > 16 ? _drillName.substring(0, 14) + ".." : _drillName;
-            dc.drawText(centerX, y + 12, Graphics.FONT_TINY, displayName, Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(centerX, y + labelValueGap, Graphics.FONT_TINY, displayName, Graphics.TEXT_JUSTIFY_CENTER);
             y += lineHeight;
         }
         
@@ -780,9 +1159,9 @@ class reticccView extends WatchUi.View {
         if (!_drillGoal.equals("")) {
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(centerX, y, Graphics.FONT_XTINY, "GOAL", Graphics.TEXT_JUSTIFY_CENTER);
-            dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             var displayGoal = _drillGoal.length() > 16 ? _drillGoal.substring(0, 14) + ".." : _drillGoal;
-            dc.drawText(centerX, y + 12, Graphics.FONT_TINY, displayGoal, Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(centerX, y + labelValueGap, Graphics.FONT_TINY, displayGoal, Graphics.TEXT_JUSTIFY_CENTER);
             y += lineHeight;
         }
         
@@ -793,13 +1172,13 @@ class reticccView extends WatchUi.View {
             if (_distance > 0) {
                 dc.drawText(centerX - colOffset, y, Graphics.FONT_XTINY, "DIST", Graphics.TEXT_JUSTIFY_CENTER);
                 dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-                dc.drawText(centerX - colOffset, y + 12, Graphics.FONT_TINY, _distance.toString() + "m", Graphics.TEXT_JUSTIFY_CENTER);
+                dc.drawText(centerX - colOffset, y + labelValueGap, Graphics.FONT_TINY, _distance.toString() + "m", Graphics.TEXT_JUSTIFY_CENTER);
             }
             if (_timeLimit > 0) {
                 dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
                 dc.drawText(centerX + colOffset, y, Graphics.FONT_XTINY, "LIMIT", Graphics.TEXT_JUSTIFY_CENTER);
-                dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
-                dc.drawText(centerX + colOffset, y + 12, Graphics.FONT_TINY, formatTime(_timeLimit), Graphics.TEXT_JUSTIFY_CENTER);
+                dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(centerX + colOffset, y + labelValueGap, Graphics.FONT_TINY, formatTime(_timeLimit), Graphics.TEXT_JUSTIFY_CENTER);
             }
             y += lineHeight;
         }
@@ -812,21 +1191,21 @@ class reticccView extends WatchUi.View {
             if (_totalSessions > 0) {
                 dc.drawText(centerX - colOffset, y, Graphics.FONT_XTINY, "SESS", Graphics.TEXT_JUSTIFY_CENTER);
                 dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-                dc.drawText(centerX - colOffset, y + 10, Graphics.FONT_XTINY, _totalSessions.toString(), Graphics.TEXT_JUSTIFY_CENTER);
+                dc.drawText(centerX - colOffset, y + labelValueGap, Graphics.FONT_XTINY, _totalSessions.toString(), Graphics.TEXT_JUSTIFY_CENTER);
             }
             
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             if (_totalShots > 0) {
                 dc.drawText(centerX, y, Graphics.FONT_XTINY, "SHOTS", Graphics.TEXT_JUSTIFY_CENTER);
                 dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-                dc.drawText(centerX, y + 10, Graphics.FONT_XTINY, _totalShots.toString(), Graphics.TEXT_JUSTIFY_CENTER);
+                dc.drawText(centerX, y + labelValueGap, Graphics.FONT_XTINY, _totalShots.toString(), Graphics.TEXT_JUSTIFY_CENTER);
             }
             
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             if (_bestAccuracy > 0) {
                 dc.drawText(centerX + colOffset, y, Graphics.FONT_XTINY, "BEST", Graphics.TEXT_JUSTIFY_CENTER);
-                dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_TRANSPARENT);
-                dc.drawText(centerX + colOffset, y + 10, Graphics.FONT_XTINY, _bestAccuracy.toString() + "%", Graphics.TEXT_JUSTIFY_CENTER);
+                dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(centerX + colOffset, y + labelValueGap, Graphics.FONT_XTINY, _bestAccuracy.toString() + "%", Graphics.TEXT_JUSTIFY_CENTER);
             }
         }
         
@@ -836,7 +1215,7 @@ class reticccView extends WatchUi.View {
         dc.fillCircle(margin + 10, margin + 10, 5);
         
         // Timer in corner
-        dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(width - margin - 5, safeTop, Graphics.FONT_XTINY, formatTime(_elapsedSeconds), Graphics.TEXT_JUSTIFY_RIGHT);
         
         // Page indicator
@@ -854,7 +1233,7 @@ class reticccView extends WatchUi.View {
         var rowHeight = height / 5;
         
         // Timer top right (proportional)
-        dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(width - margin - 5, margin, Graphics.FONT_XTINY, formatTime(_elapsedSeconds), Graphics.TEXT_JUSTIFY_RIGHT);
         
         // Recording indicator top left (proportional)
@@ -863,8 +1242,10 @@ class reticccView extends WatchUi.View {
         dc.fillCircle(margin + 10, margin + 10, 5);
         
         // Header
-        dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(centerX, margin, Graphics.FONT_SMALL, "ENVIRON", Graphics.TEXT_JUSTIFY_CENTER);
+        
+        var envLabelGap = height / 12;  // Gap between label and value
         
         // WIND - top row
         var y = margin + rowHeight;
@@ -876,9 +1257,9 @@ class reticccView extends WatchUi.View {
             if (_windAngle > 0) {
                 windText = _windSpeed.toString() + " m/s  " + _windAngle.toString() + "°";
             }
-            dc.drawText(centerX, y + 15, Graphics.FONT_SMALL, windText, Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(centerX, y + envLabelGap, Graphics.FONT_SMALL, windText, Graphics.TEXT_JUSTIFY_CENTER);
         } else {
-            dc.drawText(centerX, y + 15, Graphics.FONT_SMALL, "-- m/s", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(centerX, y + envLabelGap, Graphics.FONT_SMALL, "-- m/s", Graphics.TEXT_JUSTIFY_CENTER);
         }
         
         // Middle row: LIGHT and TEMP
@@ -891,29 +1272,29 @@ class reticccView extends WatchUi.View {
         var lightColor = Graphics.COLOR_WHITE;
         if (_lightLevel > 0) {
             if (_lightLevel < 30) { lightText = "LOW"; lightColor = Graphics.COLOR_DK_GRAY; }
-            else if (_lightLevel < 70) { lightText = "MED"; lightColor = Graphics.COLOR_YELLOW; }
-            else { lightText = "HIGH"; lightColor = Graphics.COLOR_GREEN; }  // Fixed: use green for good light
+            else if (_lightLevel < 70) { lightText = "MED"; lightColor = Graphics.COLOR_LT_GRAY; }
+            else { lightText = "HIGH"; lightColor = Graphics.COLOR_WHITE; }
         }
         dc.setColor(lightColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(leftCol, y + 12, Graphics.FONT_TINY, lightText, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(leftCol, y + envLabelGap, Graphics.FONT_TINY, lightText, Graphics.TEXT_JUSTIFY_CENTER);
         
         // Temp - fixed 0°C bug using _hasTemperature flag
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(rightCol, y, Graphics.FONT_XTINY, "TEMP", Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(rightCol, y + 12, Graphics.FONT_TINY, _hasTemperature ? _temperature.toString() + "°C" : "--", Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(rightCol, y + envLabelGap, Graphics.FONT_TINY, _hasTemperature ? _temperature.toString() + "°C" : "--", Graphics.TEXT_JUSTIFY_CENTER);
         
         // Bottom row: HUM and PRESS/ALT
         y += rowHeight;
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(leftCol, y, Graphics.FONT_XTINY, "HUM", Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(leftCol, y + 12, Graphics.FONT_TINY, _humidity > 0 ? _humidity.toString() + "%" : "--", Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(leftCol, y + envLabelGap, Graphics.FONT_TINY, _humidity > 0 ? _humidity.toString() + "%" : "--", Graphics.TEXT_JUSTIFY_CENTER);
         
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(rightCol, y, Graphics.FONT_XTINY, "PRESS", Graphics.TEXT_JUSTIFY_CENTER);
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(rightCol, y + 12, Graphics.FONT_TINY, _pressure > 0 ? _pressure.toString() : "--", Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(rightCol, y + envLabelGap, Graphics.FONT_TINY, _pressure > 0 ? _pressure.toString() : "--", Graphics.TEXT_JUSTIFY_CENTER);
         
         // Altitude row (if available)
         if (_altitude > 0) {
@@ -921,7 +1302,7 @@ class reticccView extends WatchUi.View {
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(centerX, y, Graphics.FONT_XTINY, "ALT", Graphics.TEXT_JUSTIFY_CENTER);
             dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(centerX, y + 12, Graphics.FONT_TINY, _altitude.toString() + "m", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(centerX, y + envLabelGap, Graphics.FONT_TINY, _altitude.toString() + "m", Graphics.TEXT_JUSTIFY_CENTER);
         }
         
         // Page indicator at bottom
@@ -939,7 +1320,7 @@ class reticccView extends WatchUi.View {
         var startX = (width / 2) - dotSpacing;
         
         // Left dot (Personal)
-        dc.setColor(currentPage == PAGE_PERSONAL ? Graphics.COLOR_PURPLE : Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(currentPage == PAGE_PERSONAL ? Graphics.COLOR_WHITE : Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(startX, dotY, currentPage == PAGE_PERSONAL ? dotRadius + 1 : dotRadius);
         
         // Center dot (Main)
@@ -947,7 +1328,7 @@ class reticccView extends WatchUi.View {
         dc.fillCircle(startX + dotSpacing, dotY, currentPage == PAGE_MAIN ? dotRadius + 1 : dotRadius);
         
         // Right dot (Environment)
-        dc.setColor(currentPage == PAGE_ENVIRONMENT ? Graphics.COLOR_BLUE : Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(currentPage == PAGE_ENVIRONMENT ? Graphics.COLOR_WHITE : Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(startX + (dotSpacing * 2), dotY, currentPage == PAGE_ENVIRONMENT ? dotRadius + 1 : dotRadius);
     }
     
@@ -960,13 +1341,15 @@ class reticccView extends WatchUi.View {
         // =====================================================================
         // 1. TOP - "COMPLETE" header
         // =====================================================================
-        dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(centerX, margin, Graphics.FONT_SMALL, "COMPLETE", Graphics.TEXT_JUSTIFY_CENTER);
         
         // =====================================================================
         // 2. MIDDLE ROW - Spread TIME, SHOTS, SPLIT horizontally
         // =====================================================================
         var hasAvgSplit = _splitTimes.size() > 0;
+        
+        var labelGap = height / 10;  // Gap between label and value
         
         if (hasAvgSplit) {
             // 3 items: TIME | SHOTS | SPLIT - spread across width
@@ -976,41 +1359,41 @@ class reticccView extends WatchUi.View {
             
             // TIME (left)
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(col1, centerY - 20, Graphics.FONT_XTINY, "TIME", Graphics.TEXT_JUSTIFY_CENTER);
-            dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(col1, centerY, Graphics.FONT_TINY, formatTime(_elapsedSeconds), Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(col1, centerY - labelGap, Graphics.FONT_XTINY, "TIME", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(col1, centerY + 5, Graphics.FONT_TINY, formatTime(_elapsedSeconds), Graphics.TEXT_JUSTIFY_CENTER);
             
             // SHOTS (center)
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(col2, centerY - 20, Graphics.FONT_XTINY, "SHOTS", Graphics.TEXT_JUSTIFY_CENTER);
-            dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(col2, centerY - labelGap, Graphics.FONT_XTINY, "SHOTS", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             var shotsText = _maxBullets > 0 ? _shotsFired.toString() + "/" + _maxBullets.toString() : _shotsFired.toString();
-            dc.drawText(col2, centerY, Graphics.FONT_TINY, shotsText, Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(col2, centerY + 5, Graphics.FONT_TINY, shotsText, Graphics.TEXT_JUSTIFY_CENTER);
             
             // AVG SPLIT (right)
             var avgSplit = calculateAvgSplit();
             var avgSplitSecs = avgSplit.toFloat() / 1000.0;
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(col3, centerY - 20, Graphics.FONT_XTINY, "SPLIT", Graphics.TEXT_JUSTIFY_CENTER);
-            dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(col3, centerY, Graphics.FONT_TINY, avgSplitSecs.format("%.1f") + "s", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(col3, centerY - labelGap, Graphics.FONT_XTINY, "SPLIT", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(col3, centerY + 5, Graphics.FONT_TINY, avgSplitSecs.format("%.1f") + "s", Graphics.TEXT_JUSTIFY_CENTER);
         } else {
             // 2 items: TIME | SHOTS - spread left and right
-            var colLeft = centerX - width / 5;
-            var colRight = centerX + width / 5;
+            var colLeft = centerX - width / 4;
+            var colRight = centerX + width / 4;
             
             // TIME (left)
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(colLeft, centerY - 20, Graphics.FONT_XTINY, "TIME", Graphics.TEXT_JUSTIFY_CENTER);
-            dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(colLeft, centerY, Graphics.FONT_MEDIUM, formatTime(_elapsedSeconds), Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(colLeft, centerY - labelGap, Graphics.FONT_XTINY, "TIME", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(colLeft, centerY + 5, Graphics.FONT_MEDIUM, formatTime(_elapsedSeconds), Graphics.TEXT_JUSTIFY_CENTER);
             
             // SHOTS (right)
             dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(colRight, centerY - 20, Graphics.FONT_XTINY, "SHOTS", Graphics.TEXT_JUSTIFY_CENTER);
-            dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(colRight, centerY - labelGap, Graphics.FONT_XTINY, "SHOTS", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             var shotsText = _maxBullets > 0 ? _shotsFired.toString() + "/" + _maxBullets.toString() : _shotsFired.toString();
-            dc.drawText(colRight, centerY, Graphics.FONT_MEDIUM, shotsText, Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(colRight, centerY + 5, Graphics.FONT_MEDIUM, shotsText, Graphics.TEXT_JUSTIFY_CENTER);
         }
         
         // =====================================================================

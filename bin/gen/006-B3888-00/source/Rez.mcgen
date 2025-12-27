@@ -29,6 +29,8 @@ module Rez {
                 Menu.initialize();
                 addItem("Primary Mode", :mock_session);
                 addItem("Timer Mode", :mock_timer);
+                addItem("Auto Detect", :mock_auto);
+                addItem("Simulate Shot", :sim_shot);
                 addItem("Mock Environment", :mock_env);
                 addItem("Mock Personal", :mock_personal);
                 addItem("Load All Mock", :mock_all);

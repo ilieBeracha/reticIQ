@@ -1,0 +1,16 @@
+# Garmin Connect IQ
+developer_key
+developer_key.der
+*.prg
+*.prg.debug.xml
+bin/
+gen/
+
+# Build outputs
+*.iq
+
+# IDE
+.vscode/
+*.swp
+*.swo
+.DS_Store

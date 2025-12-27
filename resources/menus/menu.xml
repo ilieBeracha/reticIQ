@@ -1,6 +1,8 @@
 <menu id="MainMenu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
     <menu-item id="mock_session" label="Primary Mode" />
     <menu-item id="mock_timer" label="Timer Mode" />
+    <menu-item id="mock_auto" label="Auto Detect" />
+    <menu-item id="sim_shot" label="Simulate Shot" />
     <menu-item id="mock_env" label="Mock Environment" />
     <menu-item id="mock_personal" label="Mock Personal" />
     <menu-item id="mock_all" label="Load All Mock" />
