@@ -71,8 +71,8 @@ class reticccApp extends Application.AppBase {
             
         } else if (typeStr.equals(MessageTypes.SESSION_START)) {
             if (mainView != null && payload != null && payload instanceof Dictionary) {
-                mainView.startSession(payload as Dictionary);
-                sendMessage(MessageTypes.ACK, {"status" => "session_started"});
+                mainView.prepareSession(payload as Dictionary);
+                sendMessage(MessageTypes.ACK, {"status" => "session_ready"});
             }
             
         } else if (typeStr.equals(MessageTypes.SESSION_END)) {

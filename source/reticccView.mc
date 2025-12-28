@@ -102,6 +102,10 @@ class reticccView extends WatchUi.View {
     private var _shotDetector as ShotDetector?;
     private var _autoDetectEnabled as Boolean = false;
     private var _manualOverrides as Number = 0;  // Track manual shot additions/removals
+    // Pending session (received from phone, waiting for user to start)
+    private var _pendingSession as Dictionary?;
+    // Preview mode - shows the pending session UI frozen until user starts
+    private var _isPreview as Boolean = false;
     
     // =========================================================================
     // DYNAMIC FONT SELECTION - Pick best font for available space
@@ -289,6 +293,60 @@ class reticccView extends WatchUi.View {
     }
 
     // Called when session starts from phone
+    // Called by the app when a phone message requests a session start.
+    // Keeps the message handling path separate from the in-view start logic.
+    function prepareSession(data as Dictionary) as Void {
+        System.println("[RETIC] prepareSession invoked from phone message - queued (preview)");
+        // Store payload and populate view fields for preview without starting
+        _pendingSession = data;
+        // Populate display fields so the preview shows full session info
+        _sessionId = data.get("sessionId") != null ? data.get("sessionId").toString() : "";
+        _drillName = data.get("drillName") != null ? data.get("drillName").toString() : "Session";
+        _drillGoal = data.get("drillGoal") != null ? data.get("drillGoal").toString() : "";
+        _drillType = data.get("drillType") != null ? data.get("drillType").toString() : "";
+        _inputMethod = data.get("inputMethod") != null ? data.get("inputMethod").toString() : "";
+        _distance = data.get("distance") != null ? (data.get("distance") as Number) : 0;
+        _maxBullets = data.get("rounds") != null ? (data.get("rounds") as Number) : 0;
+        _timeLimit = data.get("timeLimit") != null ? (data.get("timeLimit") as Number) : 0;
+        _parTime = data.get("parTime") != null ? (data.get("parTime") as Number) : 0;
+
+        var watchModeStr = data.get("watchMode") != null ? data.get("watchMode").toString() : "primary";
+        if (watchModeStr.equals("supplementary")) {
+            _watchMode = WATCH_MODE_SUPPLEMENTARY;
+        } else {
+            _watchMode = WATCH_MODE_PRIMARY;
+        }
+
+        // Sensitivity preview
+        if (data.get("sensitivity") != null && _shotDetector != null) {
+            var sVal = data.get("sensitivity");
+            if (sVal instanceof Float) { _shotDetector.setThreshold(sVal); }
+            else if (sVal instanceof Number) { _shotDetector.setThreshold(sVal.toFloat()); }
+        }
+
+        _lastMsg = "Preview ready - TAP to START";
+        _isPreview = true;
+        WatchUi.requestUpdate();
+    }
+
+    // Return true if a session payload is waiting to be started by the user
+    function hasPendingSession() as Boolean {
+        return _pendingSession != null;
+    }
+
+    // Called by delegate when user taps to accept and start the pending session
+    function startPendingSession() as Void {
+        if (_pendingSession == null) {
+            return;
+        }
+        var data = _pendingSession as Dictionary;
+        _pendingSession = null;
+        _isPreview = false;
+        _lastMsg = "Starting session...";
+        startSession(data);
+        WatchUi.requestUpdate();
+    }
+
     function startSession(data as Dictionary) as Void {
         _state = STATE_SESSION_ACTIVE;
         _startTime = System.getTimer();
@@ -744,6 +802,15 @@ class reticccView extends WatchUi.View {
         var centerX = width / 2;
         var centerY = height / 2;
 
+        if (_isPreview) {
+            // Render frozen preview of the session (no timers, no detection)
+            drawActiveSession(dc, width, height, centerX, centerY);
+            // Overlay preview label
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, 10, Graphics.FONT_XTINY, "PREVIEW", Graphics.TEXT_JUSTIFY_CENTER);
+            return;
+        }
+
         if (_state == STATE_SESSION_ACTIVE) {
             // Draw based on current page
             if (_currentPage == PAGE_PERSONAL) {
@@ -812,9 +879,34 @@ class reticccView extends WatchUi.View {
         var timeStr = clockTime.hour.format("%02d") + ":" + clockTime.min.format("%02d");
         var tempStr = _hasTemperature ? _temperature.toString() + "°" : "--";
         var windStr = _windSpeed > 0 ? _windSpeed.toString() + _windDirection : "--";
-        
+
         var dataLine = windStr + "  " + tempStr + "  " + timeStr;
         dc.drawText(centerX, bottomY, Graphics.FONT_XTINY, dataLine, Graphics.TEXT_JUSTIFY_CENTER);
+
+        // If there's a pending session from the phone, show details and a clear start hint
+        if (_pendingSession != null) {
+            var pd = _pendingSession as Dictionary;
+            var pName = pd.get("drillName") != null ? pd.get("drillName").toString() : "Pending Session";
+            var pRounds = pd.get("rounds") != null ? (pd.get("rounds") as Number) : 0;
+            var pTime = pd.get("timeLimit") != null ? (pd.get("timeLimit") as Number) : 0;
+            var pAuto = pd.get("autoDetect") != null ? (pd.get("autoDetect") as Boolean) : false;
+
+            // Trim drill name if too long
+            if (pName.length() > 18) { pName = pName.substring(0, 16) + ".."; }
+
+            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, bottomY - 28, Graphics.FONT_TINY, pName, Graphics.TEXT_JUSTIFY_CENTER);
+
+            var detailLine = (pRounds > 0 ? (pRounds.toString() + " rounds") : "Unlimited") + "  ";
+            detailLine = detailLine + (pTime > 0 ? (pTime.toString() + "s") : "No limit");
+            detailLine = detailLine + "  " + (pAuto ? "Auto" : "Manual");
+
+            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, bottomY - 14, Graphics.FONT_XTINY, detailLine, Graphics.TEXT_JUSTIFY_CENTER);
+
+            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, bottomY + 18, Graphics.FONT_XTINY, "TAP to START SESSION", Graphics.TEXT_JUSTIFY_CENTER);
+        }
     }
     
     // Draw wind direction arrow inside circle (kept for potential future use)

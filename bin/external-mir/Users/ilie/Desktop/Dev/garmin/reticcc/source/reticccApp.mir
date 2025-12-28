@@ -370,13 +370,13 @@ _Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_86_76_12_start:
         symbol [ mainView %tmp.53 74 16 24 ];
         %tmp.53 = getv ? :mainView;
         %tmp.54 = as %tmp.53 { (!Null) };
-        symbol [ startSession %tmp.55 74 25 37 ];
-        %tmp.55 = getv function %tmp.54 :startSession;
+        symbol [ prepareSession %tmp.55 74 25 39 ];
+        %tmp.55 = getv function %tmp.54 :prepareSession;
         %tmp.56 = lgetv %payload;
-        symbol [ payload %tmp.56 74 38 45 ];
+        symbol [ payload %tmp.56 74 40 47 ];
         %tmp.57 = as %tmp.56 { (Dictionary) && (!Null) };
         %tmp.58 = as %tmp.57 Dictionary;
-        symbol [ Dictionary %tmp.58 74 49 59 ];
+        symbol [ Dictionary %tmp.58 74 51 61 ];
         invoke %tmp.54 %tmp.55(%tmp.58);
 [ "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccApp.mc" 75 16 ]
         %tmp.59 = self;
@@ -388,7 +388,7 @@ _Users_ilie_Desktop_Dev_garmin_reticcc_source_reticccApp_mc_73_86_76_12_start:
         %tmp.63 = getv %tmp.62 :ACK;
         %tmp.64 = newd 1;
         %tmp.65 = "status";
-        %tmp.66 = "session_started";
+        %tmp.66 = "session_ready";
         %tmp.67 = dup %tmp.64;
         %tmp.68 = aputv %tmp.67 %tmp.65 %tmp.66;
         invoke %tmp.59 %tmp.60(%tmp.63, %tmp.68);

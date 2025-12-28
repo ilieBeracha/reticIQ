@@ -18,6 +18,15 @@ class reticccDelegate extends WatchUi.BehaviorDelegate {
     // SUPPLEMENTARY mode: Record split time (optional)
     function onSelect() as Boolean {
         if (mainView != null) {
+            // If the phone queued a session, start it on tap from idle
+            if (mainView.getState() == STATE_IDLE && mainView.hasPendingSession()) {
+                mainView.startPendingSession();
+                if (Attention has :vibrate) {
+                    var vibeData = [ new Attention.VibeProfile(100, 50) ];
+                    Attention.vibrate(vibeData);
+                }
+                return true;
+            }
             var state = mainView.getState();
             
             if (state == STATE_SESSION_ACTIVE) {
