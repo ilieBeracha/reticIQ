@@ -1,0 +1,16 @@
+{
+  "type": "SESSION_START",
+  "payload": {
+    "sessionId": "test-multi-001",
+    "drillName": "Multi String",
+    "drillGoal": "5 rounds × 3 strings = 15 shots",
+    "drillType": "timed",
+    "distance": 10,
+    "rounds": 5,
+    "strings": 3,
+    "timeLimit": 0,
+    "parTime": 0,
+    "watchMode": "primary",
+    "autoDetect": true
+  }
+}

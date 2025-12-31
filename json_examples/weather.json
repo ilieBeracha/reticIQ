@@ -1,0 +1,8 @@
+{
+  "type": "WEATHER",
+  "payload": {
+    "windSpeed": 8,
+    "windDirection": "NE",
+    "temperature": 18
+  }
+}

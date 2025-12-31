@@ -64,6 +64,11 @@ class reticccView extends WatchUi.View {
     private var _splitTimes as Array<Number> = [];  // Time between shots (ms)
     private var _sessionCompleted as Boolean = false;  // True if max rounds reached
     
+    // Steadiness tracking
+    private var _steadinessResults as Array<SteadinessResult>;  // All shot steadiness scores
+    private var _lastSteadinessGrade as String = "";            // Most recent grade for display
+    private var _lastSteadinessScore as Number = 0;             // Most recent score for display
+    
     // Connection status
     private var _connected as Boolean = false;
     
@@ -158,9 +163,39 @@ class reticccView extends WatchUi.View {
         // Fetch initial weather data from Garmin
         fetchWeatherFromWatch();
         
-        // Initialize shot detector
+        // Initialize steadiness results array
+        _steadinessResults = [];
+        
+        // Initialize shot detector with steadiness callback
         _shotDetector = new ShotDetector();
         _shotDetector.setOnShotDetected(method(:onAutoShotDetected));
+        _shotDetector.setOnShotWithSteadiness(method(:onShotWithSteadiness));
+    }
+    
+    // Callback when a shot is detected with steadiness analysis
+    function onShotWithSteadiness(steadiness as SteadinessResult) as Void {
+        // Store the result
+        _steadinessResults.add(steadiness);
+        _lastSteadinessGrade = steadiness.gradeString;
+        _lastSteadinessScore = steadiness.steadinessScore.toNumber();
+        
+        System.println("[VIEW] Shot " + steadiness.shotNumber + " steadiness: " + 
+                      _lastSteadinessGrade + " (" + _lastSteadinessScore + ")");
+    }
+
+    // Helper: coerce various incoming types to Number (handles Number, Float, String)
+    private function toNumberCoerce(v as Object, def as Number) as Number {
+        if (v == null) { return def; }
+        if (v instanceof Number) { return v as Number; }
+        if (v instanceof Float) { return (v as Float).toNumber(); }
+        if (v instanceof String) {
+            try {
+                return (v as String).toNumber();
+            } catch (ex) {
+                return def;
+            }
+        }
+        return def;
     }
 
     function onLayout(dc as Dc) as Void {
@@ -306,7 +341,17 @@ class reticccView extends WatchUi.View {
         _drillType = data.get("drillType") != null ? data.get("drillType").toString() : "";
         _inputMethod = data.get("inputMethod") != null ? data.get("inputMethod").toString() : "";
         _distance = data.get("distance") != null ? (data.get("distance") as Number) : 0;
-        _maxBullets = data.get("rounds") != null ? (data.get("rounds") as Number) : 0;
+        // Compute total shots: rounds * strings (strings default 1).
+        var previewRounds = toNumberCoerce(data.get("rounds"), 0);
+        var previewStrings = toNumberCoerce(data.get("strings"), 1);
+        _strings = previewStrings;
+        if (data.get("maxBullets") != null) {
+            _maxBullets = data.get("maxBullets") as Number; // explicit override
+        } else if (data.get("bullets") != null) {
+            _maxBullets = data.get("bullets") as Number; // explicit override
+        } else {
+            _maxBullets = (previewRounds > 0) ? (previewRounds * previewStrings) : 0;
+        }
         _timeLimit = data.get("timeLimit") != null ? (data.get("timeLimit") as Number) : 0;
         _parTime = data.get("parTime") != null ? (data.get("parTime") as Number) : 0;
 
@@ -359,6 +404,11 @@ class reticccView extends WatchUi.View {
         _currentPage = PAGE_MAIN;
         _manualOverrides = 0;
         
+        // Reset steadiness tracking
+        _steadinessResults = [];
+        _lastSteadinessGrade = "";
+        _lastSteadinessScore = 0;
+        
         // Extract session data
         _sessionId = data.get("sessionId") != null ? data.get("sessionId").toString() : "";
         _drillName = data.get("drillName") != null ? data.get("drillName").toString() : "Session";
@@ -366,10 +416,19 @@ class reticccView extends WatchUi.View {
         _drillType = data.get("drillType") != null ? data.get("drillType").toString() : "";
         _inputMethod = data.get("inputMethod") != null ? data.get("inputMethod").toString() : "";
         _distance = data.get("distance") != null ? (data.get("distance") as Number) : 0;
-        _maxBullets = data.get("rounds") != null ? (data.get("rounds") as Number) : 0;
+        // Compute max bullets from rounds and strings (rounds==0 => unlimited)
+        var roundsVal = data.get("rounds") != null ? (data.get("rounds") as Number) : 0;
         _timeLimit = data.get("timeLimit") != null ? (data.get("timeLimit") as Number) : 0;
         _parTime = data.get("parTime") != null ? (data.get("parTime") as Number) : 0;
         _strings = data.get("strings") != null ? (data.get("strings") as Number) : 1;
+        // Set computed max bullets unless explicit maxBullets/bullets provided
+        if (data.get("maxBullets") != null) {
+            _maxBullets = data.get("maxBullets") as Number;
+        } else if (data.get("bullets") != null) {
+            _maxBullets = data.get("bullets") as Number;
+        } else {
+            _maxBullets = (roundsVal > 0) ? (roundsVal * _strings) : 0;
+        }
         
         // Parse watch mode from payload
         var watchModeStr = data.get("watchMode") != null ? data.get("watchMode").toString() : "primary";
@@ -455,6 +514,13 @@ class reticccView extends WatchUi.View {
             _manualOverrides++;
         }
         
+        // Capture biometrics at shot moment (HR, breathing)
+        if (_shotDetector != null) {
+            var tracker = _shotDetector.getBiometricsTracker();
+            tracker.recordShotBiometrics(_shotsFired);
+            System.println("[RETIC] Captured biometrics for manual shot #" + _shotsFired);
+        }
+        
         // Record split time
         var now = System.getTimer();
         if (_lastShotTime > 0 && _lastShotTime != _startTime) {
@@ -521,6 +587,13 @@ class reticccView extends WatchUi.View {
             }
             
             _shotsFired++;
+            
+            // Capture biometrics at shot moment (HR, breathing)
+            if (_shotDetector != null) {
+                var tracker = _shotDetector.getBiometricsTracker();
+                tracker.recordShotBiometrics(_shotsFired);
+                System.println("[RETIC] Captured biometrics for auto-detected shot #" + _shotsFired);
+            }
             
             // Record split time
             var now = System.getTimer();
@@ -608,7 +681,7 @@ class reticccView extends WatchUi.View {
         WatchUi.requestUpdate();
     }
     
-    // Send results back to phone and end session
+    // Send results back to phone and end session (TWO-PHASE SYNC)
     function sendResultsToPhone() as Void {
         var app = Application.getApp() as reticccApp;
         
@@ -627,26 +700,287 @@ class reticccView extends WatchUi.View {
             detectionThreshold = _shotDetector.getThreshold();
         }
         
-        var results = {
+        // =====================================================================
+        // PHASE 1: Build SESSION_SUMMARY (~300 bytes, instant delivery)
+        // =====================================================================
+        var avgSplit = calculateAvgSplit();
+        var bestSplit = 0;
+        var worstSplit = 0;
+        if (_splitTimes.size() > 0) {
+            bestSplit = _splitTimes[0];
+            worstSplit = _splitTimes[0];
+            for (var i = 0; i < _splitTimes.size(); i++) {
+                if (_splitTimes[i] < bestSplit) { bestSplit = _splitTimes[i]; }
+                if (_splitTimes[i] > worstSplit) { worstSplit = _splitTimes[i]; }
+            }
+        }
+        
+        // Get HR summary
+        var hrSummary = {"avg" => 0, "max" => 0, "min" => 0};
+        var stressSummary = {"avg" => 0, "trend" => "stable"};
+        var breathRate = 0;
+        if (_shotDetector != null) {
+            var tracker = _shotDetector.getBiometricsTracker();
+            var fullSummary = tracker.getSessionSummary();
+            hrSummary.put("avg", fullSummary.get("avgHR"));
+            hrSummary.put("max", fullSummary.get("maxHR"));
+            hrSummary.put("min", fullSummary.get("minHR"));
+            stressSummary.put("avg", fullSummary.get("stressAvg"));
+            stressSummary.put("trend", fullSummary.get("stressTrend"));
+            breathRate = fullSummary.get("avgBreathRate") as Number;
+        }
+        
+        // Get steadiness summary
+        var steadinessSummary = {"avg" => 0, "trend" => "stable"};
+        if (_steadinessResults.size() > 0) {
+            var totalScore = 0.0;
+            for (var i = 0; i < _steadinessResults.size(); i++) {
+                totalScore += _steadinessResults[i].steadinessScore;
+            }
+            steadinessSummary.put("avg", (totalScore / _steadinessResults.size()).toNumber());
+            if (_shotDetector != null) {
+                steadinessSummary.put("trend", _shotDetector.getSteadinessAnalyzer().getSessionTrend());
+            }
+        }
+        
+        var summary = {
             "sessionId" => _sessionId,
             "shotsFired" => _shotsFired,
-            "elapsedTime" => elapsedSecs,           // Seconds with decimals
-            "completed" => _sessionCompleted,        // True only if max rounds reached
+            "elapsedTime" => elapsedSecs,
             "distance" => _distance,
-            "splitTimes" => _splitTimes,             // Array of ms between shots
-            "avgSplit" => calculateAvgSplit(),       // Average split in ms
-            "autoDetected" => _autoDetectEnabled,    // Whether auto-detection was used
-            "detectionSensitivity" => detectionThreshold,  // Threshold used
-            "manualOverrides" => _manualOverrides    // How many shots were manually added/removed
+            "completed" => _sessionCompleted,
+            "avgSplit" => avgSplit,
+            "bestSplit" => bestSplit,
+            "worstSplit" => worstSplit,
+            "hr" => hrSummary,
+            "stress" => stressSummary,
+            "steadiness" => steadinessSummary,
+            "breathRate" => breathRate
         };
         
-        System.println("[RETIC] Sending results - Shots: " + _shotsFired + ", Time: " + elapsedSecs + "s, Completed: " + _sessionCompleted + ", AutoDetect: " + _autoDetectEnabled);
-        app.sendMessage("SESSION_RESULT", results);
+        // =====================================================================
+        // PHASE 2: Build SESSION_DETAILS (full data, background delivery)
+        // =====================================================================
+        var steadinessData = buildSteadinessResults();
+        var biometricsData = buildBiometricsResults();
+        var performanceData = buildPerformanceAnalytics(finalElapsedMs);
+        
+        var details = {
+            "sessionId" => _sessionId,
+            "splitTimes" => _splitTimes,
+            "autoDetected" => _autoDetectEnabled,
+            "detectionSensitivity" => detectionThreshold,
+            "manualOverrides" => _manualOverrides,
+            "steadiness" => steadinessData,
+            "biometrics" => biometricsData,
+            "performance" => performanceData
+        };
+        
+        System.println("[RETIC] Two-phase sync - Shots: " + _shotsFired + ", Time: " + elapsedSecs + "s");
+        System.println("[RETIC] Summary size ~300 bytes, Details has " + _splitTimes.size() + " splits, " + _steadinessResults.size() + " shots");
+        
+        // Send with two-phase ACK mechanism
+        app.sendSessionWithTwoPhase(_sessionId, summary, details);
         
         // Move to ended state
         _state = STATE_SESSION_ENDED;
-        _lastMsg = _sessionCompleted ? "Complete!" : "Results sent";
+        _lastMsg = "Syncing...";
         WatchUi.requestUpdate();
+    }
+    
+    // Build steadiness results dictionary for sending to phone
+    private function buildSteadinessResults() as Dictionary {
+        if (_steadinessResults.size() == 0) {
+            return {
+                "enabled" => _autoDetectEnabled,
+                "shotCount" => 0
+            };
+        }
+        
+        // Calculate averages
+        var totalScore = 0.0;
+        var flinchCount = 0;
+        var shotScores = [] as Array<Dictionary>;
+        
+        for (var i = 0; i < _steadinessResults.size(); i++) {
+            var r = _steadinessResults[i];
+            totalScore += r.steadinessScore;
+            if (r.flinchDetected) { flinchCount++; }
+            shotScores.add(r.toDict());
+        }
+        
+        var avgScore = totalScore / _steadinessResults.size();
+        
+        // Get trend and advanced metrics from analyzer
+        var trend = "stable";
+        var recoilConsistency = 0.0;
+        var flinchRate = 0.0;
+        if (_shotDetector != null) {
+            var analyzer = _shotDetector.getSteadinessAnalyzer();
+            trend = analyzer.getSessionTrend();
+            recoilConsistency = analyzer.getRecoilConsistency();
+            flinchRate = analyzer.getFlinchRate();
+        }
+        
+        // Grade distribution
+        var gradeCount = {"A+" => 0, "A" => 0, "B" => 0, "C" => 0, "D" => 0, "F" => 0};
+        for (var i = 0; i < _steadinessResults.size(); i++) {
+            var g = _steadinessResults[i].gradeString;
+            var count = gradeCount.get(g) as Number;
+            if (count != null) {
+                gradeCount.put(g, count + 1);
+            }
+        }
+        
+        // Find best and worst shots
+        var bestShotIdx = 0;
+        var worstShotIdx = 0;
+        var bestScore = 0.0;
+        var worstScore = 100.0;
+        for (var i = 0; i < _steadinessResults.size(); i++) {
+            var score = _steadinessResults[i].steadinessScore;
+            if (score > bestScore) { bestScore = score; bestShotIdx = i + 1; }
+            if (score < worstScore) { worstScore = score; worstShotIdx = i + 1; }
+        }
+        
+        return {
+            "enabled" => true,
+            "shotCount" => _steadinessResults.size(),
+            "avgScore" => avgScore.toNumber(),
+            "trend" => trend,
+            "gradeDistribution" => gradeCount,
+            "shots" => shotScores,
+            // Advanced analytics
+            "flinchCount" => flinchCount,
+            "flinchRate" => flinchRate.toNumber(),
+            "recoilConsistency" => recoilConsistency.toNumber(),
+            "bestShot" => bestShotIdx,
+            "bestScore" => bestScore.toNumber(),
+            "worstShot" => worstShotIdx,
+            "worstScore" => worstScore.toNumber()
+        };
+    }
+    
+    // Build biometrics results dictionary for sending to phone
+    private function buildBiometricsResults() as Dictionary {
+        if (_shotDetector == null) {
+            return {
+                "enabled" => false
+            };
+        }
+        
+        var tracker = _shotDetector.getBiometricsTracker();
+        
+        // Get compact timeline (only need shots, not full timelines)
+        var timeline = tracker.getCompactTimeline(120);
+        var summary = tracker.getSessionSummary();
+        
+        // NOTE: hrTimeline and breathTimeline removed to reduce payload size
+        // The phone was not receiving SESSION_RESULT due to Garmin's ~8-16KB message limit
+        // We still have per-shot biometrics which contains HR/breath at each shot
+        return {
+            "enabled" => true,
+            "summary" => summary,
+            "shotBiometrics" => timeline.get("shots")   // Per-shot HR and breathing
+        };
+    }
+    
+    // Build performance analytics for session results
+    private function buildPerformanceAnalytics(totalElapsedMs as Number) as Dictionary {
+        // First shot time (time from start to first shot)
+        var firstShotTime = 0;
+        if (_splitTimes.size() > 0) {
+            // First split is actually first shot time (from session start)
+            // Need to calculate from elapsed - sum of later splits
+            var sumSplits = 0;
+            for (var i = 0; i < _splitTimes.size(); i++) {
+                sumSplits += _splitTimes[i];
+            }
+            firstShotTime = totalElapsedMs - sumSplits;
+        } else if (_shotsFired > 0) {
+            firstShotTime = totalElapsedMs;  // Only one shot, that's the first shot time
+        }
+        
+        // Best and worst splits
+        var bestSplit = 0;
+        var worstSplit = 0;
+        var splitStdDev = 0.0;
+        
+        if (_splitTimes.size() > 0) {
+            bestSplit = _splitTimes[0];
+            worstSplit = _splitTimes[0];
+            
+            for (var i = 0; i < _splitTimes.size(); i++) {
+                if (_splitTimes[i] < bestSplit) { bestSplit = _splitTimes[i]; }
+                if (_splitTimes[i] > worstSplit) { worstSplit = _splitTimes[i]; }
+            }
+            
+            // Calculate standard deviation of splits (consistency)
+            if (_splitTimes.size() >= 2) {
+                var avgSplit = calculateAvgSplit();
+                var variance = 0.0;
+                for (var i = 0; i < _splitTimes.size(); i++) {
+                    var diff = _splitTimes[i] - avgSplit;
+                    variance += (diff * diff).toFloat();
+                }
+                splitStdDev = Math.sqrt(variance / _splitTimes.size()).toFloat();
+            }
+        }
+        
+        // Shots per minute
+        var shotsPerMinute = 0.0;
+        if (totalElapsedMs > 0 && _shotsFired > 0) {
+            shotsPerMinute = (_shotsFired.toFloat() / totalElapsedMs * 60000);
+        }
+        
+        // Par delta
+        var parDelta = 0.0;
+        if (_parTime > 0) {
+            parDelta = (totalElapsedMs.toFloat() / 1000.0) - _parTime;
+        }
+        
+        // Warmup vs rest analysis (first 3 shots vs rest)
+        var warmupAvg = 0.0;
+        var restAvg = 0.0;
+        if (_steadinessResults.size() >= 4) {
+            // First 3 shots
+            for (var i = 0; i < 3 && i < _steadinessResults.size(); i++) {
+                warmupAvg += _steadinessResults[i].steadinessScore;
+            }
+            warmupAvg = warmupAvg / 3;
+            
+            // Rest of shots
+            var restCount = 0;
+            for (var i = 3; i < _steadinessResults.size(); i++) {
+                restAvg += _steadinessResults[i].steadinessScore;
+                restCount++;
+            }
+            if (restCount > 0) {
+                restAvg = restAvg / restCount;
+            }
+        }
+        
+        // Last 3 shots average (fatigue indicator)
+        var lastThreeAvg = 0.0;
+        if (_steadinessResults.size() >= 3) {
+            var start = _steadinessResults.size() - 3;
+            for (var i = start; i < _steadinessResults.size(); i++) {
+                lastThreeAvg += _steadinessResults[i].steadinessScore;
+            }
+            lastThreeAvg = lastThreeAvg / 3;
+        }
+        
+        return {
+            "firstShotTime" => firstShotTime,           // ms to first shot (draw speed)
+            "bestSplit" => bestSplit,                   // fastest split (ms)
+            "worstSplit" => worstSplit,                 // slowest split (ms)
+            "splitStdDev" => splitStdDev.toNumber(),    // consistency (lower = better)
+            "shotsPerMinute" => (shotsPerMinute * 10).toNumber(),  // x10 for precision
+            "parDelta" => (parDelta * 1000).toNumber(), // ms difference from par
+            "warmupAvg" => warmupAvg.toNumber(),        // first 3 shots avg steadiness
+            "restAvg" => restAvg.toNumber(),            // remaining shots avg steadiness
+            "lastThreeAvg" => lastThreeAvg.toNumber()   // fatigue indicator
+        };
     }
     
     // Manually finish session (before hitting max bullets)
@@ -679,6 +1013,11 @@ class reticccView extends WatchUi.View {
         _autoDetectEnabled = false;
         _manualOverrides = 0;
         
+        // Reset steadiness data
+        _steadinessResults = [];
+        _lastSteadinessGrade = "";
+        _lastSteadinessScore = 0;
+        
         // Stop shot detection
         if (_shotDetector != null) {
             _shotDetector.stopMonitoring();
@@ -691,6 +1030,12 @@ class reticccView extends WatchUi.View {
     // Set connection status
     function setConnected(connected as Boolean) as Void {
         _connected = connected;
+        WatchUi.requestUpdate();
+    }
+    
+    // Set last message (for status updates from app)
+    function setLastMsg(msg as String) as Void {
+        _lastMsg = msg;
         WatchUi.requestUpdate();
     }
     
@@ -828,84 +1173,120 @@ class reticccView extends WatchUi.View {
     }
     
     // =========================================================================
-    // IDLE SCREEN - RETICLE branded tactical display
+    // IDLE SCREEN - Tactical scope design
     // =========================================================================
     private function drawIdleScreen(dc as Dc, width as Number, height as Number, centerX as Number, centerY as Number) as Void {
-        // Connection status indicator (top center area - safe zone)
-        dc.setColor(_connected ? Graphics.COLOR_GREEN : Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.fillCircle(centerX + width / 5, height / 6, 3);
         
         // =====================================================================
-        // RETICLE LOGO - Centered, safe zone
+        // Outer ring - scope aesthetic
         // =====================================================================
-        var logoY = height * 35 / 100;
-        var reticleSize = width / 10;  // Small
+        var ringRadius = (width < height ? width : height) / 2 - 15;
         
-        // Draw reticle/scope crosshair logo
+        // Outer glow/ring
+        dc.setColor(0x1A1A1A, Graphics.COLOR_TRANSPARENT);
+        if (dc has :setPenWidth) { dc.setPenWidth(8); }
+        dc.drawCircle(centerX, centerY, ringRadius);
+        
+        // Main ring
+        dc.setColor(0x333333, Graphics.COLOR_TRANSPARENT);
+        if (dc has :setPenWidth) { dc.setPenWidth(3); }
+        dc.drawCircle(centerX, centerY, ringRadius);
+        
+        // Accent arc - top (orange/red accent)
+        dc.setColor(0xFF4500, Graphics.COLOR_TRANSPARENT);  // Orange-red
+        if (dc has :setPenWidth) { dc.setPenWidth(3); }
+        dc.drawArc(centerX, centerY, ringRadius, Graphics.ARC_CLOCKWISE, 70, 110);
+        
+        // =====================================================================
+        // Crosshair lines - tactical feel
+        // =====================================================================
+        dc.setColor(0x444444, Graphics.COLOR_TRANSPARENT);
+        if (dc has :setPenWidth) { dc.setPenWidth(1); }
+        
+        // Top line
+        dc.drawLine(centerX, 35, centerX, centerY - 55);
+        // Bottom line  
+        dc.drawLine(centerX, centerY + 55, centerX, height - 35);
+        // Left line
+        dc.drawLine(35, centerY, centerX - 55, centerY);
+        // Right line
+        dc.drawLine(centerX + 55, centerY, width - 35, centerY);
+        
+        // Small tick marks
+        var tickLen = 6;
+        dc.drawLine(centerX - tickLen, centerY - 40, centerX + tickLen, centerY - 40);
+        dc.drawLine(centerX - tickLen, centerY + 40, centerX + tickLen, centerY + 40);
+        dc.drawLine(centerX - 40, centerY - tickLen, centerX - 40, centerY + tickLen);
+        dc.drawLine(centerX + 40, centerY - tickLen, centerX + 40, centerY + tickLen);
+        
+        if (dc has :setPenWidth) { dc.setPenWidth(1); }
+        
+        // =====================================================================
+        // Center content area
+        // =====================================================================
+        
+        // Brand name
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, centerY - 28, Graphics.FONT_MEDIUM, "RETICLE", Graphics.TEXT_JUSTIFY_CENTER);
         
-        // Outer circle
-        dc.drawCircle(centerX, logoY, reticleSize);
-        
-        // Crosshair lines (with gap in center)
-        var gapSize = reticleSize / 3;
-        dc.drawLine(centerX, logoY - reticleSize, centerX, logoY - gapSize);
-        dc.drawLine(centerX, logoY + gapSize, centerX, logoY + reticleSize);
-        dc.drawLine(centerX - reticleSize, logoY, centerX - gapSize, logoY);
-        dc.drawLine(centerX + gapSize, logoY, centerX + reticleSize, logoY);
-        
-        // Center dot
-        dc.fillCircle(centerX, logoY, 2);
-        
-        // =====================================================================
-        // Company name - center
-        // =====================================================================
-        var nameY = centerY;
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, nameY, Graphics.FONT_SMALL, "RETICLE", Graphics.TEXT_JUSTIFY_CENTER);
-        
-        // Tagline
-        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, nameY + dc.getFontHeight(Graphics.FONT_SMALL) + 4, Graphics.FONT_XTINY, "PRECISION TRAINING", Graphics.TEXT_JUSTIFY_CENTER);
-        
-        // =====================================================================
-        // Bottom data: single line, centered safe zone
-        // =====================================================================
-        var bottomY = height * 78 / 100;
-        
-        // All data on one line, compact
-        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        // Time - larger, prominent
         var clockTime = System.getClockTime();
         var timeStr = clockTime.hour.format("%02d") + ":" + clockTime.min.format("%02d");
-        var tempStr = _hasTemperature ? _temperature.toString() + "°" : "--";
-        var windStr = _windSpeed > 0 ? _windSpeed.toString() + _windDirection : "--";
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, centerY + 2, Graphics.FONT_LARGE, timeStr, Graphics.TEXT_JUSTIFY_CENTER);
+        
+        // =====================================================================
+        // Bottom info area
+        // =====================================================================
+        var bottomY = height - 55;
+        
+        // Connection indicator
+        if (_connected) {
+            dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_TRANSPARENT);
+            dc.fillCircle(centerX, bottomY, 4);
+        } else {
+            dc.setColor(0x666666, Graphics.COLOR_TRANSPARENT);
+            dc.drawCircle(centerX, bottomY, 4);
+        }
 
-        var dataLine = windStr + "  " + tempStr + "  " + timeStr;
-        dc.drawText(centerX, bottomY, Graphics.FONT_XTINY, dataLine, Graphics.TEXT_JUSTIFY_CENTER);
-
-        // If there's a pending session from the phone, show details and a clear start hint
+        // =====================================================================
+        // Pending session - center overlay
+        // =====================================================================
         if (_pendingSession != null) {
             var pd = _pendingSession as Dictionary;
-            var pName = pd.get("drillName") != null ? pd.get("drillName").toString() : "Pending Session";
-            var pRounds = pd.get("rounds") != null ? (pd.get("rounds") as Number) : 0;
-            var pTime = pd.get("timeLimit") != null ? (pd.get("timeLimit") as Number) : 0;
+            var pName = pd.get("drillName") != null ? pd.get("drillName").toString() : "Ready";
+            var pRounds = toNumberCoerce(pd.get("rounds"), 0);
+            var pStrings = toNumberCoerce(pd.get("strings"), 1);
             var pAuto = pd.get("autoDetect") != null ? (pd.get("autoDetect") as Boolean) : false;
 
-            // Trim drill name if too long
-            if (pName.length() > 18) { pName = pName.substring(0, 16) + ".."; }
+            if (pName.length() > 14) { pName = pName.substring(0, 12) + ".."; }
 
+            // Dark overlay for center
+            dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
+            dc.fillCircle(centerX, centerY, 70);
+            
+            // Accent ring around content
+            dc.setColor(0xFF4500, Graphics.COLOR_TRANSPARENT);
+            if (dc has :setPenWidth) { dc.setPenWidth(2); }
+            dc.drawCircle(centerX, centerY, 68);
+            if (dc has :setPenWidth) { dc.setPenWidth(1); }
+            
+            // Session name
             dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(centerX, bottomY - 28, Graphics.FONT_TINY, pName, Graphics.TEXT_JUSTIFY_CENTER);
-
-            var detailLine = (pRounds > 0 ? (pRounds.toString() + " rounds") : "Unlimited") + "  ";
-            detailLine = detailLine + (pTime > 0 ? (pTime.toString() + "s") : "No limit");
-            detailLine = detailLine + "  " + (pAuto ? "Auto" : "Manual");
-
-            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(centerX, bottomY - 14, Graphics.FONT_XTINY, detailLine, Graphics.TEXT_JUSTIFY_CENTER);
-
-            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(centerX, bottomY + 18, Graphics.FONT_XTINY, "TAP to START SESSION", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(centerX, centerY - 30, Graphics.FONT_TINY, pName, Graphics.TEXT_JUSTIFY_CENTER);
+            
+            // Shot count
+            var totalShots = (pRounds > 0) ? (pRounds * pStrings) : 0;
+            var shotStr = totalShots > 0 ? totalShots.toString() : "∞";
+            dc.setColor(0xFF4500, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, centerY - 8, Graphics.FONT_MEDIUM, shotStr, Graphics.TEXT_JUSTIFY_CENTER);
+            
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, centerY + 18, Graphics.FONT_XTINY, pAuto ? "AUTO DETECT" : "MANUAL", Graphics.TEXT_JUSTIFY_CENTER);
+            
+            // Pulsing start hint
+            dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, centerY + 38, Graphics.FONT_XTINY, "▶ START", Graphics.TEXT_JUSTIFY_CENTER);
         }
     }
     
@@ -966,107 +1347,151 @@ class reticccView extends WatchUi.View {
     }
     
     // =========================================================================
-    // PRIMARY MODE - Shot Counter Screen
-    // Matches UI Mockup: drill name, distance, shot count (X / Y), timer, par
-    // Uses dynamic positioning: dc.getWidth() * percentage
+    // PRIMARY MODE - Shot Counter Screen - Tactical Design
     // =========================================================================
     private function drawPrimarySession(dc as Dc, width as Number, height as Number, centerX as Number, centerY as Number, margin as Number, safeWidth as Number, safeTop as Number, safeBottom as Number) as Void {
-        // Get font heights for precise positioning
-        var fontSmallH = dc.getFontHeight(Graphics.FONT_SMALL);
-        var fontTinyH = dc.getFontHeight(Graphics.FONT_TINY);
-        
-        // Dynamic font selection for shot count
-        var shotCountText = _maxBullets > 0 
-            ? _shotsFired.toString() + " / " + _maxBullets.toString() 
-            : _shotsFired.toString();
-        var shotFont = selectFontForText(dc, (width * 7 / 10), (height / 4), shotCountText);
-        var fontHotH = dc.getFontHeight(shotFont);
         
         // =====================================================================
-        // 1. TOP ZONE - Drill name + Distance (proportional: 10-25% of height)
+        // Outer scope ring - tactical aesthetic (matches idle screen)
         // =====================================================================
-        var topY = height * 12 / 100;  // 12% from top
+        var ringRadius = (width < height ? width : height) / 2 - 12;
         
-        // Drill name (with target icon emoji simulation)
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        var drillText = _drillName;
-        if (drillText.length() > 14) { drillText = drillText.substring(0, 12) + ".."; }
-        dc.drawText(centerX, topY, Graphics.FONT_SMALL, drillText, Graphics.TEXT_JUSTIFY_CENTER);
+        // Subtle outer ring
+        dc.setColor(0x222222, Graphics.COLOR_TRANSPARENT);
+        if (dc has :setPenWidth) { dc.setPenWidth(4); }
+        dc.drawCircle(centerX, centerY, ringRadius);
+        if (dc has :setPenWidth) { dc.setPenWidth(1); }
         
-        // Distance below drill name
-        if (_distance > 0) {
-            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(centerX, topY + fontSmallH + 2, Graphics.FONT_TINY, _distance.toString() + "m", Graphics.TEXT_JUSTIFY_CENTER);
+        // Progress arc - shows shots fired vs total (orange accent)
+        if (_maxBullets > 0) {
+            var progress = _shotsFired.toFloat() / _maxBullets.toFloat();
+            if (progress > 1.0) { progress = 1.0; }
+            var arcDegrees = (progress * 360).toNumber();
+            if (arcDegrees > 0) {
+                dc.setColor(0xFF4500, Graphics.COLOR_TRANSPARENT);  // Orange
+                if (dc has :setPenWidth) { dc.setPenWidth(4); }
+                dc.drawArc(centerX, centerY, ringRadius, Graphics.ARC_CLOCKWISE, 90, 90 - arcDegrees);
+                if (dc has :setPenWidth) { dc.setPenWidth(1); }
+            }
         }
         
         // =====================================================================
-        // 2. CENTER ZONE - BIG shot count (proportional: 35-65% of height)
-        // Format: "3 / 6" for limited, "3" for unlimited
+        // Top - Drill name (compact at very top)
         // =====================================================================
-        var shotY = centerY - (fontHotH / 2);
+        var topY = height * 8 / 100;
+        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        var drillText = _drillName;
+        if (drillText.length() > 16) { drillText = drillText.substring(0, 14) + ".."; }
+        dc.drawText(centerX, topY, Graphics.FONT_XTINY, drillText, Graphics.TEXT_JUSTIFY_CENTER);
         
-        // Shot count - changes color when complete
+        // Distance badge - more gap below drill name
+        if (_distance > 0) {
+            dc.setColor(0x666666, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, topY + 24, Graphics.FONT_XTINY, _distance.toString() + "m", Graphics.TEXT_JUSTIFY_CENTER);
+        }
+        
+        // =====================================================================
+        // CENTER - Giant shot count (true center)
+        // =====================================================================
+        var fontHotHeight = dc.getFontHeight(Graphics.FONT_NUMBER_THAI_HOT);
+        var fontTinyHeight = dc.getFontHeight(Graphics.FONT_TINY);
+        
+        // Center the shot count + "of X" as a group
+        var groupHeight = fontHotHeight + 12 + fontTinyHeight;  // shot + gap + "of X"
+        var shotY = centerY - groupHeight / 2 - 10;  // Shift up slightly
+        
+        // Shot count number - BIG
         var shotColor = Graphics.COLOR_WHITE;
         if (_shotFlashActive) {
-            shotColor = Graphics.COLOR_LT_GRAY;
+            shotColor = 0xFF4500;  // Flash orange on shot
         } else if (_maxBullets > 0 && _shotsFired >= _maxBullets) {
-            shotColor = Graphics.COLOR_WHITE;
+            shotColor = Graphics.COLOR_GREEN;  // Complete = green
         }
         dc.setColor(shotColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, shotY, shotFont, shotCountText, Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(centerX, shotY, Graphics.FONT_NUMBER_THAI_HOT, _shotsFired.toString(), Graphics.TEXT_JUSTIFY_CENTER);
+        
+        // "of X" to the right of center
+        if (_maxBullets > 0) {
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX + 55, centerY - fontTinyHeight / 2, Graphics.FONT_TINY, "of " + _maxBullets.toString(), Graphics.TEXT_JUSTIFY_LEFT);
+        }
         
         // =====================================================================
-        // 3. BOTTOM ZONE - Timer and Par time (proportional: 70-90% of height)
+        // Timer section - lower, more separation from count
         // =====================================================================
-        var bottomY = height * 72 / 100;  // 72% from top
-        var timeOffsetX = width / 5;      // 20% offset
-        var parOffsetX = width / 20;      // 5% offset
+        var timerY = height * 72 / 100;
         
-        // Timer label + value
-        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX - timeOffsetX, bottomY, Graphics.FONT_XTINY, "Time:", Graphics.TEXT_JUSTIFY_RIGHT);
+        // Elapsed time - prominent
+        var timeText = getElapsedTimeFormatted();
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        var timeRemaining = getTimeRemaining();
-        var timeText = (_timeLimit > 0 && timeRemaining > 0) 
-            ? "-" + formatTime(timeRemaining) 
-            : getElapsedTimeFormatted();
-        dc.drawText(centerX + parOffsetX, bottomY, Graphics.FONT_TINY, timeText, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(centerX, timerY, Graphics.FONT_MEDIUM, timeText, Graphics.TEXT_JUSTIFY_CENTER);
         
-        // Par time (if set)
+        // Par time comparison (if set) - more gap below timer
         if (_parTime > 0) {
-            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(centerX - timeOffsetX, bottomY + fontTinyH + 2, Graphics.FONT_XTINY, "Par:", Graphics.TEXT_JUSTIFY_RIGHT);
-            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(centerX + parOffsetX, bottomY + fontTinyH + 2, Graphics.FONT_TINY, _parTime.format("%.1f") + "s", Graphics.TEXT_JUSTIFY_LEFT);
-        }
-        
-        // =====================================================================
-        // 4. HINT at bottom - "TAP TO ADD SHOT"
-        // =====================================================================
-        var hintY = height * 88 / 100;  // 88% from top
-        if (_maxBullets > 0 && _shotsFired >= _maxBullets) {
-            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(centerX, hintY, Graphics.FONT_XTINY, "COMPLETE!", Graphics.TEXT_JUSTIFY_CENTER);
-        } else {
-            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(centerX, hintY, Graphics.FONT_XTINY, "TAP TO ADD SHOT", Graphics.TEXT_JUSTIFY_CENTER);
-        }
-        
-        // =====================================================================
-        // DEBUG: Live G-force display (shows accelerometer status)
-        // =====================================================================
-        if (_autoDetectEnabled && _shotDetector != null) {
-            var mag = _shotDetector.getLastMagnitude();
-            var gText = "G: " + mag.format("%.2f");
-            // Yellow if value is updating, RED if above threshold
-            if (mag > _shotDetector.getThreshold()) {
-                dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
-            } else if (mag > 0.1) {
-                dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
+            var parY = timerY + dc.getFontHeight(Graphics.FONT_MEDIUM) + 6;
+            var elapsed = _elapsedMs.toFloat() / 1000.0;
+            var parDiff = elapsed - _parTime;
+            
+            if (_shotsFired > 0) {
+                // Show difference from par
+                var parColor = parDiff <= 0 ? Graphics.COLOR_GREEN : Graphics.COLOR_RED;
+                var parSign = parDiff <= 0 ? "" : "+";
+                dc.setColor(parColor, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(centerX, parY, Graphics.FONT_TINY, parSign + parDiff.format("%.1f") + "s", Graphics.TEXT_JUSTIFY_CENTER);
             } else {
+                // Show par target
                 dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+                dc.drawText(centerX, parY, Graphics.FONT_TINY, "Par: " + _parTime.format("%.1f") + "s", Graphics.TEXT_JUSTIFY_CENTER);
             }
-            dc.drawText(centerX, height - margin - 10, Graphics.FONT_XTINY, gText, Graphics.TEXT_JUSTIFY_CENTER);
+        }
+        
+        // =====================================================================
+        // Steadiness indicator - bottom left (pushed out more)
+        // =====================================================================
+        if (_autoDetectEnabled && _lastSteadinessGrade.length() > 0) {
+            var steadyX = width * 20 / 100;
+            var steadyY = height * 78 / 100;
+            
+            // Grade with color
+            var gradeColor = Graphics.COLOR_WHITE;
+            if (_lastSteadinessGrade.equals("A+") || _lastSteadinessGrade.equals("A")) {
+                gradeColor = Graphics.COLOR_GREEN;
+            } else if (_lastSteadinessGrade.equals("B")) {
+                gradeColor = Graphics.COLOR_YELLOW;
+            } else if (_lastSteadinessGrade.equals("C") || _lastSteadinessGrade.equals("D")) {
+                gradeColor = 0xFF4500;
+            } else {
+                gradeColor = Graphics.COLOR_RED;
+            }
+            
+            dc.setColor(gradeColor, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(steadyX, steadyY, Graphics.FONT_MEDIUM, _lastSteadinessGrade, Graphics.TEXT_JUSTIFY_CENTER);
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(steadyX, steadyY + 26, Graphics.FONT_XTINY, "STEADY", Graphics.TEXT_JUSTIFY_CENTER);
+        }
+        
+        // =====================================================================
+        // Split time - bottom right (pushed out more)
+        // =====================================================================
+        if (_splitTimes.size() > 0) {
+            var splitX = width * 80 / 100;
+            var splitY = height * 78 / 100;
+            
+            var lastSplit = _splitTimes[_splitTimes.size() - 1];
+            var splitSec = lastSplit.toFloat() / 1000.0;
+            
+            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(splitX, splitY, Graphics.FONT_MEDIUM, splitSec.format("%.2f"), Graphics.TEXT_JUSTIFY_CENTER);
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(splitX, splitY + 26, Graphics.FONT_XTINY, "SPLIT", Graphics.TEXT_JUSTIFY_CENTER);
+        }
+        
+        // =====================================================================
+        // Status indicator - complete (at very bottom)
+        // =====================================================================
+        if (_maxBullets > 0 && _shotsFired >= _maxBullets) {
+            dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, height - 24, Graphics.FONT_XTINY, "● COMPLETE", Graphics.TEXT_JUSTIFY_CENTER);
         }
     }
     
@@ -1489,8 +1914,62 @@ class reticccView extends WatchUi.View {
         }
         
         // =====================================================================
-        // 3. BOTTOM - Tap to reset
+        // 2.5 STEADINESS SUMMARY - Show average grade if available
         // =====================================================================
+        if (_steadinessResults.size() > 0) {
+            var steadyY = centerY + labelGap + 20;
+            
+            // Calculate average score
+            var totalScore = 0.0;
+            for (var i = 0; i < _steadinessResults.size(); i++) {
+                totalScore += _steadinessResults[i].steadinessScore;
+            }
+            var avgScore = (totalScore / _steadinessResults.size()).toNumber();
+            
+            // Determine average grade
+            var avgGrade = "F";
+            if (avgScore >= 95) { avgGrade = "A+"; }
+            else if (avgScore >= 85) { avgGrade = "A"; }
+            else if (avgScore >= 70) { avgGrade = "B"; }
+            else if (avgScore >= 55) { avgGrade = "C"; }
+            else if (avgScore >= 40) { avgGrade = "D"; }
+            
+            // Color code
+            var gradeColor = Graphics.COLOR_WHITE;
+            if (avgGrade.equals("A+") || avgGrade.equals("A")) {
+                gradeColor = Graphics.COLOR_GREEN;
+            } else if (avgGrade.equals("B")) {
+                gradeColor = Graphics.COLOR_YELLOW;
+            } else if (avgGrade.equals("C")) {
+                gradeColor = Graphics.COLOR_ORANGE;
+            } else {
+                gradeColor = Graphics.COLOR_RED;
+            }
+            
+            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, steadyY, Graphics.FONT_XTINY, "STEADINESS", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.setColor(gradeColor, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, steadyY + 15, Graphics.FONT_TINY, avgGrade + " (" + avgScore + ")", Graphics.TEXT_JUSTIFY_CENTER);
+        }
+        
+        // =====================================================================
+        // 3. BOTTOM - Sync status and tap to reset
+        // =====================================================================
+        
+        // Show sync status
+        if (_lastMsg != null && !_lastMsg.equals("")) {
+            var syncColor = Graphics.COLOR_LT_GRAY;
+            if (_lastMsg.find("✓") != null || _lastMsg.find("Synced") != null) {
+                syncColor = Graphics.COLOR_GREEN;
+            } else if (_lastMsg.find("Retry") != null || _lastMsg.find("Syncing") != null) {
+                syncColor = Graphics.COLOR_YELLOW;
+            } else if (_lastMsg.find("offline") != null || _lastMsg.find("Failed") != null) {
+                syncColor = Graphics.COLOR_RED;
+            }
+            dc.setColor(syncColor, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, height - margin - 28, Graphics.FONT_TINY, _lastMsg, Graphics.TEXT_JUSTIFY_CENTER);
+        }
+        
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(centerX, height - margin - 10, Graphics.FONT_XTINY, "TAP to reset", Graphics.TEXT_JUSTIFY_CENTER);
     }

@@ -1,0 +1,30 @@
+[
+  {
+    "type": "PING",
+    "payload": null
+  },
+  {
+    "type": "SESSION_START",
+    "payload": {
+      "sessionId": "batch-001",
+      "drillName": "Batch Start",
+      "drillType": "timed",
+      "distance": 25,
+      "rounds": 10,
+      "autoDetect": true,
+      "sensitivity": 3.5
+    }
+  },
+  {
+    "type": "DATA",
+    "payload": { "action": "set_flags", "emkv": true, "vrcv": true }
+  },
+  {
+    "type": "WEATHER",
+    "payload": { "windSpeed": 5, "windDirection": "NW", "temperature": 20 }
+  },
+  {
+    "type": "SESSION_END",
+    "payload": { "sessionId": "batch-001", "result": { "shots": 12, "score": 8 } }
+  }
+]

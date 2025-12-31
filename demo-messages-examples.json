@@ -1,0 +1,68 @@
+[
+  {
+    "type": "PING",
+    "payload": null
+  },
+  {
+    "type": "SESSION_START",
+    "payload": {
+      "sessionId": "example-001",
+      "drillName": "Auto Detect Test",
+      "drillGoal": "Verify auto-detect with custom flags",
+      "drillType": "timed",
+      "distance": 25,
+      "rounds": 10,
+      "timeLimit": 60,
+      "parTime": 0,
+      "watchMode": "primary",
+      "autoDetect": true,
+      "sensitivity": 3.5,
+      "emkv": true,
+      "vrcv": false
+    }
+  },
+  {
+    "type": "SESSION_START",
+    "payload": {
+      "sessionId": "example-002",
+      "drillName": "Manual Mark Test",
+      "drillGoal": "Manual input with vibration",
+      "drillType": "grouping",
+      "distance": 50,
+      "rounds": 5,
+      "timeLimit": 0,
+      "parTime": 0,
+      "watchMode": "primary",
+      "autoDetect": false,
+      "sensitivity": 2.5,
+      "emkv": false,
+      "vrcv": true
+    }
+  },
+  {
+    "type": "DATA",
+    "payload": {
+      "action": "set_flags",
+      "emkv": true,
+      "vrcv": true
+    }
+  },
+  {
+    "type": "WEATHER",
+    "payload": {
+      "windSpeed": 8,
+      "windDirection": "NE",
+      "temperature": 18
+    }
+  },
+  {
+    "type": "SESSION_END",
+    "payload": {
+      "sessionId": "example-001",
+      "result": {
+        "shots": 10,
+        "score": 6
+      }
+    }
+  }
+]

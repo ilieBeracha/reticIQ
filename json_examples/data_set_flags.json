@@ -1,0 +1,8 @@
+{
+  "type": "DATA",
+  "payload": {
+    "action": "set_flags",
+    "emkv": true,
+    "vrcv": true
+  }
+}

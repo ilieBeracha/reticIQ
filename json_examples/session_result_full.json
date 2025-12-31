@@ -1,0 +1,281 @@
+{
+  "type": "SESSION_RESULT",
+  "description": "Complete session result with all advanced analytics",
+  "payload": {
+    "sessionId": "session_20251231_143052_abc123",
+    "shotsFired": 6,
+    "elapsedTime": 2.847,
+    "completed": true,
+    "distance": 7,
+    "splitTimes": [420, 380, 395, 410, 385],
+    "avgSplit": 398,
+    "autoDetected": true,
+    "detectionSensitivity": 3.5,
+    "manualOverrides": 0,
+
+    "performance": {
+      "firstShotTime": 857,
+      "bestSplit": 380,
+      "worstSplit": 420,
+      "splitStdDev": 15,
+      "shotsPerMinute": 1264,
+      "parDelta": 847,
+      "warmupAvg": 78,
+      "restAvg": 85,
+      "lastThreeAvg": 82,
+      "_comments": {
+        "firstShotTime": "Time from START to first shot (ms) - draw speed indicator",
+        "bestSplit": "Fastest split time between shots (ms)",
+        "worstSplit": "Slowest split time between shots (ms)",
+        "splitStdDev": "Standard deviation of splits (ms) - lower = more consistent",
+        "shotsPerMinute": "Rate of fire x10 for precision (divide by 10)",
+        "parDelta": "Difference from par time (ms) - negative = under par",
+        "warmupAvg": "First 3 shots average steadiness score",
+        "restAvg": "Remaining shots average steadiness score",
+        "lastThreeAvg": "Last 3 shots average - fatigue indicator"
+      }
+    },
+
+    "steadiness": {
+      "enabled": true,
+      "shotCount": 6,
+      "avgScore": 82,
+      "trend": "improving",
+      "gradeDistribution": {
+        "A+": 0,
+        "A": 2,
+        "B": 3,
+        "C": 1,
+        "D": 0,
+        "F": 0
+      },
+      "flinchCount": 1,
+      "flinchRate": 16,
+      "recoilConsistency": 87,
+      "bestShot": 4,
+      "bestScore": 91,
+      "worstShot": 1,
+      "worstScore": 68,
+      "_comments": {
+        "flinchCount": "Number of shots with detected anticipation/flinch",
+        "flinchRate": "Percentage of shots with flinch detected",
+        "recoilConsistency": "Score 0-100 - how consistent recoil pattern is across shots (higher = better)",
+        "bestShot": "Shot number with highest steadiness score",
+        "worstShot": "Shot number with lowest steadiness score"
+      },
+      "shots": [
+        {
+          "shotNumber": 1,
+          "score": 68,
+          "grade": "C",
+          "tremor": 35,
+          "sway": 28,
+          "drift": 22,
+          "samples": 38,
+          "anomaly": false,
+          "flinch": true,
+          "flinchMag": 45,
+          "recoilMag": 380,
+          "recoilDev": 8,
+          "_comments": {
+            "tremor": "High-frequency micro-movements (0-100, lower = better)",
+            "sway": "Low-frequency body sway (0-100, lower = better)",
+            "drift": "Gradual position change (0-100, lower = better)",
+            "flinch": "Anticipation spike detected before trigger break",
+            "flinchMag": "Magnitude of flinch in centi-G (divide by 100 for G)",
+            "recoilMag": "Peak recoil magnitude in centi-G",
+            "recoilDev": "Deviation from session average recoil (%)"
+          }
+        },
+        {
+          "shotNumber": 2,
+          "score": 79,
+          "grade": "B",
+          "tremor": 22,
+          "sway": 18,
+          "drift": 15,
+          "samples": 42,
+          "anomaly": false,
+          "flinch": false,
+          "flinchMag": 0,
+          "recoilMag": 365,
+          "recoilDev": 4
+        },
+        {
+          "shotNumber": 3,
+          "score": 85,
+          "grade": "A",
+          "tremor": 15,
+          "sway": 12,
+          "drift": 10,
+          "samples": 40,
+          "anomaly": false,
+          "flinch": false,
+          "flinchMag": 0,
+          "recoilMag": 372,
+          "recoilDev": 2
+        },
+        {
+          "shotNumber": 4,
+          "score": 91,
+          "grade": "A",
+          "tremor": 10,
+          "sway": 8,
+          "drift": 6,
+          "samples": 41,
+          "anomaly": false,
+          "flinch": false,
+          "flinchMag": 0,
+          "recoilMag": 358,
+          "recoilDev": 5
+        },
+        {
+          "shotNumber": 5,
+          "score": 81,
+          "grade": "B",
+          "tremor": 18,
+          "sway": 16,
+          "drift": 14,
+          "samples": 39,
+          "anomaly": false,
+          "flinch": false,
+          "flinchMag": 0,
+          "recoilMag": 375,
+          "recoilDev": 3
+        },
+        {
+          "shotNumber": 6,
+          "score": 83,
+          "grade": "B",
+          "tremor": 16,
+          "sway": 14,
+          "drift": 12,
+          "samples": 43,
+          "anomaly": false,
+          "flinch": false,
+          "flinchMag": 0,
+          "recoilMag": 368,
+          "recoilDev": 2
+        }
+      ]
+    },
+
+    "biometrics": {
+      "enabled": true,
+      "summary": {
+        "minHR": 72,
+        "maxHR": 118,
+        "avgHR": 95,
+        "avgBreathRate": 14,
+        "hrSamples": 28,
+        "breathSamples": 12,
+        "shotCount": 6,
+        "stressAvg": 42,
+        "stressMin": 28,
+        "stressMax": 65,
+        "stressTrend": "decreasing",
+        "optimalShots": 3,
+        "optimalPct": 50,
+        "_comments": {
+          "stressAvg": "Average HRV-based stress score (0-100, lower = more relaxed)",
+          "stressTrend": "How stress changed during session: increasing/decreasing/stable",
+          "optimalShots": "Number of shots with optimal conditions (pause + stable HR + low stress)",
+          "optimalPct": "Percentage of shots taken in optimal conditions"
+        }
+      },
+      "hrTimeline": [
+        [0, 78, 0],
+        [1000, 82, 0],
+        [2000, 88, 0],
+        [2847, 95, 1],
+        [3267, 102, 2],
+        [3647, 108, 3],
+        [4042, 112, 4],
+        [4452, 115, 5],
+        [4837, 118, 6]
+      ],
+      "_hrTimelineFormat": "[timestamp_ms, heart_rate_bpm, shot_number_or_0]",
+      "breathTimeline": [
+        [0, 12, 0],
+        [2847, 14, 1],
+        [3267, 15, 2],
+        [3647, 14, 3],
+        [4042, 13, 4],
+        [4452, 14, 5],
+        [4837, 15, 6]
+      ],
+      "_breathTimelineFormat": "[timestamp_ms, breath_rate_bpm, shot_number_or_0]",
+      "shotBiometrics": [
+        {
+          "shot": 1,
+          "hr": 95,
+          "hrAvg": 86,
+          "br": 14,
+          "breathPhase": "exhale",
+          "hrTrend": "rising",
+          "stress": 65,
+          "rmssd": 180,
+          "_comments": {
+            "hr": "Heart rate at exact shot moment",
+            "hrAvg": "5-second average HR before shot",
+            "br": "Estimated breath rate (breaths per minute)",
+            "breathPhase": "Respiratory phase: inhale/exhale/pause (pause is ideal!)",
+            "hrTrend": "HR direction: rising/falling/stable",
+            "stress": "HRV-based stress score 0-100 (lower = more relaxed)",
+            "rmssd": "Raw HRV metric in deci-ms (divide by 10 for ms)"
+          }
+        },
+        {
+          "shot": 2,
+          "hr": 102,
+          "hrAvg": 92,
+          "br": 15,
+          "breathPhase": "pause",
+          "hrTrend": "rising",
+          "stress": 52,
+          "rmssd": 220
+        },
+        {
+          "shot": 3,
+          "hr": 108,
+          "hrAvg": 98,
+          "br": 14,
+          "breathPhase": "pause",
+          "hrTrend": "rising",
+          "stress": 45,
+          "rmssd": 280
+        },
+        {
+          "shot": 4,
+          "hr": 112,
+          "hrAvg": 104,
+          "br": 13,
+          "breathPhase": "pause",
+          "hrTrend": "stable",
+          "stress": 35,
+          "rmssd": 350
+        },
+        {
+          "shot": 5,
+          "hr": 115,
+          "hrAvg": 108,
+          "br": 14,
+          "breathPhase": "inhale",
+          "hrTrend": "stable",
+          "stress": 32,
+          "rmssd": 380
+        },
+        {
+          "shot": 6,
+          "hr": 118,
+          "hrAvg": 112,
+          "br": 15,
+          "breathPhase": "pause",
+          "hrTrend": "stable",
+          "stress": 28,
+          "rmssd": 420
+        }
+      ]
+    }
+  }
+}

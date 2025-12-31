@@ -1,0 +1,10 @@
+{
+  "type": "SESSION_END",
+  "payload": {
+    "sessionId": "example-001",
+    "result": {
+      "shots": 10,
+      "score": 6
+    }
+  }
+}

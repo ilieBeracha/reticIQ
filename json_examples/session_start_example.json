@@ -1,0 +1,20 @@
+{
+  "type": "SESSION_START",
+  "payload": {
+    "sessionId": "session_20251231_143052_abc123",
+    "drillName": "Bill Drill",
+    "drillGoal": "6 shots under 2 seconds",
+    "drillType": "timed",
+    "inputMethod": "manual",
+    "distance": 7,
+    "rounds": 6,
+    "strings": 1,
+    "timeLimit": 0,
+    "parTime": 2.0,
+    "watchMode": "primary",
+    "autoDetect": true,
+    "sensitivity": 3.5,
+    "emkv": false,
+    "vrcv": true
+  }
+}
