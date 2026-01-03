@@ -324,6 +324,16 @@ class reticccView extends WatchUi.View {
             _elapsedMs = now - _startTime;
             _elapsedSeconds = _elapsedMs / 1000;
 
+            // IMPORTANT: Keep display on during active session
+            // This prevents the watch from going into "gesture off" mode when wrist is tilted
+            // (critical for shooters who hold their arm extended, like snipers)
+            // We refresh backlight every 3 seconds to balance visibility vs battery
+            if (_elapsedSeconds % 3 == 0) {
+                if (Attention has :backlight) {
+                    Attention.backlight(true);
+                }
+            }
+
             // Check time limit enforcement (only in PRIMARY mode)
             if (_watchMode == WATCH_MODE_PRIMARY && _timeLimit > 0 && _elapsedSeconds >= _timeLimit) {
                 _sessionCompleted = false;  // Time ran out, not completed by shots
@@ -396,11 +406,23 @@ class reticccView extends WatchUi.View {
             _watchMode = WATCH_MODE_PRIMARY;
         }
 
-        // Sensitivity preview
-        if (data.get("sensitivity") != null && _shotDetector != null) {
-            var sVal = data.get("sensitivity");
-            if (sVal instanceof Float) { _shotDetector.setThreshold(sVal); }
-            else if (sVal instanceof Number) { _shotDetector.setThreshold(sVal.toFloat()); }
+        // Preview detection config
+        if (_shotDetector != null) {
+            var detectionVal = data.get("detection");
+            System.println("[RETIC-PREVIEW] detection value: " + (detectionVal != null ? "exists" : "NULL"));
+            
+            if (detectionVal != null && detectionVal instanceof Dictionary) {
+                var detectionDict = detectionVal as Dictionary;
+                System.println("[RETIC-PREVIEW] ✓ Parsing detection config...");
+                _shotDetector.configureFromDict(detectionDict);
+                System.println("[RETIC-PREVIEW] ✓ Preview config: " + _shotDetector.getThreshold() + "G");
+            } else if (data.get("sensitivity") != null) {
+                var sVal = data.get("sensitivity");
+                if (sVal instanceof Float) { _shotDetector.setThreshold(sVal); }
+                else if (sVal instanceof Number) { _shotDetector.setThreshold(sVal.toFloat()); }
+                else if (sVal instanceof Double) { _shotDetector.setThreshold(sVal.toFloat()); }
+                System.println("[RETIC-PREVIEW] Legacy preview sensitivity: " + _shotDetector.getThreshold() + "G");
+            }
         }
 
         _lastMsg = "Preview ready - TAP to START";
@@ -437,6 +459,11 @@ class reticccView extends WatchUi.View {
         _splitTimes = [];
         _currentPage = PAGE_MAIN;
         _manualOverrides = 0;
+
+        // Keep display on during session - critical for shooters with extended arm positions
+        if (Attention has :backlight) {
+            Attention.backlight(true);
+        }
 
         // Reset steadiness tracking
         _steadinessResults = [];
@@ -497,13 +524,39 @@ class reticccView extends WatchUi.View {
         System.println("[RETIC] watchMode: " + _watchMode);
         System.println("[RETIC] shotDetector exists: " + (_shotDetector != null));
         
-        // Set sensitivity if provided
-        if (data.get("sensitivity") != null && _shotDetector != null) {
-            var sensitivityVal = data.get("sensitivity");
-            if (sensitivityVal instanceof Float) {
-                _shotDetector.setThreshold(sensitivityVal);
-            } else if (sensitivityVal instanceof Number) {
-                _shotDetector.setThreshold(sensitivityVal.toFloat());
+        // Configure detection from new 'detection' object or legacy 'sensitivity' field
+        if (_shotDetector != null) {
+            var detectionVal = data.get("detection");
+            System.println("[RETIC] detection value type: " + (detectionVal != null ? detectionVal.toString() : "NULL"));
+            
+            if (detectionVal != null && detectionVal instanceof Dictionary) {
+                // New API: full detection config from phone
+                var detectionDict = detectionVal as Dictionary;
+                System.println("[RETIC] ✓ Detection is Dictionary, parsing...");
+                _shotDetector.configureFromDict(detectionDict);
+                System.println("[RETIC] ✓ Detection config applied: " + _shotDetector.getThreshold() + "G");
+            } else if (data.get("sensitivity") != null) {
+                // Legacy API: just sensitivity value
+                var sensitivityVal = data.get("sensitivity");
+                System.println("[RETIC] Using legacy sensitivity: " + sensitivityVal);
+                if (sensitivityVal instanceof Float) {
+                    _shotDetector.setThreshold(sensitivityVal);
+                } else if (sensitivityVal instanceof Number) {
+                    _shotDetector.setThreshold(sensitivityVal.toFloat());
+                } else if (sensitivityVal instanceof Double) {
+                    _shotDetector.setThreshold(sensitivityVal.toFloat());
+                }
+                System.println("[RETIC] Legacy sensitivity set to: " + _shotDetector.getThreshold());
+            } else {
+                System.println("[RETIC] ⚠ No detection config found in payload!");
+            }
+            
+            // Apply VRCV setting if provided
+            if (data.get("vrcv") != null) {
+                var vrcvVal = data.get("vrcv");
+                if (vrcvVal instanceof Boolean) {
+                    _shotDetector.setVrcv(vrcvVal);
+                }
             }
         }
         
@@ -1514,6 +1567,32 @@ class reticccView extends WatchUi.View {
         if (_maxBullets > 0 && _shotsFired >= _maxBullets) {
             dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_TRANSPARENT);
             dc.drawText(centerX, height - 24, Graphics.FONT_XTINY, "● COMPLETE", Graphics.TEXT_JUSTIFY_CENTER);
+        }
+
+        // =====================================================================
+        // DEBUG: Show detection threshold and last magnitude (top right)
+        // =====================================================================
+        if (_autoDetectEnabled && _shotDetector != null) {
+            var dbgX = width - margin - 5;
+            var dbgY = margin + 25;
+            var thresh = _shotDetector.getThreshold();
+            var lastMag = _shotDetector.getLastMagnitude();
+            var adaptive = _shotDetector.getAdaptiveThreshold();
+
+            // Show: "T:3.5 A:3.2 M:1.8"
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(dbgX, dbgY, Graphics.FONT_XTINY, "T:" + thresh.format("%.1f"), Graphics.TEXT_JUSTIFY_RIGHT);
+            dc.drawText(dbgX, dbgY + 14, Graphics.FONT_XTINY, "A:" + adaptive.format("%.1f"), Graphics.TEXT_JUSTIFY_RIGHT);
+
+            // Magnitude - color based on threshold
+            var magColor = Graphics.COLOR_DK_GRAY;
+            if (lastMag >= thresh) {
+                magColor = Graphics.COLOR_GREEN;  // Would trigger
+            } else if (lastMag >= thresh * 0.7) {
+                magColor = Graphics.COLOR_YELLOW;  // Close
+            }
+            dc.setColor(magColor, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(dbgX, dbgY + 28, Graphics.FONT_XTINY, "M:" + lastMag.format("%.1f"), Graphics.TEXT_JUSTIFY_RIGHT);
         }
     }
     

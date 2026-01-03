@@ -74,7 +74,12 @@ class TimelineChunker {
         // Trim if too long (10 min max)
         var maxPoints = ChunkConfig.MAX_TIMELINE_DURATION / ChunkConfig.TIMELINE_SAMPLE_INTERVAL;
         if (_points.size() > maxPoints) {
-            _points = _points.slice(-maxPoints.toNumber(), null) as Array<TimelinePoint>;
+            var newPoints = [] as Array<TimelinePoint>;
+            var startIdx = _points.size() - maxPoints;
+            for (var i = startIdx; i < _points.size(); i++) {
+                newPoints.add(_points[i]);
+            }
+            _points = newPoints;
         }
     }
 

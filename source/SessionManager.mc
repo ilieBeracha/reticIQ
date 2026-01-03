@@ -37,6 +37,10 @@ class SessionManager {
     // Detection metadata
     private var _autoDetected as Boolean = false;
     private var _sensitivity as Float = 3.5;
+    private var _minThreshold as Float = 1.6;
+    private var _maxThreshold as Float = 9.6;
+    private var _cooldownMs as Number = 80;
+    private var _detectionProfile as String = "handgun";
     private var _manualOverrides as Number = 0;
 
     // State
@@ -80,13 +84,43 @@ class SessionManager {
             }
         }
 
-        if (config.get("sensitivity") != null) {
+        // Parse detection config (new format) or legacy sensitivity
+        if (config.get("detection") != null && config.get("detection") instanceof Dictionary) {
+            var detection = config.get("detection") as Dictionary;
+            
+            if (detection.get("sensitivity") != null) {
+                var sVal = detection.get("sensitivity");
+                if (sVal instanceof Float) { _sensitivity = sVal; }
+                else if (sVal instanceof Number) { _sensitivity = sVal.toFloat(); }
+            }
+            if (detection.get("minThreshold") != null) {
+                var mVal = detection.get("minThreshold");
+                if (mVal instanceof Float) { _minThreshold = mVal; }
+                else if (mVal instanceof Number) { _minThreshold = mVal.toFloat(); }
+            }
+            if (detection.get("maxThreshold") != null) {
+                var xVal = detection.get("maxThreshold");
+                if (xVal instanceof Float) { _maxThreshold = xVal; }
+                else if (xVal instanceof Number) { _maxThreshold = xVal.toFloat(); }
+            }
+            if (detection.get("cooldownMs") != null) {
+                var cVal = detection.get("cooldownMs");
+                if (cVal instanceof Number) { _cooldownMs = cVal; }
+            }
+            if (detection.get("profile") != null) {
+                _detectionProfile = detection.get("profile").toString();
+            }
+        } else if (config.get("sensitivity") != null) {
+            // Legacy format: just sensitivity value
             var sVal = config.get("sensitivity");
             if (sVal instanceof Float) {
                 _sensitivity = sVal;
             } else if (sVal instanceof Number) {
                 _sensitivity = sVal.toFloat();
             }
+            // Derive other values from sensitivity
+            _minThreshold = _sensitivity * 0.5;
+            _maxThreshold = _sensitivity * 3.0;
         }
 
         _startTime = Time.now().value();
@@ -184,6 +218,10 @@ class SessionManager {
     function isCompleted() as Boolean { return _isCompleted; }
     function wasAutoDetected() as Boolean { return _autoDetected; }
     function getSensitivity() as Float { return _sensitivity; }
+    function getMinThreshold() as Float { return _minThreshold; }
+    function getMaxThreshold() as Float { return _maxThreshold; }
+    function getCooldownMs() as Number { return _cooldownMs; }
+    function getDetectionProfile() as String { return _detectionProfile; }
     function getManualOverrides() as Number { return _manualOverrides; }
     function getFlinchCount() as Number { return _flinchCount; }
     function getStartTimestamp() as Number { return _startTimestamp; }
@@ -225,6 +263,10 @@ class SessionManager {
         _manualOverrides = 0;
         _autoDetected = false;
         _sensitivity = 3.5;
+        _minThreshold = 1.6;
+        _maxThreshold = 9.6;
+        _cooldownMs = 80;
+        _detectionProfile = "handgun";
         _isActive = false;
         _isCompleted = false;
     }

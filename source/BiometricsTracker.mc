@@ -278,13 +278,15 @@ class BiometricsTracker {
         
         // Trim if too large
         if (_hrTimeline.size() > MAX_HR_SAMPLES) {
-            _hrTimeline = _hrTimeline.slice(-MAX_HR_SAMPLES, null) as Array<HRSample>;
+            var startIdx = _hrTimeline.size() - MAX_HR_SAMPLES;
+            _hrTimeline = _hrTimeline.slice(startIdx, _hrTimeline.size()) as Array<HRSample>;
         }
         
         // Add to rolling buffer (for averages)
         _hrBuffer.add(hr);
         if (_hrBuffer.size() > 30) {  // Keep last 30 seconds
-            _hrBuffer = _hrBuffer.slice(-30, null) as Array<Number>;
+            var startIdx = _hrBuffer.size() - 30;
+            _hrBuffer = _hrBuffer.slice(startIdx, _hrBuffer.size()) as Array<Number>;
         }
         
         // Update stats
@@ -299,7 +301,8 @@ class BiometricsTracker {
             var rrInterval = (60000.0 / hr).toNumber();
             _rrIntervals.add(rrInterval);
             if (_rrIntervals.size() > 30) {
-                _rrIntervals = _rrIntervals.slice(-30, null) as Array<Number>;
+                var startIdx = _rrIntervals.size() - 30;
+                _rrIntervals = _rrIntervals.slice(startIdx, _rrIntervals.size()) as Array<Number>;
             }
         }
     }
@@ -317,7 +320,9 @@ class BiometricsTracker {
         // We detect breathing by looking at HR oscillations
         
         // Get recent RR intervals
-        var recent = _rrIntervals.slice(-BREATH_WINDOW_SAMPLES, null) as Array<Number>;
+        var startIdx = _rrIntervals.size() - BREATH_WINDOW_SAMPLES;
+        if (startIdx < 0) { startIdx = 0; }
+        var recent = _rrIntervals.slice(startIdx, _rrIntervals.size()) as Array<Number>;
         
         // Calculate variance (indicator of HRV)
         var mean = 0.0;
@@ -374,7 +379,8 @@ class BiometricsTracker {
         _breathTimeline.add(breathSample);
         
         if (_breathTimeline.size() > MAX_BREATH_SAMPLES) {
-            _breathTimeline = _breathTimeline.slice(-MAX_BREATH_SAMPLES, null) as Array<BreathSample>;
+            var breathStartIdx = _breathTimeline.size() - MAX_BREATH_SAMPLES;
+            _breathTimeline = _breathTimeline.slice(breathStartIdx, _breathTimeline.size()) as Array<BreathSample>;
         }
     }
     
@@ -486,8 +492,11 @@ class BiometricsTracker {
         }
         
         // Get recent R-R intervals (last 30 seconds)
-        var intervals = _rrIntervals.size() > 30 ? 
-            _rrIntervals.slice(-30, null) as Array<Number> : _rrIntervals;
+        var intervals = _rrIntervals;
+        if (_rrIntervals.size() > 30) {
+            var intervalStartIdx = _rrIntervals.size() - 30;
+            intervals = _rrIntervals.slice(intervalStartIdx, _rrIntervals.size()) as Array<Number>;
+        }
         
         // Calculate RMSSD (Root Mean Square of Successive Differences)
         var sumSquaredDiffs = 0.0;

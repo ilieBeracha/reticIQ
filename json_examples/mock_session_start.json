@@ -1,21 +1,21 @@
 {
   "type": "SESSION_START",
   "payload": {
-    "sessionId": "session_20251231_143052_abc123",
-    "drillName": "Bill Drill",
-    "drillGoal": "6 shots under 2 seconds",
-    "drillType": "timed",
-    "inputMethod": "manual",
-    "distance": 7,
-    "rounds": 6,
+    "sessionId": "mock_test_001",
+    "drillName": "Quick Test",
+    "drillGoal": "Test detection config",
+    "drillType": "practice",
+    "inputMethod": "auto",
+    "distance": 10,
+    "rounds": 5,
     "strings": 1,
     "timeLimit": 0,
-    "parTime": 2.0,
+    "parTime": 0,
     "watchMode": "primary",
     "autoDetect": true,
     
     "detection": {
-      "sensitivity": 0.2,
+      "sensitivity": 3.2,
       "minThreshold": 1.6,
       "maxThreshold": 9.6,
       "cooldownMs": 80,
@@ -23,8 +23,6 @@
     },
     
     "sensitivity": 3.2,
-    
-    "emkv": false,
     "vrcv": true
   }
 }

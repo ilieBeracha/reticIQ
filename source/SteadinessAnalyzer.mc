@@ -136,7 +136,8 @@ class SteadinessAnalyzer {
             if (interval > 0 && interval < 200) {  // Sanity check
                 _sampleIntervals.add(interval);
                 if (_sampleIntervals.size() > 20) {
-                    _sampleIntervals = _sampleIntervals.slice(-20, null) as Array<Number>;
+                    var sampleStartIdx = _sampleIntervals.size() - 20;
+                    _sampleIntervals = _sampleIntervals.slice(sampleStartIdx, _sampleIntervals.size()) as Array<Number>;
                 }
                 // Update estimated rate
                 if (_sampleIntervals.size() >= 5) {
