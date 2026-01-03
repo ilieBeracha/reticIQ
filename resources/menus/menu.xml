@@ -1,4 +1,7 @@
 <menu id="MainMenu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
+    <menu-item id="test_timeline" label="🧪 TEST TIMELINE" />
+    <menu-item id="mock_phone" label="📱 Mock Phone" />
+    <menu-item id="demo_session" label="▶ DEMO (Auto)" />
     <menu-item id="mock_session" label="Primary Mode" />
     <menu-item id="mock_timer" label="Timer Mode" />
     <menu-item id="mock_auto" label="Auto Detect" />

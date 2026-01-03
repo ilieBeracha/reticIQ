@@ -11,13 +11,13 @@ class reticccMenuDelegate extends WatchUi.MenuInputDelegate {
 
     function onMenuItem(item as Symbol) as Void {
         var app = Application.getApp() as reticccApp;
-        
+
         if (item == :mock_session) {
             // Start PRIMARY mode session (shot counter)
             app.startMockSession();
             System.println("[MENU] Primary mode session started");
             WatchUi.popView(WatchUi.SLIDE_DOWN);
-            
+
         } else if (item == :mock_timer) {
             // Start SUPPLEMENTARY mode session (timer only)
             app.startMockSupplementarySession();

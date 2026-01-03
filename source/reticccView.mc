@@ -102,6 +102,7 @@ class reticccView extends WatchUi.View {
     
     // Debug/status tracking
     private var _lastMsg as String = "";
+    private var _errorMsg as String = "";  // Full error message for display
     
     // Auto shot detection
     private var _shotDetector as ShotDetector?;
@@ -111,6 +112,11 @@ class reticccView extends WatchUi.View {
     private var _pendingSession as Dictionary?;
     // Preview mode - shows the pending session UI frozen until user starts
     private var _isPreview as Boolean = false;
+
+    // Demo mode - auto-fires shots at intervals
+    private var _demoMode as Boolean = false;
+    private var _demoShotsRemaining as Number = 0;
+    private var _demoNextShotTime as Number = 0;  // System.getTimer() when next shot should fire
     
     // =========================================================================
     // DYNAMIC FONT SELECTION - Pick best font for available space
@@ -174,12 +180,17 @@ class reticccView extends WatchUi.View {
     
     // Callback when a shot is detected with steadiness analysis
     function onShotWithSteadiness(steadiness as SteadinessResult) as Void {
-        // Store the result
+        // Store the result locally for UI display
         _steadinessResults.add(steadiness);
         _lastSteadinessGrade = steadiness.gradeString;
         _lastSteadinessScore = steadiness.steadinessScore.toNumber();
-        
-        System.println("[VIEW] Shot " + steadiness.shotNumber + " steadiness: " + 
+
+        // Record to SessionManager for payload building
+        var app = Application.getApp() as reticccApp;
+        var sessionMgr = app.getSessionManager();
+        sessionMgr.recordSteadinessResult(steadiness);
+
+        System.println("[VIEW] Shot " + steadiness.shotNumber + " steadiness: " +
                       _lastSteadinessGrade + " (" + _lastSteadinessScore + ")");
     }
 
@@ -205,6 +216,7 @@ class reticccView extends WatchUi.View {
         _timer = new Timer.Timer();
         // Use 100ms updates for smooth timer display in supplementary mode
         _timer.start(method(:onTimerTick), 100, true);
+        System.println("[VIEW] onShow - timer started, demoMode: " + _demoMode + ", demoShots: " + _demoShotsRemaining);
         // Refresh weather data when view is shown
         fetchWeatherFromWatch();
     }
@@ -285,18 +297,40 @@ class reticccView extends WatchUi.View {
     
     // Timer callback - update elapsed time and check time limit
     function onTimerTick() as Void {
+        // Demo mode check - runs even before session timer display logic
+        if (_demoMode && _demoShotsRemaining > 0) {
+            var now = System.getTimer();
+            if (now >= _demoNextShotTime) {
+                System.println("[DEMO] Firing shot, remaining: " + _demoShotsRemaining);
+                var result = addShot();
+                System.println("[DEMO] Shot result: " + result);
+                _demoShotsRemaining--;
+
+                if (_demoShotsRemaining > 0) {
+                    // Schedule next shot: 300-600ms interval
+                    var shotNum = 6 - _demoShotsRemaining;
+                    var nextDelay = 300 + (shotNum * 50);  // Gets slightly slower
+                    _demoNextShotTime = now + nextDelay;
+                    System.println("[DEMO] Next shot in " + nextDelay + "ms");
+                } else {
+                    System.println("[DEMO] All shots fired!");
+                    _demoMode = false;
+                }
+            }
+        }
+
         if (_state == STATE_SESSION_ACTIVE && _startTime > 0) {
             var now = System.getTimer();
             _elapsedMs = now - _startTime;
             _elapsedSeconds = _elapsedMs / 1000;
-            
+
             // Check time limit enforcement (only in PRIMARY mode)
             if (_watchMode == WATCH_MODE_PRIMARY && _timeLimit > 0 && _elapsedSeconds >= _timeLimit) {
                 _sessionCompleted = false;  // Time ran out, not completed by shots
                 finishSession();
                 return;
             }
-            
+
             WatchUi.requestUpdate();
         }
     }
@@ -403,11 +437,16 @@ class reticccView extends WatchUi.View {
         _splitTimes = [];
         _currentPage = PAGE_MAIN;
         _manualOverrides = 0;
-        
+
         // Reset steadiness tracking
         _steadinessResults = [];
         _lastSteadinessGrade = "";
         _lastSteadinessScore = 0;
+
+        // Initialize SessionManager with session config
+        var app = Application.getApp() as reticccApp;
+        var sessionMgr = app.getSessionManager();
+        sessionMgr.startSession(data);
         
         // Extract session data
         _sessionId = data.get("sessionId") != null ? data.get("sessionId").toString() : "";
@@ -468,15 +507,20 @@ class reticccView extends WatchUi.View {
             }
         }
         
-        // Start auto-detection if enabled and in PRIMARY mode
-        if (_autoDetectEnabled && _watchMode == WATCH_MODE_PRIMARY && _shotDetector != null) {
-            System.println("[RETIC] Starting shot detector...");
-            _shotDetector.setEnabled(true);
+        // ALWAYS start biometrics/timeline tracking for any session
+        if (_shotDetector != null) {
             _shotDetector.resetDetections();
-            _shotDetector.startMonitoring();
-            System.println("[RETIC] Auto shot detection ENABLED");
-        } else {
-            System.println("[RETIC] Auto shot detection NOT started");
+            _shotDetector.startMonitoring(_sessionId);  // This starts biometrics + timeline
+            System.println("[RETIC] Biometrics/timeline tracking STARTED");
+
+            // Only enable auto shot DETECTION if configured
+            if (_autoDetectEnabled && _watchMode == WATCH_MODE_PRIMARY) {
+                _shotDetector.setEnabled(true);
+                System.println("[RETIC] Auto shot detection ENABLED");
+            } else {
+                _shotDetector.setEnabled(false);
+                System.println("[RETIC] Auto shot detection DISABLED (manual mode)");
+            }
         }
         
         System.println("[RETIC] Session started - Mode: " + watchModeStr + ", Rounds: " + _maxBullets + ", Par: " + _parTime + ", AutoDetect: " + _autoDetectEnabled);
@@ -498,7 +542,7 @@ class reticccView extends WatchUi.View {
         if (_state != STATE_SESSION_ACTIVE) {
             return :inactive;
         }
-        
+
         // In PRIMARY mode, enforce shot limits
         if (_watchMode == WATCH_MODE_PRIMARY) {
             if (_maxBullets > 0 && _shotsFired >= _maxBullets) {
@@ -506,29 +550,40 @@ class reticccView extends WatchUi.View {
             }
         }
         // In SUPPLEMENTARY mode, no limit enforcement - always allow taps
-        
+
         _shotsFired++;
-        
+
         // Track manual override if auto-detect is enabled
         if (_autoDetectEnabled) {
             _manualOverrides++;
         }
-        
+
         // Capture biometrics at shot moment (HR, breathing)
         if (_shotDetector != null) {
             var tracker = _shotDetector.getBiometricsTracker();
             tracker.recordShotBiometrics(_shotsFired);
+            // Also record to timeline for chunked sync (manual shots don't have steadiness data)
+            tracker.recordShotForTimeline(_shotsFired, 0, false, false);
             System.println("[RETIC] Captured biometrics for manual shot #" + _shotsFired);
         }
-        
+
         // Record split time
         var now = System.getTimer();
+        var splitMs = 0;
         if (_lastShotTime > 0 && _lastShotTime != _startTime) {
-            var splitMs = now - _lastShotTime;
+            splitMs = now - _lastShotTime;
             _splitTimes.add(splitMs);
         }
         _lastShotTime = now;
-        
+
+        // Record to SessionManager for payload building
+        var app = Application.getApp() as reticccApp;
+        var sessionMgr = app.getSessionManager();
+        sessionMgr.recordShot(now - _startTime, splitMs);
+        if (_autoDetectEnabled) {
+            sessionMgr.recordManualOverride();
+        }
+
         // Trigger visual flash feedback
         _shotFlashActive = true;
         if (_shotFlashTimer != null) {
@@ -536,16 +591,16 @@ class reticccView extends WatchUi.View {
         }
         _shotFlashTimer = new Timer.Timer();
         _shotFlashTimer.start(method(:onShotFlashEnd), 200, false);
-        
+
         WatchUi.requestUpdate();
-        
+
         // In PRIMARY mode, auto-complete when reaching max bullets
         if (_watchMode == WATCH_MODE_PRIMARY && _maxBullets > 0 && _shotsFired >= _maxBullets) {
             _sessionCompleted = true;
             sendResultsToPhone();
             return :completed;
         }
-        
+
         return :added;
     }
     
@@ -578,31 +633,37 @@ class reticccView extends WatchUi.View {
         if (_state != STATE_SESSION_ACTIVE) {
             return;
         }
-        
+
         // In PRIMARY mode, auto-detected shots count toward limit
         if (_watchMode == WATCH_MODE_PRIMARY) {
             // Check if we're already at max
             if (_maxBullets > 0 && _shotsFired >= _maxBullets) {
                 return;  // Don't add more shots
             }
-            
+
             _shotsFired++;
-            
+
             // Capture biometrics at shot moment (HR, breathing)
             if (_shotDetector != null) {
                 var tracker = _shotDetector.getBiometricsTracker();
                 tracker.recordShotBiometrics(_shotsFired);
                 System.println("[RETIC] Captured biometrics for auto-detected shot #" + _shotsFired);
             }
-            
+
             // Record split time
             var now = System.getTimer();
+            var splitMs = 0;
             if (_lastShotTime > 0 && _lastShotTime != _startTime) {
-                var splitMs = now - _lastShotTime;
+                splitMs = now - _lastShotTime;
                 _splitTimes.add(splitMs);
             }
             _lastShotTime = now;
-            
+
+            // Record to SessionManager for payload building
+            var app = Application.getApp() as reticccApp;
+            var sessionMgr = app.getSessionManager();
+            sessionMgr.recordShot(now - _startTime, splitMs);
+
             // Trigger visual flash feedback
             _shotFlashActive = true;
             if (_shotFlashTimer != null) {
@@ -610,9 +671,9 @@ class reticccView extends WatchUi.View {
             }
             _shotFlashTimer = new Timer.Timer();
             _shotFlashTimer.start(method(:onShotFlashEnd), 200, false);
-            
+
             WatchUi.requestUpdate();
-            
+
             // Check if we've reached max bullets
             if (_maxBullets > 0 && _shotsFired >= _maxBullets) {
                 _sessionCompleted = true;
@@ -626,19 +687,24 @@ class reticccView extends WatchUi.View {
         if (_state != STATE_SESSION_ACTIVE) {
             return :inactive;
         }
-        
+
         if (_shotsFired <= 0) {
             return :blocked;
         }
-        
+
         _shotsFired--;
         _manualOverrides++;  // Track correction
-        
+
         // Remove last split time if any
         if (_splitTimes.size() > 0) {
             _splitTimes = _splitTimes.slice(0, _splitTimes.size() - 1) as Array<Number>;
         }
-        
+
+        // Remove from SessionManager as well
+        var app = Application.getApp() as reticccApp;
+        var sessionMgr = app.getSessionManager();
+        sessionMgr.removeLastShot();
+
         // Visual feedback - different flash
         _shotFlashActive = true;
         if (_shotFlashTimer != null) {
@@ -646,7 +712,7 @@ class reticccView extends WatchUi.View {
         }
         _shotFlashTimer = new Timer.Timer();
         _shotFlashTimer.start(method(:onShotFlashEnd), 200, false);
-        
+
         // Haptic feedback (triple short pulse for undo)
         if (Attention has :vibrate) {
             var vibeData = [
@@ -682,105 +748,21 @@ class reticccView extends WatchUi.View {
     }
     
     // Send results back to phone and end session (TWO-PHASE SYNC)
+    // Now delegates to centralized app.onSessionComplete() which uses
+    // SessionManager + PayloadBuilder for compact, consistent payloads
     function sendResultsToPhone() as Void {
         var app = Application.getApp() as reticccApp;
-        
-        // Stop shot detection
-        if (_shotDetector != null) {
-            _shotDetector.stopMonitoring();
-        }
-        
-        // Calculate final elapsed time with precision
-        var finalElapsedMs = System.getTimer() - _startTime;
-        var elapsedSecs = finalElapsedMs.toFloat() / 1000.0;
-        
-        // Get detection threshold
-        var detectionThreshold = 0.0;
-        if (_shotDetector != null) {
-            detectionThreshold = _shotDetector.getThreshold();
-        }
-        
-        // =====================================================================
-        // PHASE 1: Build SESSION_SUMMARY (~300 bytes, instant delivery)
-        // =====================================================================
-        var avgSplit = calculateAvgSplit();
-        var bestSplit = 0;
-        var worstSplit = 0;
-        if (_splitTimes.size() > 0) {
-            bestSplit = _splitTimes[0];
-            worstSplit = _splitTimes[0];
-            for (var i = 0; i < _splitTimes.size(); i++) {
-                if (_splitTimes[i] < bestSplit) { bestSplit = _splitTimes[i]; }
-                if (_splitTimes[i] > worstSplit) { worstSplit = _splitTimes[i]; }
-            }
-        }
-        
-        // Get HR summary
-        var hrSummary = {"avg" => 0, "max" => 0, "min" => 0};
-        var stressSummary = {"avg" => 0, "trend" => "stable"};
-        var breathRate = 0;
-        if (_shotDetector != null) {
-            var tracker = _shotDetector.getBiometricsTracker();
-            var fullSummary = tracker.getSessionSummary();
-            hrSummary.put("avg", fullSummary.get("avgHR"));
-            hrSummary.put("max", fullSummary.get("maxHR"));
-            hrSummary.put("min", fullSummary.get("minHR"));
-            stressSummary.put("avg", fullSummary.get("stressAvg"));
-            stressSummary.put("trend", fullSummary.get("stressTrend"));
-            breathRate = fullSummary.get("avgBreathRate") as Number;
-        }
-        
-        // Get steadiness summary
-        var steadinessSummary = {"avg" => 0, "trend" => "stable"};
-        if (_steadinessResults.size() > 0) {
-            var totalScore = 0.0;
-            for (var i = 0; i < _steadinessResults.size(); i++) {
-                totalScore += _steadinessResults[i].steadinessScore;
-            }
-            steadinessSummary.put("avg", (totalScore / _steadinessResults.size()).toNumber());
-            if (_shotDetector != null) {
-                steadinessSummary.put("trend", _shotDetector.getSteadinessAnalyzer().getSessionTrend());
-            }
-        }
-        
-        var summary = {
-            "sessionId" => _sessionId,
-            "shotsFired" => _shotsFired,
-            "elapsedTime" => elapsedSecs,
-            "distance" => _distance,
-            "completed" => _sessionCompleted,
-            "avgSplit" => avgSplit,
-            "bestSplit" => bestSplit,
-            "worstSplit" => worstSplit,
-            "hr" => hrSummary,
-            "stress" => stressSummary,
-            "steadiness" => steadinessSummary,
-            "breathRate" => breathRate
-        };
-        
-        // =====================================================================
-        // PHASE 2: Build SESSION_DETAILS (full data, background delivery)
-        // =====================================================================
-        var steadinessData = buildSteadinessResults();
-        var biometricsData = buildBiometricsResults();
-        var performanceData = buildPerformanceAnalytics(finalElapsedMs);
-        
-        var details = {
-            "sessionId" => _sessionId,
-            "splitTimes" => _splitTimes,
-            "autoDetected" => _autoDetectEnabled,
-            "detectionSensitivity" => detectionThreshold,
-            "manualOverrides" => _manualOverrides,
-            "steadiness" => steadinessData,
-            "biometrics" => biometricsData,
-            "performance" => performanceData
-        };
-        
-        System.println("[RETIC] Two-phase sync - Shots: " + _shotsFired + ", Time: " + elapsedSecs + "s");
-        System.println("[RETIC] Summary size ~300 bytes, Details has " + _splitTimes.size() + " splits, " + _steadinessResults.size() + " shots");
-        
-        // Send with two-phase ACK mechanism
-        app.sendSessionWithTwoPhase(_sessionId, summary, details);
+
+        // Update SessionManager with final hit count
+        var sessionMgr = app.getSessionManager();
+        sessionMgr.setHits(_shotsFired);  // In this version, hits = shots fired
+
+        System.println("[VIEW] sendResultsToPhone - delegating to app.onSessionComplete()");
+        System.println("[VIEW] Shots: " + _shotsFired + ", Completed: " + _sessionCompleted);
+
+        // Delegate to centralized session completion handler
+        // This uses SessionManager data + PayloadBuilder for two-phase sync
+        app.onSessionComplete(_sessionCompleted, _shotDetector);
         
         // Move to ended state
         _state = STATE_SESSION_ENDED;
@@ -1012,18 +994,23 @@ class reticccView extends WatchUi.View {
         _parTime = 0;
         _autoDetectEnabled = false;
         _manualOverrides = 0;
-        
+
         // Reset steadiness data
         _steadinessResults = [];
         _lastSteadinessGrade = "";
         _lastSteadinessScore = 0;
-        
+
+        // Reset SessionManager
+        var app = Application.getApp() as reticccApp;
+        var sessionMgr = app.getSessionManager();
+        sessionMgr.reset();
+
         // Stop shot detection
         if (_shotDetector != null) {
             _shotDetector.stopMonitoring();
             _shotDetector.setEnabled(false);
         }
-        
+
         WatchUi.requestUpdate();
     }
 
@@ -1036,6 +1023,20 @@ class reticccView extends WatchUi.View {
     // Set last message (for status updates from app)
     function setLastMsg(msg as String) as Void {
         _lastMsg = msg;
+        _errorMsg = "";  // Clear error when setting normal message
+        WatchUi.requestUpdate();
+    }
+    
+    // Set error message (full error details for display)
+    function setErrorMsg(msg as String) as Void {
+        _errorMsg = msg;
+        _lastMsg = "";  // Clear normal msg when showing error
+        WatchUi.requestUpdate();
+    }
+    
+    // Clear error message
+    function clearError() as Void {
+        _errorMsg = "";
         WatchUi.requestUpdate();
     }
     
@@ -1087,6 +1088,27 @@ class reticccView extends WatchUi.View {
     // Check if auto-detection is currently enabled for session
     function isAutoDetectEnabled() as Boolean {
         return _autoDetectEnabled;
+    }
+
+    // Enable demo mode - auto-fires shots at intervals
+    function startDemoMode(shotCount as Number, delayMs as Number) as Void {
+        _demoMode = true;
+        _demoShotsRemaining = shotCount;
+        _demoNextShotTime = System.getTimer() + delayMs;
+        System.println("[DEMO] Demo mode enabled: " + shotCount + " shots, first in " + delayMs + "ms");
+
+        // Ensure timer is running (it may have been stopped by menu's onHide)
+        if (_timer == null) {
+            _timer = new Timer.Timer();
+            _timer.start(method(:onTimerTick), 100, true);
+            System.println("[DEMO] Timer restarted for demo mode");
+        }
+    }
+
+    // Stop demo mode
+    function stopDemoMode() as Void {
+        _demoMode = false;
+        _demoShotsRemaining = 0;
     }
     
     // Page navigation (called from delegate) - wraps around
@@ -1953,11 +1975,59 @@ class reticccView extends WatchUi.View {
         }
         
         // =====================================================================
-        // 3. BOTTOM - Sync status and tap to reset
+        // 3. BOTTOM - Sync status / Error display and tap to reset
         // =====================================================================
         
-        // Show sync status
-        if (_lastMsg != null && !_lastMsg.equals("")) {
+        // Show FULL ERROR MESSAGE if present (takes priority)
+        if (_errorMsg != null && !_errorMsg.equals("")) {
+            // Error display - RED, multi-line capable
+            dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
+            
+            // Split error message if too long
+            var errorLen = _errorMsg.length();
+            if (errorLen > 25) {
+                // Find a good split point (space near middle)
+                var splitIdx = 0;
+                var midPoint = errorLen / 2;
+                for (var i = midPoint; i < errorLen && i < midPoint + 10; i++) {
+                    if (_errorMsg.substring(i, i + 1).equals(" ") || 
+                        _errorMsg.substring(i, i + 1).equals(":") ||
+                        _errorMsg.substring(i, i + 1).equals("-")) {
+                        splitIdx = i;
+                        break;
+                    }
+                }
+                if (splitIdx == 0) {
+                    // No good split, try before midpoint
+                    for (var i = midPoint; i > 5; i--) {
+                        if (_errorMsg.substring(i, i + 1).equals(" ") ||
+                            _errorMsg.substring(i, i + 1).equals(":")) {
+                            splitIdx = i;
+                            break;
+                        }
+                    }
+                }
+                
+                if (splitIdx > 0) {
+                    // Two lines
+                    var line1 = _errorMsg.substring(0, splitIdx);
+                    var line2 = _errorMsg.substring(splitIdx + 1, errorLen);
+                    dc.drawText(centerX, height - margin - 45, Graphics.FONT_XTINY, line1, Graphics.TEXT_JUSTIFY_CENTER);
+                    dc.drawText(centerX, height - margin - 30, Graphics.FONT_XTINY, line2, Graphics.TEXT_JUSTIFY_CENTER);
+                } else {
+                    // Single line with smaller font
+                    dc.drawText(centerX, height - margin - 35, Graphics.FONT_XTINY, _errorMsg, Graphics.TEXT_JUSTIFY_CENTER);
+                }
+            } else {
+                // Short error - single line
+                dc.drawText(centerX, height - margin - 35, Graphics.FONT_XTINY, _errorMsg, Graphics.TEXT_JUSTIFY_CENTER);
+            }
+            
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, height - margin - 10, Graphics.FONT_XTINY, "TAP to clear", Graphics.TEXT_JUSTIFY_CENTER);
+        }
+        // Show normal sync status
+        else if (_lastMsg != null && !_lastMsg.equals("")) {
             var syncColor = Graphics.COLOR_LT_GRAY;
             if (_lastMsg.find("✓") != null || _lastMsg.find("Synced") != null) {
                 syncColor = Graphics.COLOR_GREEN;
@@ -1968,9 +2038,12 @@ class reticccView extends WatchUi.View {
             }
             dc.setColor(syncColor, Graphics.COLOR_TRANSPARENT);
             dc.drawText(centerX, height - margin - 28, Graphics.FONT_TINY, _lastMsg, Graphics.TEXT_JUSTIFY_CENTER);
+            
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, height - margin - 10, Graphics.FONT_XTINY, "TAP to reset", Graphics.TEXT_JUSTIFY_CENTER);
+        } else {
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(centerX, height - margin - 10, Graphics.FONT_XTINY, "TAP to reset", Graphics.TEXT_JUSTIFY_CENTER);
         }
-        
-        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(centerX, height - margin - 10, Graphics.FONT_XTINY, "TAP to reset", Graphics.TEXT_JUSTIFY_CENTER);
     }
 }

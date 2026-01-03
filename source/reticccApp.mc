@@ -11,6 +11,7 @@ import Toybox.Application.Storage;
 var mainView as reticccView?;
 
 // Message type constants - MUST match your React Native AppConstants
+// Protocol v2: 2-phase sync (SESSION_SUMMARY -> TIMELINE_CHUNK)
 module MessageTypes {
     const PING = "PING";
     const PONG = "PONG";
@@ -20,39 +21,115 @@ module MessageTypes {
     const SESSION_START = "SESSION_START";
     const SESSION_END = "SESSION_END";
     const SESSION_RESULT = "SESSION_RESULT";      // Legacy - keep for compatibility
-    const SESSION_SUMMARY = "SESSION_SUMMARY";    // Phase 1: Quick summary (~300 bytes)
-    const SESSION_DETAILS = "SESSION_DETAILS";    // Phase 2: Full data (background)
+    const SESSION_SUMMARY = "SESSION_SUMMARY";    // Phase 1: Summary + all metadata (~1KB)
+    const TIMELINE_CHUNK = "TIMELINE_CHUNK";      // Phase 2: Biometric time-series chunks
     const WEATHER = "WEATHER";
 }
 
-// Sync phase enum
+// Sync phase enum (Protocol v2: 2-phase sync)
 enum SyncPhase {
     SYNC_IDLE,           // No sync in progress
     SYNC_SUMMARY,        // Waiting for summary ACK
-    SYNC_DETAILS         // Waiting for details ACK
+    SYNC_TIMELINE        // Waiting for timeline chunk ACK
 }
 
 // Storage keys for persistent data
 module StorageKeys {
     const PENDING_SESSIONS = "pending_sessions";
-    const PENDING_DETAILS = "pending_details";    // Full details awaiting send
+    const PENDING_TIMELINE = "pending_timeline";  // Timeline chunks awaiting send
     const LAST_SEND_ATTEMPT = "last_send_attempt";
 }
 
 class reticccApp extends Application.AppBase {
-    
-    // Two-phase sync state
+
+    // Multi-phase sync state (Protocol v2: summary -> timeline)
     private var _syncPhase as SyncPhase = SYNC_IDLE;
     private var _pendingAckSessionId as String? = null;
     private var _ackTimer as Timer.Timer? = null;
     private var _ackTimeoutMs as Number = 5000;  // 5 second timeout for ACK
     private var _pendingSessionData as Dictionary? = null;
-    private var _pendingDetailsData as Dictionary? = null;  // Full details for phase 2
     private var _retryCount as Number = 0;
     private var _maxRetries as Number = 3;
 
+    // Timeline chunk sync state (phase 3)
+    private var _timelineChunks as Array<Dictionary>?;
+    private var _currentChunkIndex as Number = 0;
+    private var _totalChunks as Number = 0;
+
+    // Session management modules (two-phase sync architecture)
+    private var _sessionManager as SessionManager?;
+    private var _payloadBuilder as PayloadBuilder?;
+
     function initialize() {
         AppBase.initialize();
+        _sessionManager = new SessionManager();
+        _payloadBuilder = new PayloadBuilder();
+    }
+
+    // Get session manager for View integration
+    function getSessionManager() as SessionManager {
+        if (_sessionManager == null) {
+            _sessionManager = new SessionManager();
+        }
+        return _sessionManager as SessionManager;
+    }
+
+    // Get payload builder
+    function getPayloadBuilder() as PayloadBuilder {
+        if (_payloadBuilder == null) {
+            _payloadBuilder = new PayloadBuilder();
+        }
+        return _payloadBuilder as PayloadBuilder;
+    }
+
+    // Called by View when session completes (Protocol v2: 2-phase sync)
+    function onSessionComplete(
+        completed as Boolean,
+        shotDetector as ShotDetector?
+    ) as Void {
+        var sessionMgr = getSessionManager();
+        var payloadBldr = getPayloadBuilder();
+
+        // End the session in SessionManager
+        sessionMgr.endSession(completed);
+
+        // Get biometrics and steadiness trackers from ShotDetector
+        var bioTracker = null as BiometricsTracker?;
+        var steadyAnalyzer = null as SteadinessAnalyzer?;
+        if (shotDetector != null) {
+            bioTracker = shotDetector.getBiometricsTracker();
+            steadyAnalyzer = shotDetector.getSteadinessAnalyzer();
+            shotDetector.stopMonitoring();
+        }
+
+        // Build summary payload (Protocol v2: no separate details phase)
+        var payloads = payloadBldr.build(sessionMgr, bioTracker, steadyAnalyzer);
+        var summary = payloads.get("summary") as Dictionary;
+
+        // Collect timeline chunks from biometrics tracker
+        _timelineChunks = null;
+        _currentChunkIndex = 0;
+        _totalChunks = 0;
+
+        if (bioTracker != null) {
+            var chunker = bioTracker.getTimelineChunker();
+            if (chunker != null && chunker.hasData()) {
+                _timelineChunks = chunker.getAllChunks();
+                _totalChunks = _timelineChunks.size();
+                System.println("[APP] Timeline: " + chunker.getPointCount() + " points, " + _totalChunks + " chunks");
+            }
+        }
+
+        var sessionId = sessionMgr.getSessionId();
+        System.println("[APP] onSessionComplete - sessionId: " + sessionId + ", completed: " + completed);
+        System.println("[APP] Summary keys: sid=" + summary.get("sid") + ", shots=" + summary.get("shots"));
+
+        // Initiate Protocol v2 sync (summary -> timeline chunks)
+        sendSessionSummary(sessionId, summary);
+
+        if (mainView != null) {
+            mainView.setLastMsg("Syncing...");
+        }
     }
 
     function onStart(state as Dictionary?) as Void {
@@ -145,24 +222,23 @@ class reticccApp extends Application.AppBase {
     }
     
     // =========================================================================
-    // TWO-PHASE SESSION SYNC - Reliable Delivery
-    // Phase 1: SESSION_SUMMARY (instant, ~300 bytes)
-    // Phase 2: SESSION_DETAILS (background, full data)
+    // PROTOCOL V2: TWO-PHASE SESSION SYNC - Reliable Delivery
+    // Phase 1: SESSION_SUMMARY (instant, ~1KB)
+    // Phase 2: TIMELINE_CHUNK (biometric time-series, after summary ACK)
     // =========================================================================
     
-    // Start two-phase sync: send summary first, then details after ACK
-    function sendSessionWithTwoPhase(sessionId as String, summary as Dictionary, details as Dictionary) as Void {
-        System.println("[SYNC] Starting two-phase sync for: " + sessionId);
+    // Start Protocol v2 sync: send summary first, then timeline after ACK
+    function sendSessionSummary(sessionId as String, summary as Dictionary) as Void {
+        System.println("[SYNC] Starting Protocol v2 sync for: " + sessionId);
         
         // Store pending data
         _pendingAckSessionId = sessionId;
         _pendingSessionData = summary;
-        _pendingDetailsData = details;
         _syncPhase = SYNC_SUMMARY;
         _retryCount = 0;
         
-        // Save details to storage (in case app crashes before phase 2)
-        saveDetailsToStorage(sessionId, details);
+        // Save summary to storage (in case app crashes before ACK)
+        saveSessionToStorage(sessionId, summary);
         
         // Phase 1: Send summary immediately
         System.println("[SYNC] Phase 1: Sending SESSION_SUMMARY");
@@ -176,83 +252,141 @@ class reticccApp extends Application.AppBase {
         }
     }
     
-    // Handle ACK received from phone (supports two-phase)
+    // Legacy wrapper for backward compatibility
+    function sendSessionWithTwoPhase(sessionId as String, summary as Dictionary, details as Dictionary) as Void {
+        // Protocol v2: details are ignored, go straight to timeline after summary
+        sendSessionSummary(sessionId, summary);
+    }
+    
+    // Handle ACK received from phone (Protocol v2: summary -> timeline chunks)
     private function handleAck(payload as Object?) as Void {
         if (payload == null || !(payload instanceof Dictionary)) {
             System.println("[ACK] Invalid ACK payload");
             return;
         }
-        
+
         var ackPayload = payload as Dictionary;
         var ackSessionId = ackPayload.get("sessionId");
-        var ackType = ackPayload.get("type");  // "summary" or "details"
-        
+        var ackType = ackPayload.get("type");  // "summary" or "timeline"
+        var ackStatus = ackPayload.get("status");
+
         var typeStr = (ackType != null) ? ackType.toString() : "unknown";
         System.println("[ACK] Received ACK type=" + typeStr + " for session: " + (ackSessionId != null ? ackSessionId.toString() : "null"));
-        
+
+        // Check for error status
+        if (ackStatus != null && ackStatus.toString().equals("error")) {
+            var errorMsg = ackPayload.get("error");
+            System.println("[ACK] Error from phone: " + (errorMsg != null ? errorMsg.toString() : "unknown"));
+            // Keep data for retry, show error
+            if (mainView != null) {
+                mainView.setLastMsg("Sync error");
+            }
+            return;
+        }
+
         // Check if this ACK matches our pending session
         if (ackSessionId == null || _pendingAckSessionId == null) {
             System.println("[ACK] No pending session or missing sessionId");
             return;
         }
-        
+
         if (!ackSessionId.toString().equals(_pendingAckSessionId)) {
             System.println("[ACK] sessionId mismatch. Expected: " + _pendingAckSessionId + ", Got: " + ackSessionId.toString());
             return;
         }
-        
+
         // Cancel timeout timer
         stopAckTimer();
-        
+
         if (_syncPhase == SYNC_SUMMARY) {
-            // Summary ACK received - now send details
-            System.println("[SYNC] ✓ Summary ACK received! Starting Phase 2...");
-            
+            // Summary ACK received - show success, then start timeline
+            System.println("[SYNC] ✓ Summary ACK received! Phone shows 'Session Recorded'");
+
             if (mainView != null) {
                 mainView.setLastMsg("Synced ✓");
             }
-            
-            // Phase 2: Send details in background
-            if (_pendingDetailsData != null) {
-                _syncPhase = SYNC_DETAILS;
-                _retryCount = 0;
-                
-                System.println("[SYNC] Phase 2: Sending SESSION_DETAILS");
-                sendMessage(MessageTypes.SESSION_DETAILS, _pendingDetailsData);
-                startAckTimer();
-                
-                // Don't update UI - user already sees success
+
+            // Remove summary from storage (successful delivery)
+            removeSessionFromStorage(_pendingAckSessionId);
+
+            // Phase 2: Start timeline chunk sync if there's data
+            startTimelineSync();
+
+        } else if (_syncPhase == SYNC_TIMELINE) {
+            // Timeline chunk ACK received - send next chunk or complete
+            var ackChunk = ackPayload.get("chunk");
+            System.println("[SYNC] Timeline chunk " + (_currentChunkIndex + 1) + "/" + _totalChunks + " ACK received");
+
+            _currentChunkIndex++;
+
+            if (_currentChunkIndex < _totalChunks) {
+                // Send next chunk
+                sendNextTimelineChunk();
             } else {
-                // No details to send (shouldn't happen)
-                System.println("[SYNC] No details to send, sync complete");
+                // All chunks sent successfully!
+                System.println("[SYNC] ✓✓ All " + _totalChunks + " timeline chunks sent! Sync complete!");
+
+                // Remove timeline from storage
+                removeTimelineFromStorage(_pendingAckSessionId);
+
+                // Clear state
                 clearSyncState();
-            }
-            
-        } else if (_syncPhase == SYNC_DETAILS) {
-            // Details ACK received - sync complete!
-            System.println("[SYNC] ✓✓ Details ACK received! Sync complete!");
-            
-            // Remove from storage (successful delivery)
-            removeDetailsFromStorage(_pendingAckSessionId);
-            
-            // Clear state
-            clearSyncState();
-            
-            if (mainView != null) {
-                mainView.setLastMsg("Synced ✓");
+
+                if (mainView != null) {
+                    mainView.setLastMsg("Synced ✓");
+                }
             }
         }
+    }
+
+    // Start timeline chunk sync (Phase 2 of Protocol v2)
+    private function startTimelineSync() as Void {
+        if (_timelineChunks == null || _totalChunks == 0) {
+            // No timeline data, sync complete
+            System.println("[SYNC] No timeline data, sync complete");
+            clearSyncState();
+            return;
+        }
+
+        System.println("[SYNC] Phase 2: Starting timeline sync (" + _totalChunks + " chunks)");
+        _syncPhase = SYNC_TIMELINE;
+        _currentChunkIndex = 0;
+        _retryCount = 0;
+
+        // Save timeline chunks to storage for recovery
+        if (_pendingAckSessionId != null) {
+            saveTimelineToStorage(_pendingAckSessionId, _timelineChunks);
+        }
+
+        // Send first chunk
+        sendNextTimelineChunk();
+    }
+
+    // Send the next timeline chunk
+    private function sendNextTimelineChunk() as Void {
+        if (_timelineChunks == null || _currentChunkIndex >= _totalChunks) {
+            return;
+        }
+
+        var chunk = _timelineChunks[_currentChunkIndex];
+        System.println("[SYNC] Sending timeline chunk " + (_currentChunkIndex + 1) + "/" + _totalChunks);
+
+        _retryCount = 0;
+        sendMessage(MessageTypes.TIMELINE_CHUNK, chunk);
+        startAckTimer();
     }
     
     // Clear all sync state
     private function clearSyncState() as Void {
         _pendingAckSessionId = null;
         _pendingSessionData = null;
-        _pendingDetailsData = null;
+        _timelineChunks = null;
+        _currentChunkIndex = 0;
+        _totalChunks = 0;
         _syncPhase = SYNC_IDLE;
         _retryCount = 0;
     }
-    
+
     // Start ACK timeout timer
     private function startAckTimer() as Void {
         stopAckTimer();  // Cancel any existing timer
@@ -270,43 +404,47 @@ class reticccApp extends Application.AppBase {
         }
     }
     
-    // ACK timeout callback - no ACK received in time
+    // ACK timeout callback - no ACK received in time (Protocol v2)
     function onAckTimeout() as Void {
         System.println("[ACK] ⚠ Timeout! No ACK received (phase=" + _syncPhase + ")");
-        
+
         _retryCount++;
-        
+
         if (_retryCount < _maxRetries) {
             // Retry sending current phase
             System.println("[ACK] Retry attempt " + _retryCount + "/" + _maxRetries);
-            
+
             if (_syncPhase == SYNC_SUMMARY && _pendingSessionData != null) {
                 sendMessage(MessageTypes.SESSION_SUMMARY, _pendingSessionData);
                 if (mainView != null) {
                     mainView.setLastMsg("Retry " + _retryCount + "...");
                 }
-            } else if (_syncPhase == SYNC_DETAILS && _pendingDetailsData != null) {
-                sendMessage(MessageTypes.SESSION_DETAILS, _pendingDetailsData);
-                // Don't update UI for details retry - user already sees success
+            } else if (_syncPhase == SYNC_TIMELINE && _timelineChunks != null) {
+                // Retry current timeline chunk
+                if (_currentChunkIndex < _totalChunks) {
+                    var chunk = _timelineChunks[_currentChunkIndex];
+                    sendMessage(MessageTypes.TIMELINE_CHUNK, chunk);
+                }
+                // Don't update UI for timeline retry
             }
-            
+
             startAckTimer();
         } else {
             // Max retries reached
             System.println("[ACK] Max retries reached for phase " + _syncPhase);
-            
+
             if (_syncPhase == SYNC_SUMMARY) {
-                // Summary failed - save both for later
+                // Summary failed - keep in storage for later
                 System.println("[ACK] Summary sync failed. Saved for later.");
                 if (mainView != null) {
                     mainView.setLastMsg("Saved offline");
                 }
-            } else if (_syncPhase == SYNC_DETAILS) {
-                // Details failed but summary succeeded - OK for now
-                System.println("[ACK] Details sync failed. Will retry later.");
-                // Details already in storage from earlier
+            } else if (_syncPhase == SYNC_TIMELINE) {
+                // Timeline failed but summary succeeded - OK for now
+                System.println("[ACK] Timeline sync failed at chunk " + (_currentChunkIndex + 1) + "/" + _totalChunks + ". Will retry later.");
+                // Timeline already in storage
             }
-            
+
             clearSyncState();
         }
     }
@@ -359,24 +497,6 @@ class reticccApp extends Application.AppBase {
         }
     }
     
-    // Save session details to local storage (for phase 2)
-    private function saveDetailsToStorage(sessionId as String, payload as Dictionary) as Void {
-        try {
-            var pending = Storage.getValue(StorageKeys.PENDING_DETAILS);
-            var pendingDict = {} as Dictionary<String, Dictionary>;
-            
-            if (pending != null && pending instanceof Dictionary) {
-                pendingDict = pending as Dictionary<String, Dictionary>;
-            }
-            
-            pendingDict.put(sessionId, payload);
-            Storage.setValue(StorageKeys.PENDING_DETAILS, pendingDict);
-            System.println("[STORAGE] Saved session details: " + sessionId);
-        } catch (ex) {
-            System.println("[STORAGE] Error saving details: " + ex.getErrorMessage());
-        }
-    }
-    
     // Remove session from storage (after successful ACK)
     private function removeSessionFromStorage(sessionId as String) as Void {
         try {
@@ -392,47 +512,77 @@ class reticccApp extends Application.AppBase {
             System.println("[STORAGE] Error removing session: " + ex.getErrorMessage());
         }
     }
-    
-    // Remove details from storage (after successful details ACK)
-    private function removeDetailsFromStorage(sessionId as String) as Void {
+
+    // Save timeline chunks to local storage (for phase 2 recovery)
+    private function saveTimelineToStorage(sessionId as String, chunks as Array<Dictionary>) as Void {
         try {
-            var pending = Storage.getValue(StorageKeys.PENDING_DETAILS);
-            
+            var pending = Storage.getValue(StorageKeys.PENDING_TIMELINE);
+            var pendingDict = {} as Dictionary<String, Object>;
+
             if (pending != null && pending instanceof Dictionary) {
-                var pendingDict = pending as Dictionary<String, Dictionary>;
-                pendingDict.remove(sessionId);
-                Storage.setValue(StorageKeys.PENDING_DETAILS, pendingDict);
-                System.println("[STORAGE] Removed details: " + sessionId);
+                pendingDict = pending as Dictionary<String, Object>;
             }
+
+            // Store chunks array and current index for resume
+            pendingDict.put(sessionId, {
+                "chunks" => chunks,
+                "index" => 0
+            });
+            Storage.setValue(StorageKeys.PENDING_TIMELINE, pendingDict);
+            System.println("[STORAGE] Saved " + chunks.size() + " timeline chunks: " + sessionId);
         } catch (ex) {
-            System.println("[STORAGE] Error removing details: " + ex.getErrorMessage());
+            System.println("[STORAGE] Error saving timeline: " + ex.getErrorMessage());
         }
     }
-    
-    // Check and retry pending sessions on app start/connection
+
+    // Remove timeline from storage (after all chunks sent)
+    private function removeTimelineFromStorage(sessionId as String) as Void {
+        try {
+            var pending = Storage.getValue(StorageKeys.PENDING_TIMELINE);
+
+            if (pending != null && pending instanceof Dictionary) {
+                var pendingDict = pending as Dictionary<String, Object>;
+                pendingDict.remove(sessionId);
+                Storage.setValue(StorageKeys.PENDING_TIMELINE, pendingDict);
+                System.println("[STORAGE] Removed timeline: " + sessionId);
+            }
+        } catch (ex) {
+            System.println("[STORAGE] Error removing timeline: " + ex.getErrorMessage());
+        }
+    }
+
+
+    // Check and retry pending sessions on app start/connection (Protocol v2)
     function checkPendingSessions() as Void {
         try {
-            // First check for pending details (phase 2 retries)
-            var pendingDetails = Storage.getValue(StorageKeys.PENDING_DETAILS);
-            if (pendingDetails != null && pendingDetails instanceof Dictionary) {
-                var detailsDict = pendingDetails as Dictionary<String, Dictionary>;
-                var detailKeys = detailsDict.keys();
+            // Check for pending timeline chunks first (phase 2 retries)
+            var pendingTimeline = Storage.getValue(StorageKeys.PENDING_TIMELINE);
+            if (pendingTimeline != null && pendingTimeline instanceof Dictionary) {
+                var timelineDict = pendingTimeline as Dictionary<String, Object>;
+                var timelineKeys = timelineDict.keys();
                 
-                if (detailKeys.size() > 0) {
-                    System.println("[STORAGE] Found " + detailKeys.size() + " pending details to sync");
-                    var firstKey = detailKeys[0] as String;
-                    var detailsData = detailsDict.get(firstKey);
+                if (timelineKeys.size() > 0) {
+                    System.println("[STORAGE] Found " + timelineKeys.size() + " pending timeline sync(s)");
+                    var firstKey = timelineKeys[0] as String;
+                    var timelineData = timelineDict.get(firstKey);
                     
-                    if (detailsData != null && detailsData instanceof Dictionary) {
-                        System.println("[STORAGE] Retrying details: " + firstKey);
-                        _pendingAckSessionId = firstKey;
-                        _pendingDetailsData = detailsData as Dictionary;
-                        _syncPhase = SYNC_DETAILS;
-                        _retryCount = 0;
+                    if (timelineData != null && timelineData instanceof Dictionary) {
+                        var data = timelineData as Dictionary;
+                        var chunks = data.get("chunks");
+                        var idx = data.get("index");
                         
-                        sendMessage(MessageTypes.SESSION_DETAILS, _pendingDetailsData);
-                        startAckTimer();
-                        return;  // Handle one at a time
+                        if (chunks != null && chunks instanceof Array) {
+                            System.println("[STORAGE] Retrying timeline: " + firstKey);
+                            _pendingAckSessionId = firstKey;
+                            _timelineChunks = chunks as Array<Dictionary>;
+                            _totalChunks = _timelineChunks.size();
+                            _currentChunkIndex = (idx != null) ? (idx as Number) : 0;
+                            _syncPhase = SYNC_TIMELINE;
+                            _retryCount = 0;
+                            
+                            sendNextTimelineChunk();
+                            return;  // Handle one at a time
+                        }
                     }
                 }
             }
@@ -601,7 +751,56 @@ class reticccApp extends Application.AppBase {
         }
     }
 
+    // =========================================================================
+    // DEMO MODE - Fully automated session for testing without a gun
+    // Auto-fires simulated shots with realistic timing
+    // =========================================================================
+
+    // Start a fully automated demo session
+    // Fires 6 simulated shots with realistic split times (0.3-0.8s)
+    function startDemoSession() as Void {
+        System.println("[DEMO] startDemoSession called");
+
+        if (mainView == null) {
+            System.println("[DEMO] ERROR: mainView is null!");
+            return;
+        }
+
+        // Load environment and personal data first
+        setMockEnvironment();
+        setMockPersonal();
+
+        // Use manual input mode to avoid needing real sensor data
+        var mockData = {
+            "sessionId" => "DEMO-" + Time.now().value().toString(),
+            "drillName" => "Demo Drill",
+            "drillGoal" => "6 shots auto-fire",
+            "drillType" => "timed",
+            "inputMethod" => "manual",
+            "watchMode" => "primary",
+            "distance" => 7,
+            "rounds" => 6,
+            "timeLimit" => 0,
+            "parTime" => 2,
+            "strings" => 1,
+            "autoDetect" => false,
+            "sensitivity" => 3.5
+        };
+
+        System.println("[DEMO] Starting session...");
+        mainView.startSession(mockData);
+        System.println("[DEMO] Session started, state: " + mainView.getState());
+
+        // Enable demo mode in the view - uses existing timer tick (more reliable)
+        mainView.startDemoMode(6, 1500);  // 6 shots, first after 1.5s
+        System.println("[DEMO] Demo mode activated");
+    }
+
     function onStop(state as Dictionary?) as Void {
+        // Clean up demo mode on app stop
+        if (mainView != null) {
+            mainView.stopDemoMode();
+        }
     }
 
     function getInitialView() as [Views] or [Views, InputDelegates] {
@@ -612,16 +811,23 @@ class reticccApp extends Application.AppBase {
 
 // Communication listener for transmit callbacks
 class CommListener extends Communications.ConnectionListener {
+    private var _msgType as String = "";
+
     function initialize() {
         ConnectionListener.initialize();
     }
 
+    function initWithType(msgType as String) {
+        ConnectionListener.initialize();
+        _msgType = msgType;
+    }
+
     function onComplete() as Void {
-        System.println("[COMM] ✓ Message sent successfully");
+        System.println("[COMM] ✓ " + _msgType + " sent successfully");
     }
 
     function onError() as Void {
-        System.println("[COMM] ✗ Message send FAILED - check phone connection");
+        System.println("[COMM] ✗ " + _msgType + " send FAILED - check phone connection");
         // Notify view of send failure
         if (mainView != null) {
             mainView.setLastMsg("Send failed!");

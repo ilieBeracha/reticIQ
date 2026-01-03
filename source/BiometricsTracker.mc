@@ -79,17 +79,22 @@ class ShotBiometrics {
 
 // Main biometrics tracker
 class BiometricsTracker {
-    
+
     // Configuration
     private const HR_SAMPLE_INTERVAL_MS = 1000;   // Sample HR every 1 second
     private const MAX_HR_SAMPLES = 600;           // 10 minutes of data
     private const MAX_BREATH_SAMPLES = 300;       // 5 minutes of breath data
     private const BREATH_WINDOW_SAMPLES = 10;     // Samples for breath detection
-    
+    private const TIMELINE_SAMPLE_INTERVAL_MS = 3000;  // Timeline sample every 3 seconds
+
     // State
     private var _isTracking as Boolean = false;
     private var _sessionStartTime as Number = 0;
     private var _sampleTimer as Timer.Timer?;
+    private var _lastTimelineSampleTime as Number = 0;
+
+    // Timeline chunker for reliable sync
+    private var _timelineChunker as TimelineChunker?;
     
     // Current readings
     private var _currentHR as Number = 0;
@@ -114,6 +119,10 @@ class BiometricsTracker {
     private var _avgHR as Float = 0.0;
     private var _hrSum as Number = 0;
     private var _hrCount as Number = 0;
+
+    // Start/end HR for Protocol v2 summary
+    private var _startHR as Number = 0;
+    private var _endHR as Number = 0;
     
     function initialize() {
         _hrTimeline = [];
@@ -121,6 +130,7 @@ class BiometricsTracker {
         _breathTimeline = [];
         _rrIntervals = [];
         _shotBiometrics = [];
+        _timelineChunker = new TimelineChunker();
     }
     
     // =========================================================================
@@ -128,15 +138,26 @@ class BiometricsTracker {
     // =========================================================================
     
     // Start tracking biometrics
-    function startTracking() as Void {
+    function startTracking(sessionId as String) as Void {
         if (_isTracking) {
+            System.println("[BIO] Already tracking, skipping start");
             return;
         }
-        
-        System.println("[BIO] Starting biometrics tracking");
-        
+
+        System.println("[BIO] ========== STARTING BIOMETRICS TRACKING ==========");
+        System.println("[BIO] Session ID: " + sessionId);
+
         _isTracking = true;
         _sessionStartTime = System.getTimer();
+        _lastTimelineSampleTime = _sessionStartTime;
+
+        // Initialize timeline chunker for this session
+        if (_timelineChunker != null) {
+            _timelineChunker.reset(sessionId);
+            System.println("[BIO] ✓ TimelineChunker reset for session: " + sessionId);
+        } else {
+            System.println("[BIO] ❌ _timelineChunker is NULL - timeline data will be LOST!");
+        }
         
         // Enable heart rate sensor
         try {
@@ -149,6 +170,11 @@ class BiometricsTracker {
         // Start sampling timer
         _sampleTimer = new Timer.Timer();
         _sampleTimer.start(method(:onSampleTimer), HR_SAMPLE_INTERVAL_MS, true);
+        
+        // *** CRITICAL: Add immediate first timeline sample at t=0 ***
+        // This ensures we have data even for very short sessions
+        System.println("[BIO] Adding immediate first timeline sample at t=0");
+        addTimelineSample();
     }
     
     // Stop tracking
@@ -158,6 +184,11 @@ class BiometricsTracker {
         }
         
         System.println("[BIO] Stopping biometrics tracking");
+        
+        // *** CRITICAL: Add final timeline sample before stopping ***
+        // This ensures we capture the end state
+        System.println("[BIO] Adding final timeline sample before stop");
+        addTimelineSample();
         
         _isTracking = false;
         
@@ -172,21 +203,56 @@ class BiometricsTracker {
         } catch (ex) {
             // Ignore
         }
+        
+        // Log final stats
+        if (_timelineChunker != null) {
+            System.println("[BIO] ✓ Final timeline stats: " + _timelineChunker.getPointCount() + " points, " + _timelineChunker.getShotCount() + " shots");
+        }
     }
     
     // Called periodically to sample HR
     function onSampleTimer() as Void {
         var info = Sensor.getInfo();
-        
-        if (info != null && info.heartRate != null) {
+
+        if (info.heartRate != null) {
             var hr = info.heartRate as Number;
             if (hr > 0 && hr < 250) {  // Sanity check
                 recordHeartRate(hr, 0);  // 0 = not a shot moment
             }
         }
-        
+
         // Update breathing estimation
         updateBreathingEstimate();
+
+        // Add timeline sample every 3 seconds (for mobile app timeline chart)
+        var now = System.getTimer();
+        if (now - _lastTimelineSampleTime >= TIMELINE_SAMPLE_INTERVAL_MS) {
+            _lastTimelineSampleTime = now;
+            addTimelineSample();
+        }
+    }
+
+    // Add a timeline sample for the chunked sync
+    // Made public so we can add samples at start/stop of tracking
+    function addTimelineSample() as Void {
+        if (_timelineChunker == null) {
+            System.println("[BIO] ❌ addTimelineSample - _timelineChunker is NULL!");
+            return;
+        }
+
+        var sessionTime = System.getTimer() - _sessionStartTime;
+        var stress = calculateHrvStress();
+        var stressScore = stress[1] as Number;
+
+        _timelineChunker.addSample(
+            sessionTime,
+            _currentHR,
+            _currentBreathRate,
+            stressScore
+        );
+        
+        // Log every sample for debugging
+        System.println("[BIO] Timeline sample #" + _timelineChunker.getPointCount() + " added (t=" + (sessionTime/1000) + "s, HR=" + _currentHR + ", stress=" + stressScore + ")");
     }
     
     // Record HR reading (called from timer or at shot moment)
@@ -196,6 +262,15 @@ class BiometricsTracker {
         
         _currentHR = hr;
         _lastHRTime = now;
+
+        // Track start HR (first valid reading)
+        if (_startHR == 0 && hr > 0) {
+            _startHR = hr;
+        }
+        // Always update end HR to most recent valid reading
+        if (hr > 0) {
+            _endHR = hr;
+        }
         
         // Add to timeline
         var sample = new HRSample(sessionTime, hr, shotNumber);
@@ -355,11 +430,49 @@ class BiometricsTracker {
         var breathSample = new BreathSample(bio.timestamp, _currentBreathRate, _currentBreathPhase, shotNumber);
         _breathTimeline.add(breathSample);
         
-        System.println("[BIO] Shot " + shotNumber + " - HR: " + bio.heartRate + 
-                      " (" + bio.hrTrend + "), Breath: " + bio.breathRate.format("%.1f") + 
+        System.println("[BIO] Shot " + shotNumber + " - HR: " + bio.heartRate +
+                      " (" + bio.hrTrend + "), Breath: " + bio.breathRate.format("%.1f") +
                       " bpm (" + bio.breathPhase + "), Stress: " + bio.stressScore);
-        
+
         return bio;
+    }
+
+    // Record shot event for timeline (called after recordShotBiometrics with steadiness data)
+    function recordShotForTimeline(
+        shotNumber as Number,
+        steadinessScore as Number,
+        flinchDetected as Boolean,
+        isHit as Boolean
+    ) as Void {
+        System.println("[BIO] recordShotForTimeline called - shot #" + shotNumber);
+        
+        if (_timelineChunker == null) {
+            System.println("[BIO] ❌ _timelineChunker is NULL! Shot NOT recorded to timeline!");
+            return;
+        }
+        
+        if (_shotBiometrics.size() == 0) {
+            System.println("[BIO] ❌ _shotBiometrics is empty! Shot NOT recorded to timeline!");
+            return;
+        }
+
+        // Get the most recent shot biometrics
+        var bio = _shotBiometrics[_shotBiometrics.size() - 1];
+        var sessionTime = System.getTimer() - _sessionStartTime;
+
+        _timelineChunker.addShotEvent(
+            shotNumber,
+            sessionTime,
+            bio.heartRate,
+            bio.breathRate,
+            bio.breathPhase,
+            bio.stressScore,
+            steadinessScore,
+            flinchDetected,
+            isHit
+        );
+
+        System.println("[BIO] ✓ Shot " + shotNumber + " added to timeline (steadiness=" + steadinessScore + ", chunker shots=" + _timelineChunker.getShotCount() + ")");
     }
     
     // =========================================================================
@@ -524,6 +637,8 @@ class BiometricsTracker {
             "minHR" => _minHR == 999 ? 0 : _minHR,
             "maxHR" => _maxHR,
             "avgHR" => _avgHR.toNumber(),
+            "startHR" => _startHR,                     // Protocol v2
+            "endHR" => _endHR,                         // Protocol v2
             "avgBreathRate" => _currentBreathRate.toNumber(),
             "hrSamples" => _hrTimeline.size(),
             "breathSamples" => _breathTimeline.size(),
@@ -576,9 +691,20 @@ class BiometricsTracker {
         _avgHR = 0.0;
         _hrSum = 0;
         _hrCount = 0;
+        _startHR = 0;                 // Protocol v2
+        _endHR = 0;                   // Protocol v2
         _currentHR = 0;
         _currentBreathRate = 0.0;
         _currentBreathPhase = "unknown";
+        _lastTimelineSampleTime = 0;
+        if (_timelineChunker != null) {
+            _timelineChunker.reset("");
+        }
+    }
+
+    // Get timeline chunker for sync
+    function getTimelineChunker() as TimelineChunker? {
+        return _timelineChunker;
     }
     
     // Check if tracking

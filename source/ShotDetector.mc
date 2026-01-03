@@ -99,23 +99,23 @@ class ShotDetector {
     }
     
     // Start monitoring accelerometer for shots
-    function startMonitoring() as Void {
+    function startMonitoring(sessionId as String) as Void {
         if (_isMonitoring) {
             System.println("[SHOT] Already monitoring, skipping start");
             return;
         }
-        
+
         System.println("[SHOT] === STARTING MONITORING ===");
-        
+
         try {
             // Enable sensor events callback - accel data comes through Info.accel
             Sensor.enableSensorEvents(method(:onSensorData));
             _isMonitoring = true;
             _lastShotTime = 0;
-            
-            // Start biometrics tracking (HR, breathing)
-            _biometricsTracker.startTracking();
-            
+
+            // Start biometrics tracking (HR, breathing) with session ID for timeline
+            _biometricsTracker.startTracking(sessionId);
+
             System.println("[SHOT] ✓ Sensor events ENABLED, threshold: " + _threshold + "G");
         } catch (ex) {
             System.println("[SHOT] ✗ FAILED to enable sensor events");
@@ -231,11 +231,19 @@ class ShotDetector {
             
             // Analyze pre-shot steadiness (may have limited data in simulator)
             _lastSteadinessResult = _steadinessAnalyzer.analyzeShot(now, _totalDetections);
-            
+
             // Record biometrics at shot moment
             _lastShotBiometrics = _biometricsTracker.recordShotBiometrics(_totalDetections);
-            
-            System.println("[SHOT] SIMULATED shot! Total: " + _totalDetections + 
+
+            // Record to timeline for chunked sync (includes HR, breath, steadiness, etc.)
+            _biometricsTracker.recordShotForTimeline(
+                _totalDetections,
+                _lastSteadinessResult.steadinessScore.toNumber(),
+                _lastSteadinessResult.flinchDetected,
+                false  // isHit - unknown for simulated shots
+            );
+
+            System.println("[SHOT] SIMULATED shot! Total: " + _totalDetections +
                           ", Steadiness: " + _lastSteadinessResult.gradeString);
             
             // Trigger callbacks
@@ -279,10 +287,10 @@ class ShotDetector {
         _calibrating = true;
         _calibrationPeaks = [];
         _calibrationCallback = callback;
-        
+
         // Make sure accelerometer is running
         if (!_isMonitoring) {
-            startMonitoring();
+            startMonitoring("CALIBRATION");
         }
         
         // Set timer to end calibration after 5 seconds
@@ -396,11 +404,19 @@ class ShotDetector {
             
             // Analyze pre-shot steadiness
             _lastSteadinessResult = _steadinessAnalyzer.analyzeShot(now, _totalDetections);
-            
+
             // Record biometrics at shot moment (HR, breathing)
             _lastShotBiometrics = _biometricsTracker.recordShotBiometrics(_totalDetections);
-            
-            System.println("[SHOT] Detected! Magnitude: " + delta.format("%.2f") + "G, Total: " + _totalDetections + 
+
+            // Record to timeline for chunked sync (includes HR, breath, steadiness, etc.)
+            _biometricsTracker.recordShotForTimeline(
+                _totalDetections,
+                _lastSteadinessResult.steadinessScore.toNumber(),
+                _lastSteadinessResult.flinchDetected,
+                false  // isHit - will be updated by view if known
+            );
+
+            System.println("[SHOT] Detected! Magnitude: " + delta.format("%.2f") + "G, Total: " + _totalDetections +
                           ", Steadiness: " + _lastSteadinessResult.gradeString);
             
             // Trigger callbacks
