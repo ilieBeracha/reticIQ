@@ -45,16 +45,33 @@ class PayloadBuilder {
         var hrData = {"avg" => 0, "min" => 0, "max" => 0, "start" => 0, "end" => 0};
         var stressData = {"avg" => 0, "min" => 0, "max" => 0};
         var breathAvg = 0;
+        var breathSource = "none";  // "native", "estimated", or "none"
+        var hrvSource = "estimated";  // "native" (IBI) or "estimated"
+        var bodyBattery = -1;  // Readiness at session start
+        var optimalPct = 0;  // % of shots in optimal conditions
+        var shotBiometrics = [] as Array<Dictionary>;  // Per-shot biometrics
 
         if (bioTracker != null) {
             var bioSummary = bioTracker.getSessionSummary();
             hrData = _aggregator.extractFullHRSummary(bioSummary);
             stressData = _aggregator.extractFullStressSummary(bioSummary);
             breathAvg = _aggregator.extractBreathRate(bioSummary);
+            breathSource = bioTracker.getBreathingSource();
+            hrvSource = bioTracker.getHrvSource();
+            bodyBattery = bioTracker.getSessionStartBodyBattery();
+            optimalPct = bioSummary.get("optimalPct") != null ? bioSummary.get("optimalPct") as Number : 0;
+            shotBiometrics = bioTracker.getShotBiometrics();
         }
 
-        // Get steadiness at shot moments average
+        // Get steadiness metrics
         var shotSteadinessAvg = steadyStats.get("avg") as Number;
+        var gradeDistribution = {} as Dictionary;
+        var recoilConsistency = 0;
+        
+        if (steadyAnalyzer != null) {
+            gradeDistribution = steadyAnalyzer.getGradeDistribution();
+            recoilConsistency = steadyAnalyzer.getRecoilConsistency().toNumber();
+        }
 
         // Get duration in milliseconds (phone expects ms, not seconds)
         var durationMs = session.getDurationMs();
@@ -90,9 +107,16 @@ class PayloadBuilder {
                 "hr" => hrData,
                 "stress" => stressData,
                 "breath" => {
-                    "avg" => breathAvg
-                }
+                    "avg" => breathAvg,
+                    "source" => breathSource  // "native", "estimated", or "none"
+                },
+                "hrvSource" => hrvSource,     // "native" (real IBI) or "estimated" (from HR)
+                "bodyBattery" => bodyBattery, // Readiness at session start (-1 if unavailable)
+                "optimalPct" => optimalPct    // % of shots in optimal conditions (pause+stable+lowStress)
             },
+
+            // === PER-SHOT BIOMETRICS (for correlation analysis) ===
+            "shotBio" => shotBiometrics,  // [{shot, hr, hrAvg, br, breathPhase, hrTrend, stress, rmssd}, ...]
 
             // === DETECTION METADATA ===
             "detection" => {
@@ -106,7 +130,9 @@ class PayloadBuilder {
                 "avg" => steadyStats.get("avg"),
                 "trend" => steadyStats.get("trend"),  // "improving", "declining", "stable"
                 "flinch" => steadyStats.get("flinch"),  // Flinch count
-                "shots" => shotSteadinessAvg  // Average steadiness at shot moments
+                "shots" => shotSteadinessAvg,           // Average steadiness at shot moments
+                "grades" => gradeDistribution,          // {"A+" => 3, "A" => 5, "B" => 2, ...}
+                "recoilConsistency" => recoilConsistency // Grip/stance consistency (0-100)
             },
 
             // === PERFORMANCE METRICS ===

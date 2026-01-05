@@ -330,8 +330,31 @@ class ShotDetector {
         System.println("[SHOT] Config: " + _config.toString());
 
         try {
-            // Enable sensor events callback - accel data comes through Info.accel
-            Sensor.enableSensorEvents(method(:onSensorData));
+            // Use registerSensorDataListener for HIGH-FREQUENCY sensor data (25Hz)
+            // enableSensorEvents only provides 1Hz which is too slow for steadiness analysis!
+            var options = {
+                :period => 1,  // 1 second batches
+                :accelerometer => {
+                    :enabled => true,
+                    :sampleRate => 25  // 25 samples per second for proper steadiness analysis
+                }
+            };
+            
+            // Try to enable gyroscope for angular velocity (muzzle wobble detection)
+            // This significantly improves steadiness analysis for barrel tracking
+            // Available on most modern Garmin watches (Fenix 6+, Venu, epix, etc.)
+            try {
+                options.put(:gyroscope, {
+                    :enabled => true,
+                    :sampleRate => 25
+                });
+                System.println("[SHOT] ✓ Gyroscope enabled for angular velocity tracking");
+            } catch (ex) {
+                System.println("[SHOT] ⚠ Gyroscope not available on this device");
+            }
+            
+            Sensor.registerSensorDataListener(method(:onHighFreqSensorData), options);
+            
             _isMonitoring = true;
             _lastShotTime = 0;
             
@@ -345,12 +368,20 @@ class ShotDetector {
             // Start biometrics tracking (HR, breathing) with session ID for timeline
             _biometricsTracker.startTracking(sessionId);
 
-            System.println("[SHOT] ✓ Sensor events ENABLED");
+            System.println("[SHOT] ✓ High-freq sensor listener REGISTERED (25Hz)");
             System.println("[SHOT]   Threshold: " + _config.sensitivity + "G");
             System.println("[SHOT]   MinThreshold: " + _config.minThreshold + "G");
             System.println("[SHOT]   Cooldown: " + _config.getEffectiveCooldown() + "ms");
         } catch (ex) {
-            System.println("[SHOT] ✗ FAILED to enable sensor events");
+            System.println("[SHOT] ✗ FAILED to register sensor listener: " + ex.getErrorMessage());
+            // Fallback to low-freq sensor events (1Hz) - won't have steadiness but shot detection works
+            try {
+                Sensor.enableSensorEvents(method(:onSensorData));
+                _isMonitoring = true;
+                System.println("[SHOT] ⚠ Fallback to 1Hz sensor events (no steadiness data)");
+            } catch (ex2) {
+                System.println("[SHOT] ✗ Fallback also failed!");
+            }
         }
     }
     
@@ -361,21 +392,30 @@ class ShotDetector {
         }
         
         try {
-            // Pass null to disable sensor events
-            Sensor.enableSensorEvents(null);
-            _isMonitoring = false;
-            
-            // Stop biometrics tracking
-            _biometricsTracker.stopTracking();
-            
-            System.println("[SHOT] Accelerometer monitoring stopped");
-            System.println("[SHOT]   Total detections: " + _totalDetections);
-            System.println("[SHOT]   Rejected (low): " + _rejectedLowCount);
-            System.println("[SHOT]   Rejected (vertical): " + _rejectedVerticalCount);
-            System.println("[SHOT]   Final adaptive threshold: " + _adaptiveThreshold.format("%.2f") + "G");
+            // Unregister high-freq listener first
+            Sensor.unregisterSensorDataListener();
         } catch (ex) {
-            System.println("[SHOT] Failed to disable sensor events");
+            // May not have been registered if fallback was used
         }
+        
+        try {
+            // Also disable low-freq sensor events (in case fallback was used)
+            Sensor.enableSensorEvents(null);
+        } catch (ex) {
+            // Ignore
+        }
+        
+        _isMonitoring = false;
+        
+        // Stop biometrics tracking
+        _biometricsTracker.stopTracking();
+        
+        System.println("[SHOT] Accelerometer monitoring stopped");
+        System.println("[SHOT]   Total detections: " + _totalDetections);
+        System.println("[SHOT]   Rejected (low): " + _rejectedLowCount);
+        System.println("[SHOT]   Rejected (vertical): " + _rejectedVerticalCount);
+        System.println("[SHOT]   Final adaptive threshold: " + _adaptiveThreshold.format("%.2f") + "G");
+        System.println("[SHOT]   Steadiness buffer: " + _steadinessAnalyzer.getBufferCount() + " samples");
     }
     
     // Check if currently monitoring
@@ -384,11 +424,13 @@ class ShotDetector {
     }
     
     // Enable/disable shot detection
+    // Note: This only controls auto-detection of shots via accelerometer threshold.
+    // The accelerometer keeps running for steadiness analysis even when disabled.
     function setEnabled(enabled as Boolean) as Void {
         _enabled = enabled;
-        if (!enabled && _isMonitoring) {
-            stopMonitoring();
-        }
+        // Don't stop monitoring here - we want accelerometer data for steadiness
+        // even when auto-detect is off. Use stopMonitoring() explicitly when session ends.
+        System.println("[SHOT] Auto-detection " + (enabled ? "ENABLED" : "DISABLED") + " (_isMonitoring=" + _isMonitoring + ")");
     }
     
     function isEnabled() as Boolean {
@@ -623,10 +665,136 @@ class ShotDetector {
     }
     
     // =========================================================================
-    // SENSOR CALLBACK - Enhanced with adaptive threshold and signature validation
+    // HIGH-FREQUENCY SENSOR CALLBACK - For steadiness analysis (25Hz)
     // =========================================================================
     
-    // Called when new accelerometer data is available
+    // Called with batches of high-frequency accelerometer data
+    function onHighFreqSensorData(sensorData as Sensor.SensorData) as Void {
+        var accelData = sensorData.accelerometerData;
+        if (accelData == null) {
+            return;
+        }
+        
+        var xSamples = accelData.x;
+        var ySamples = accelData.y;
+        var zSamples = accelData.z;
+        
+        if (xSamples == null || ySamples == null || zSamples == null) {
+            return;
+        }
+        
+        var sampleCount = xSamples.size();
+        if (sampleCount == 0) {
+            return;
+        }
+        
+        // Process each sample in the batch
+        for (var i = 0; i < sampleCount; i++) {
+            var x = xSamples[i].toFloat() / 1000.0;  // Convert milli-G to G
+            var y = ySamples[i].toFloat() / 1000.0;
+            var z = zSamples[i].toFloat() / 1000.0;
+            
+            // Feed to steadiness analyzer (this is the key fix!)
+            _steadinessAnalyzer.addSample(x, y, z);
+            
+            // Calculate magnitude for shot detection
+            var magnitudeSq = (x * x) + (y * y) + (z * z);
+            var magnitude = Math.sqrt(magnitudeSq).toFloat();
+            var delta = (magnitude - 1.0).abs();
+            _lastMagnitude = delta;
+            
+            // Track for rise time
+            _previousMagnitudes.add(delta);
+            if (_previousMagnitudes.size() > RISE_TIME_SAMPLES) {
+                var newMags = [] as Array<Float>;
+                var startIdx = _previousMagnitudes.size() - RISE_TIME_SAMPLES;
+                for (var j = startIdx; j < _previousMagnitudes.size(); j++) {
+                    newMags.add(_previousMagnitudes[j]);
+                }
+                _previousMagnitudes = newMags;
+            }
+            
+            // Calibration mode
+            if (_calibrating && delta > 1.5) {
+                _calibrationPeaks.add(delta);
+                continue;
+            }
+            
+            // Shot detection
+            if (!_enabled) {
+                continue;
+            }
+            
+            var now = System.getTimer();
+            var timeSinceLastShot = now - _lastShotTime;
+            
+            if (timeSinceLastShot < _config.getEffectiveCooldown()) {
+                continue;
+            }
+            
+            if (delta < _config.minThreshold) {
+                continue;
+            }
+            
+            if (delta >= _adaptiveThreshold) {
+                if (!validateShotSignature(x, y, z, delta)) {
+                    _rejectedVerticalCount++;
+                    continue;
+                }
+                
+                // Shot detected!
+                _lastShotTime = now;
+                _totalDetections++;
+                
+                // Update adaptive threshold
+                _recentPeaks.add(delta);
+                if (_recentPeaks.size() > MAX_RECENT_PEAKS) {
+                    var newPeaks = [] as Array<Float>;
+                    var startIdx = _recentPeaks.size() - MAX_RECENT_PEAKS;
+                    for (var j = startIdx; j < _recentPeaks.size(); j++) {
+                        newPeaks.add(_recentPeaks[j]);
+                    }
+                    _recentPeaks = newPeaks;
+                }
+                updateAdaptiveThreshold();
+                
+                // Analyze steadiness (now with proper data!)
+                _lastSteadinessResult = _steadinessAnalyzer.analyzeShot(now, _totalDetections);
+                _lastShotBiometrics = _biometricsTracker.recordShotBiometrics(_totalDetections);
+                
+                _biometricsTracker.recordShotForTimeline(
+                    _totalDetections,
+                    _lastSteadinessResult.steadinessScore.toNumber(),
+                    _lastSteadinessResult.flinchDetected,
+                    false
+                );
+                
+                System.println("[SHOT] Detected! Mag: " + delta.format("%.2f") + "G, Steady: " + 
+                              _lastSteadinessResult.gradeString + " (buffer: " + 
+                              _steadinessAnalyzer.getBufferCount() + " samples)");
+                
+                // Callbacks
+                if (_onShotWithSteadiness != null && _lastSteadinessResult != null) {
+                    _onShotWithSteadiness.invoke(_lastSteadinessResult);
+                }
+                if (_onShotDetected != null) {
+                    _onShotDetected.invoke();
+                }
+                
+                // Vibration feedback
+                if (_vrcv && (Attention has :vibrate)) {
+                    var vibeData = [new Attention.VibeProfile(75, 50)];
+                    Attention.vibrate(vibeData);
+                }
+            }
+        }
+    }
+    
+    // =========================================================================
+    // LOW-FREQ SENSOR CALLBACK (1Hz fallback)
+    // =========================================================================
+    
+    // Called when new accelerometer data is available (1Hz - fallback only)
     function onSensorData(sensorInfo as Sensor.Info) as Void {
         if (sensorInfo.accel == null) {
             // First few calls might be null - that's OK, but log it occasionally

@@ -18,6 +18,11 @@ class reticccDelegate extends WatchUi.BehaviorDelegate {
     // SUPPLEMENTARY mode: Record split time (optional)
     function onSelect() as Boolean {
         if (mainView != null) {
+            // Block input during countdown
+            if (mainView.isCountdownActive()) {
+                return true;  // Consume but ignore
+            }
+            
             // If the phone queued a session, start it on tap from idle
             if (mainView.getState() == STATE_IDLE && mainView.hasPendingSession()) {
                 mainView.startPendingSession();
@@ -69,9 +74,19 @@ class reticccDelegate extends WatchUi.BehaviorDelegate {
         return true;
     }
 
-    // Handle back button - finish session early
+    // Handle back button - finish session early or cancel countdown
     function onBack() as Boolean {
         if (mainView != null) {
+            // Cancel countdown if active
+            if (mainView.isCountdownActive()) {
+                mainView.cancelCountdown();
+                if (Attention has :vibrate) {
+                    var vibeData = [new Attention.VibeProfile(50, 100)];
+                    Attention.vibrate(vibeData);
+                }
+                return true;
+            }
+            
             var state = mainView.getState();
             
             if (state == STATE_SESSION_ACTIVE) {

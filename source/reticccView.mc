@@ -118,6 +118,13 @@ class reticccView extends WatchUi.View {
     private var _demoShotsRemaining as Number = 0;
     private var _demoNextShotTime as Number = 0;  // System.getTimer() when next shot should fire
     
+    // Countdown before session starts (3, 2, 1, GO!)
+    private var _countdownActive as Boolean = false;
+    private var _countdownValue as Number = 0;        // Current countdown number (3, 2, 1, 0=GO)
+    private var _countdownStartTime as Number = 0;    // When countdown started
+    private var _countdownTimer as Timer.Timer?;
+    private var _pendingSessionData as Dictionary?;   // Session data waiting for countdown to finish
+    
     // =========================================================================
     // DYNAMIC FONT SELECTION - Pick best font for available space
     // Per Travis Vitek (Garmin) recommendations
@@ -443,9 +450,98 @@ class reticccView extends WatchUi.View {
         var data = _pendingSession as Dictionary;
         _pendingSession = null;
         _isPreview = false;
-        _lastMsg = "Starting session...";
-        startSession(data);
+        
+        // Start countdown instead of immediate session start
+        startCountdown(data);
+    }
+    
+    // =========================================================================
+    // COUNTDOWN - 3, 2, 1, GO! before session starts
+    // =========================================================================
+    
+    private function startCountdown(data as Dictionary) as Void {
+        _countdownActive = true;
+        _countdownValue = 3;
+        _countdownStartTime = System.getTimer();
+        _pendingSessionData = data;
+        _lastMsg = "";
+        
+        // Vibrate to signal countdown start
+        if (Attention has :vibrate) {
+            var vibeData = [new Attention.VibeProfile(50, 100)];
+            Attention.vibrate(vibeData);
+        }
+        
+        // Start countdown timer (1 second intervals)
+        _countdownTimer = new Timer.Timer();
+        _countdownTimer.start(method(:onCountdownTick), 1000, true);
+        
+        System.println("[RETIC] Countdown started: 3...");
         WatchUi.requestUpdate();
+    }
+    
+    // Countdown timer tick - called every 1 second
+    function onCountdownTick() as Void {
+        _countdownValue--;
+        
+        System.println("[RETIC] Countdown: " + _countdownValue);
+        
+        // Vibrate on each count
+        if (Attention has :vibrate) {
+            if (_countdownValue > 0) {
+                // Short pulse for 3, 2, 1
+                var vibeData = [new Attention.VibeProfile(50, 80)];
+                Attention.vibrate(vibeData);
+            } else {
+                // Longer pulse for GO!
+                var vibeData = [new Attention.VibeProfile(100, 200)];
+                Attention.vibrate(vibeData);
+            }
+        }
+        
+        if (_countdownValue <= 0) {
+            // Countdown complete - start the actual session
+            if (_countdownTimer != null) {
+                _countdownTimer.stop();
+                _countdownTimer = null;
+            }
+            _countdownActive = false;
+            
+            // Now actually start the session
+            if (_pendingSessionData != null) {
+                var data = _pendingSessionData as Dictionary;
+                _pendingSessionData = null;
+                actuallyStartSession(data);
+            }
+        }
+        
+        WatchUi.requestUpdate();
+    }
+    
+    // Cancel countdown if user backs out
+    function cancelCountdown() as Void {
+        if (_countdownActive) {
+            _countdownActive = false;
+            _countdownValue = 0;
+            _pendingSessionData = null;
+            if (_countdownTimer != null) {
+                _countdownTimer.stop();
+                _countdownTimer = null;
+            }
+            _lastMsg = "Countdown cancelled";
+            System.println("[RETIC] Countdown cancelled");
+            WatchUi.requestUpdate();
+        }
+    }
+    
+    // Check if countdown is active (for delegate to block other actions)
+    function isCountdownActive() as Boolean {
+        return _countdownActive;
+    }
+
+    // The actual session start (after countdown completes)
+    private function actuallyStartSession(data as Dictionary) as Void {
+        startSession(data);
     }
 
     function startSession(data as Dictionary) as Void {
@@ -615,9 +711,38 @@ class reticccView extends WatchUi.View {
         if (_shotDetector != null) {
             var tracker = _shotDetector.getBiometricsTracker();
             tracker.recordShotBiometrics(_shotsFired);
-            // Also record to timeline for chunked sync (manual shots don't have steadiness data)
-            tracker.recordShotForTimeline(_shotsFired, 0, false, false);
-            System.println("[RETIC] Captured biometrics for manual shot #" + _shotsFired);
+            
+            // ALWAYS try to get steadiness for manual shots
+            // Accelerometer keeps running even when auto-detect is off
+            var steadinessScore = 0;
+            var flinchDetected = false;
+            
+            var steadinessAnalyzer = _shotDetector.getSteadinessAnalyzer();
+            if (steadinessAnalyzer != null) {
+                // Analyze the pre-shot window for this manual shot
+                var result = steadinessAnalyzer.analyzeShot(System.getTimer(), _shotsFired);
+                if (result != null && !result.insufficientData) {
+                    steadinessScore = result.steadinessScore.toNumber();
+                    flinchDetected = result.flinchDetected;
+                    
+                    // Store result for UI display and payload building
+                    _steadinessResults.add(result);
+                    _lastSteadinessGrade = result.gradeString;
+                    _lastSteadinessScore = steadinessScore;
+                    
+                    // Record to SessionManager
+                    var app = Application.getApp() as reticccApp;
+                    var sessionMgr = app.getSessionManager();
+                    sessionMgr.recordSteadinessResult(result);
+                    
+                    System.println("[RETIC] Manual shot steadiness: " + steadinessScore + "% (" + result.gradeString + ")");
+                } else {
+                    System.println("[RETIC] Manual shot - insufficient steadiness data (need more accel samples)");
+                }
+            }
+            
+            tracker.recordShotForTimeline(_shotsFired, steadinessScore, flinchDetected, false);
+            System.println("[RETIC] Captured biometrics for manual shot #" + _shotsFired + " (steadiness=" + steadinessScore + "%)");
         }
 
         // Record split time
@@ -1223,11 +1348,16 @@ class reticccView extends WatchUi.View {
         var centerY = height / 2;
 
         if (_isPreview) {
-            // Render frozen preview of the session (no timers, no detection)
-            drawActiveSession(dc, width, height, centerX, centerY);
-            // Overlay preview label
-            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(centerX, 10, Graphics.FONT_XTINY, "PREVIEW", Graphics.TEXT_JUSTIFY_CENTER);
+            // Render preview with session data + countdown indicator
+            drawPreviewWithCountdownReady(dc, width, height, centerX, centerY);
+            return;
+        }
+
+        // =====================================================================
+        // COUNTDOWN OVERLAY - 3, 2, 1, GO!
+        // =====================================================================
+        if (_countdownActive) {
+            drawCountdownOverlay(dc, width, height, centerX, centerY);
             return;
         }
 
@@ -1244,6 +1374,209 @@ class reticccView extends WatchUi.View {
             drawSessionEnded(dc, width, height, centerX, centerY);
         } else {
             drawIdleScreen(dc, width, height, centerX, centerY);
+        }
+    }
+    
+    // =========================================================================
+    // PREVIEW SCREEN - Shows session data with "3" countdown indicator
+    // User sees all session info, taps to start countdown
+    // =========================================================================
+    private function drawPreviewWithCountdownReady(dc as Dc, width as Number, height as Number, centerX as Number, centerY as Number) as Void {
+        // Dark background
+        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
+        dc.clear();
+        
+        // Get actual font heights for precise positioning
+        var fontSmallH = dc.getFontHeight(Graphics.FONT_SMALL);
+        var fontTinyH = dc.getFontHeight(Graphics.FONT_TINY);
+        var fontXtinyH = dc.getFontHeight(Graphics.FONT_XTINY);
+        var fontNumMedH = dc.getFontHeight(Graphics.FONT_NUMBER_MEDIUM);
+        
+        var ringRadius = (width < height ? width : height) / 2 - 12;
+        
+        // Outer ring - tactical aesthetic
+        dc.setColor(0x222222, Graphics.COLOR_TRANSPARENT);
+        if (dc has :setPenWidth) { dc.setPenWidth(4); }
+        dc.drawCircle(centerX, centerY, ringRadius);
+        if (dc has :setPenWidth) { dc.setPenWidth(1); }
+        
+        // =====================================================================
+        // Layout from top to bottom with measured gaps
+        // =====================================================================
+        var currentY = 18;  // Start near top with margin
+        var gap = 4;        // Minimum gap between elements
+        
+        // Drill name at top
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        var drillText = _drillName;
+        if (drillText.length() > 18) { drillText = drillText.substring(0, 16) + ".."; }
+        dc.drawText(centerX, currentY, Graphics.FONT_SMALL, drillText, Graphics.TEXT_JUSTIFY_CENTER);
+        currentY += fontSmallH + gap + 2;
+        
+        // Timer placeholder (00:00.0)
+        dc.setColor(0x444444, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, currentY, Graphics.FONT_TINY, "00:00.0", Graphics.TEXT_JUSTIFY_CENTER);
+        currentY += fontTinyH + gap + 8;
+        
+        // =====================================================================
+        // Session info lines - each with measured height
+        // =====================================================================
+        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        var lineGap = fontSmallH + gap;
+        
+        // Rounds/Bullets
+        if (_maxBullets > 0) {
+            dc.drawText(centerX, currentY, Graphics.FONT_SMALL, _maxBullets.toString() + " rounds", Graphics.TEXT_JUSTIFY_CENTER);
+            currentY += lineGap;
+        }
+        
+        // Distance
+        if (_distance > 0) {
+            dc.drawText(centerX, currentY, Graphics.FONT_SMALL, _distance.toString() + "m distance", Graphics.TEXT_JUSTIFY_CENTER);
+            currentY += lineGap;
+        }
+        
+        // Par time
+        if (_parTime > 0) {
+            dc.drawText(centerX, currentY, Graphics.FONT_SMALL, "Par: " + _parTime.format("%.1f") + "s", Graphics.TEXT_JUSTIFY_CENTER);
+            currentY += lineGap;
+        }
+        
+        // Time limit
+        if (_timeLimit > 0) {
+            var mins = _timeLimit / 60;
+            var secs = _timeLimit % 60;
+            var limitStr = mins > 0 ? mins.toString() + "m " + secs.toString() + "s" : secs.toString() + "s";
+            dc.drawText(centerX, currentY, Graphics.FONT_SMALL, "Limit: " + limitStr, Graphics.TEXT_JUSTIFY_CENTER);
+            currentY += lineGap;
+        }
+        
+        // Watch mode indicator (smaller font)
+        dc.setColor(0x666666, Graphics.COLOR_TRANSPARENT);
+        var modeText = (_watchMode == WATCH_MODE_SUPPLEMENTARY) ? "Timer Only" : "Shot Counter";
+        dc.drawText(centerX, currentY, Graphics.FONT_XTINY, modeText, Graphics.TEXT_JUSTIFY_CENTER);
+        
+        // =====================================================================
+        // Bottom section: Countdown "3" and TAP TO START
+        // Position from bottom up to ensure no overlap
+        // =====================================================================
+        var bottomY = height - 18;  // Bottom margin
+        
+        // "TAP TO START" at very bottom
+        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, bottomY - fontXtinyH, Graphics.FONT_XTINY, "TAP TO START", Graphics.TEXT_JUSTIFY_CENTER);
+        
+        // Orange circle with "3" - positioned above TAP TO START
+        var circleRadius = 30;
+        var circleY = bottomY - fontXtinyH - gap - 12 - circleRadius;
+        
+        dc.setColor(0xFF4500, Graphics.COLOR_TRANSPARENT);  // Orange
+        dc.fillCircle(centerX, circleY, circleRadius);
+        
+        // The "3" centered in circle
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, circleY - fontNumMedH / 2, Graphics.FONT_NUMBER_MEDIUM, "3", Graphics.TEXT_JUSTIFY_CENTER);
+    }
+    
+    // =========================================================================
+    // COUNTDOWN OVERLAY - 3, 2, 1, GO! with session context visible
+    // =========================================================================
+    private function drawCountdownOverlay(dc as Dc, width as Number, height as Number, centerX as Number, centerY as Number) as Void {
+        // Dark background
+        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
+        dc.clear();
+        
+        // Get actual font heights for precise positioning
+        var fontSmallH = dc.getFontHeight(Graphics.FONT_SMALL);
+        var fontTinyH = dc.getFontHeight(Graphics.FONT_TINY);
+        var fontHotH = dc.getFontHeight(Graphics.FONT_NUMBER_THAI_HOT);
+        
+        var ringRadius = (width < height ? width : height) / 2 - 12;
+        var gap = 4;
+        
+        // Outer ring with countdown progress
+        dc.setColor(0x222222, Graphics.COLOR_TRANSPARENT);
+        if (dc has :setPenWidth) { dc.setPenWidth(6); }
+        dc.drawCircle(centerX, centerY, ringRadius);
+        
+        // Progress arc - shows countdown progress (3=full, 0=empty)
+        var progress = _countdownValue.toFloat() / 3.0;
+        var arcDegrees = (progress * 360).toNumber();
+        if (arcDegrees > 0) {
+            var arcColor = 0xFF4500;  // Orange default
+            if (_countdownValue == 3) { arcColor = 0xFF4500; }
+            else if (_countdownValue == 2) { arcColor = 0xFFAA00; }
+            else if (_countdownValue == 1) { arcColor = 0xFFDD00; }
+            dc.setColor(arcColor, Graphics.COLOR_TRANSPARENT);
+            if (dc has :setPenWidth) { dc.setPenWidth(6); }
+            dc.drawArc(centerX, centerY, ringRadius, Graphics.ARC_CLOCKWISE, 90, 90 - arcDegrees);
+        }
+        if (dc has :setPenWidth) { dc.setPenWidth(1); }
+        
+        // =====================================================================
+        // Top section: Drill name + Timer
+        // =====================================================================
+        var topY = 18;
+        
+        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        var drillText = _drillName;
+        if (drillText.length() > 18) { drillText = drillText.substring(0, 16) + ".."; }
+        dc.drawText(centerX, topY, Graphics.FONT_SMALL, drillText, Graphics.TEXT_JUSTIFY_CENTER);
+        topY += fontSmallH + gap;
+        
+        // Timer placeholder
+        dc.setColor(0x666666, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, topY, Graphics.FONT_TINY, "00:00.0", Graphics.TEXT_JUSTIFY_CENTER);
+        
+        // =====================================================================
+        // CENTER - Giant countdown number
+        // =====================================================================
+        var displayText = "";
+        var textColor = Graphics.COLOR_WHITE;
+        
+        if (_countdownValue > 0) {
+            displayText = _countdownValue.toString();
+            if (_countdownValue == 3) { textColor = 0xFF6644; }
+            else if (_countdownValue == 2) { textColor = 0xFFAA44; }
+            else { textColor = 0xFFDD44; }
+        } else {
+            displayText = "GO!";
+            textColor = 0x44FF44;  // Green
+        }
+        
+        dc.setColor(textColor, Graphics.COLOR_TRANSPARENT);
+        // Center the number vertically (account for font height)
+        dc.drawText(centerX, centerY - fontHotH / 2, Graphics.FONT_NUMBER_THAI_HOT, displayText, Graphics.TEXT_JUSTIFY_CENTER);
+        
+        // =====================================================================
+        // Bottom section: Session info + GET READY
+        // Position from bottom up
+        // =====================================================================
+        var bottomY = height - 18;
+        
+        // "GET READY" at bottom
+        dc.setColor(0x888888, Graphics.COLOR_TRANSPARENT);
+        var subText = _countdownValue > 0 ? "GET READY" : "STARTING...";
+        dc.drawText(centerX, bottomY - fontSmallH, Graphics.FONT_SMALL, subText, Graphics.TEXT_JUSTIFY_CENTER);
+        bottomY = bottomY - fontSmallH - gap - 6;
+        
+        // Compact info line above GET READY
+        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        var infoLine = "";
+        if (_maxBullets > 0) {
+            infoLine = _maxBullets.toString() + " rds";
+        }
+        if (_distance > 0) {
+            if (infoLine.length() > 0) { infoLine = infoLine + " • "; }
+            infoLine = infoLine + _distance.toString() + "m";
+        }
+        if (_parTime > 0) {
+            if (infoLine.length() > 0) { infoLine = infoLine + " • "; }
+            infoLine = infoLine + "par " + _parTime.format("%.1f") + "s";
+        }
+        
+        if (infoLine.length() > 0) {
+            dc.drawText(centerX, bottomY - fontTinyH, Graphics.FONT_TINY, infoLine, Graphics.TEXT_JUSTIFY_CENTER);
         }
     }
     

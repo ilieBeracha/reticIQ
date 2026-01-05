@@ -14,3 +14,7 @@ gen/
 *.swp
 *.swo
 .DS_Store
+
+# Temporary files
+.bin/
+.build/

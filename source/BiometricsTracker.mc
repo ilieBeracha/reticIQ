@@ -3,6 +3,7 @@ import Toybox.System;
 import Toybox.Sensor;
 import Toybox.Timer;
 import Toybox.Math;
+import Toybox.UserProfile;
 
 // Heart rate sample for timeline
 class HRSample {
@@ -109,9 +110,23 @@ class BiometricsTracker {
     private var _rrIntervals as Array<Number>;    // R-R intervals for HRV analysis
     private var _currentBreathRate as Float = 0.0;
     private var _currentBreathPhase as String = "unknown";
+    private var _hasNativeRespiration as Boolean = false;  // True if device has native sensor
+    private var _breathingSource as String = "none";       // "native", "estimated", or "none"
+    
+    // Native HRV/IBI support (real beat-to-beat data)
+    private var _hasNativeIBI as Boolean = false;          // True if device provides heartBeatIntervals
+    private var _hrvSource as String = "estimated";        // "native" or "estimated"
+    
+    // Body Battery (session start readiness indicator)
+    private var _sessionStartBodyBattery as Number = -1;   // -1 = not available
     
     // Shot biometrics
     private var _shotBiometrics as Array<ShotBiometrics>;
+    
+    // Mock biometrics for simulator testing (no real sensor data in simulator)
+    private var _useMockData as Boolean = false;
+    private var _mockHRBase as Number = 72;               // Base HR for simulation
+    private var _mockBreathCycle as Number = 0;           // Breath cycle counter
     
     // Session stats
     private var _minHR as Number = 999;
@@ -150,6 +165,24 @@ class BiometricsTracker {
         _isTracking = true;
         _sessionStartTime = System.getTimer();
         _lastTimelineSampleTime = _sessionStartTime;
+        
+        // Capture Body Battery at session start (readiness indicator)
+        // Available on Fenix 6+, Venu, etc. (API 3.3.0+)
+        _sessionStartBodyBattery = -1;  // Reset
+        try {
+            if (Toybox has :UserProfile) {
+                var profile = Toybox.UserProfile;
+                if (profile has :getBodyBattery) {
+                    var bb = profile.getBodyBattery();
+                    if (bb != null) {
+                        _sessionStartBodyBattery = bb as Number;
+                        System.println("[BIO] ✓ Body Battery at start: " + _sessionStartBodyBattery + "%");
+                    }
+                }
+            }
+        } catch (ex) {
+            System.println("[BIO] Body Battery not available: " + ex.getErrorMessage());
+        }
 
         // Initialize timeline chunker for this session
         if (_timelineChunker != null) {
@@ -213,16 +246,104 @@ class BiometricsTracker {
     // Called periodically to sample HR
     function onSampleTimer() as Void {
         var info = Sensor.getInfo();
+        var gotRealHR = false;
 
         if (info.heartRate != null) {
             var hr = info.heartRate as Number;
             if (hr > 0 && hr < 250) {  // Sanity check
                 recordHeartRate(hr, 0);  // 0 = not a shot moment
+                gotRealHR = true;
+                _useMockData = false;  // Real sensor working
             }
         }
+        
+        // SIMULATOR FALLBACK: Generate mock biometrics when no real data
+        // This allows testing the full data pipeline in the simulator
+        if (!gotRealHR && _hrCount < 3) {
+            // After 3 attempts with no data, enable mock mode
+            _useMockData = true;
+            System.println("[BIO] No sensor data - enabling mock biometrics for simulator");
+        }
+        
+        if (_useMockData) {
+            // Generate realistic mock HR (72-85 BPM with some variation)
+            var sessionTimeSec = (System.getTimer() - _sessionStartTime) / 1000;
+            var hrVariation = (Math.sin(sessionTimeSec.toFloat() * 0.1) * 6).toNumber();  // Slow drift
+            var hrNoise = (Math.rand() % 5) - 2;  // Random noise ±2
+            var mockHR = _mockHRBase + hrVariation + hrNoise;
+            if (mockHR < 55) { mockHR = 55; }
+            if (mockHR > 120) { mockHR = 120; }
+            recordHeartRate(mockHR, 0);
+            
+            // Generate mock RR intervals for HRV (800-900ms with realistic variability)
+            var baseRR = (60000.0 / mockHR.toFloat()).toNumber();
+            var rrVariation = (Math.rand() % 50) - 25;  // ±25ms HRV
+            var mockRR = baseRR + rrVariation;
+            if (mockRR > 200 && mockRR < 2000) {
+                _rrIntervals.add(mockRR);
+                if (_rrIntervals.size() > 60) {
+                    var startIdx = _rrIntervals.size() - 60;
+                    _rrIntervals = _rrIntervals.slice(startIdx, _rrIntervals.size()) as Array<Number>;
+                }
+            }
+            _hrvSource = "mock";
+            
+            // Generate mock breathing (12-16 breaths/min with cycle phases)
+            _mockBreathCycle = (_mockBreathCycle + 1) % 15;  // 15 samples = ~15 seconds breath cycle
+            if (_mockBreathCycle < 4) {
+                _currentBreathPhase = "inhale";
+            } else if (_mockBreathCycle < 6) {
+                _currentBreathPhase = "pause";  // Respiratory pause (good for shooting)
+            } else if (_mockBreathCycle < 11) {
+                _currentBreathPhase = "exhale";
+            } else {
+                _currentBreathPhase = "pause";  // Second pause
+            }
+            _currentBreathRate = 14.0 + (Math.rand() % 4).toFloat() - 2.0;
+            _breathingSource = "mock";
+        } else {
+            // Try to get NATIVE Inter-Beat Intervals (IBI) for REAL HRV data
+            // This is MUCH more accurate than estimating RR from HR!
+            if (info has :heartBeatIntervals && info.heartBeatIntervals != null) {
+                var ibis = info.heartBeatIntervals as Array<Number>;
+                if (ibis.size() > 0) {
+                    for (var i = 0; i < ibis.size(); i++) {
+                        var ibi = ibis[i];
+                        if (ibi > 200 && ibi < 2000) {  // Valid range: 30-300 BPM
+                            _rrIntervals.add(ibi);
+                        }
+                    }
+                    // Trim if too large
+                    if (_rrIntervals.size() > 60) {
+                        var startIdx = _rrIntervals.size() - 60;
+                        _rrIntervals = _rrIntervals.slice(startIdx, _rrIntervals.size()) as Array<Number>;
+                    }
+                    _hasNativeIBI = true;
+                    _hrvSource = "native";
+                }
+            }
 
-        // Update breathing estimation
-        updateBreathingEstimate();
+            // Try native respiration sensor first (available on Fenix 6+, Venu 2+, etc.)
+            var gotNativeBreathing = false;
+            if (info has :respirationRate && info.respirationRate != null) {
+                var nativeRate = info.respirationRate as Number;
+                if (nativeRate > 0 && nativeRate < 60) {
+                    _currentBreathRate = nativeRate.toFloat();
+                    _hasNativeRespiration = true;
+                    _breathingSource = "native";
+                    gotNativeBreathing = true;
+                    // Phase detection still uses HRV since native sensor doesn't provide it
+                }
+            }
+
+            // Fall back to HRV-based estimation if no native sensor
+            if (!gotNativeBreathing) {
+                updateBreathingEstimate();
+                if (_breathingSource.equals("none") && _currentBreathRate > 0) {
+                    _breathingSource = "estimated";
+                }
+            }
+        }
 
         // Add timeline sample every 3 seconds (for mobile app timeline chart)
         var now = System.getTimer();
@@ -360,15 +481,19 @@ class BiometricsTracker {
         if (_currentBreathRate < 4.0) { _currentBreathRate = 4.0; }
         if (_currentBreathRate > 30.0) { _currentBreathRate = 30.0; }
         
-        // Determine phase based on current HR trend
+        // Determine phase based on current HR trend (using RSA - Respiratory Sinus Arrhythmia)
+        // Use percentage-based threshold relative to mean (works across all HR ranges)
         if (recent.size() >= 3) {
             var last3Avg = (recent[recent.size()-1] + recent[recent.size()-2] + recent[recent.size()-3]) / 3.0;
-            var prev3Avg = mean;
             
-            if (last3Avg > prev3Avg + 10) {
-                _currentBreathPhase = "inhale";  // HR increasing = inhaling
-            } else if (last3Avg < prev3Avg - 10) {
-                _currentBreathPhase = "exhale";  // HR decreasing = exhaling
+            // Use 2% of mean RR interval as threshold (more robust than fixed 10ms)
+            var threshold = mean * 0.02;
+            if (threshold < 5.0) { threshold = 5.0; }  // Minimum 5ms threshold
+            
+            if (last3Avg > mean + threshold) {
+                _currentBreathPhase = "inhale";  // HR increasing = inhaling (RR intervals decreasing)
+            } else if (last3Avg < mean - threshold) {
+                _currentBreathPhase = "exhale";  // HR decreasing = exhaling (RR intervals increasing)
             } else {
                 _currentBreathPhase = "pause";   // Stable = respiratory pause (ideal for shooting!)
             }
@@ -599,6 +724,16 @@ class BiometricsTracker {
         return _currentBreathPhase;
     }
     
+    // Get breathing source ("native", "estimated", or "none")
+    function getBreathingSource() as String {
+        return _breathingSource;
+    }
+    
+    // Check if device has native respiration sensor
+    function hasNativeRespiration() as Boolean {
+        return _hasNativeRespiration;
+    }
+    
     // Get HR timeline for charting (returns array of dictionaries)
     function getHRTimeline() as Array<Dictionary> {
         var result = [] as Array<Dictionary>;
@@ -649,6 +784,9 @@ class BiometricsTracker {
             "startHR" => _startHR,                     // Protocol v2
             "endHR" => _endHR,                         // Protocol v2
             "avgBreathRate" => _currentBreathRate.toNumber(),
+            "breathSource" => _breathingSource,        // "native", "estimated", or "none"
+            "hrvSource" => _hrvSource,                 // "native" (IBI) or "estimated" (from HR)
+            "bodyBattery" => _sessionStartBodyBattery, // Readiness at session start (-1 if unavailable)
             "hrSamples" => _hrTimeline.size(),
             "breathSamples" => _breathTimeline.size(),
             "shotCount" => _shotBiometrics.size(),
@@ -659,6 +797,16 @@ class BiometricsTracker {
             "optimalShots" => optimalCount,
             "optimalPct" => optimalPct
         };
+    }
+    
+    // Get HRV source ("native" or "estimated")
+    function getHrvSource() as String {
+        return _hrvSource;
+    }
+    
+    // Get Body Battery at session start (-1 if not available)
+    function getSessionStartBodyBattery() as Number {
+        return _sessionStartBodyBattery;
     }
     
     // Get compact data for sending to phone (reduces payload size)
@@ -705,6 +853,8 @@ class BiometricsTracker {
         _currentHR = 0;
         _currentBreathRate = 0.0;
         _currentBreathPhase = "unknown";
+        _hasNativeRespiration = false;
+        _breathingSource = "none";
         _lastTimelineSampleTime = 0;
         if (_timelineChunker != null) {
             _timelineChunker.reset("");

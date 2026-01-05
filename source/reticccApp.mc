@@ -136,7 +136,7 @@ class reticccApp extends Application.AppBase {
         Communications.registerForPhoneAppMessages(method(:onPhoneMessage));
         System.println("[RETIC] Registered for phone messages");
         
-        // Check for pending sessions on app start
+        // Check for pending sessions on app start (retries failed syncs)
         checkPendingSessions();
     }
 
