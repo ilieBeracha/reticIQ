@@ -933,7 +933,7 @@ class reticccView extends WatchUi.View {
 
         // Update SessionManager with final hit count
         var sessionMgr = app.getSessionManager();
-        sessionMgr.setHits(_shotsFired);  // In this version, hits = shots fired
+        sessionMgr.setHits(_shotsFired);  // For now, hits = shots fired
 
         System.println("[VIEW] sendResultsToPhone - delegating to app.onSessionComplete()");
         System.println("[VIEW] Shots: " + _shotsFired + ", Completed: " + _sessionCompleted);
@@ -1330,6 +1330,16 @@ class reticccView extends WatchUi.View {
     // Get current state (for delegate)
     function getState() as SessionState {
         return _state;
+    }
+
+    // Get current session ID
+    function getSessionId() as String {
+        return _sessionId;
+    }
+
+    // Get shots fired count
+    function getShotsFired() as Number {
+        return _shotsFired;
     }
 
     // Main update - choose which screen to show

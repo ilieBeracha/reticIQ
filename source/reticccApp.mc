@@ -46,10 +46,10 @@ class reticccApp extends Application.AppBase {
     private var _syncPhase as SyncPhase = SYNC_IDLE;
     private var _pendingAckSessionId as String? = null;
     private var _ackTimer as Timer.Timer? = null;
-    private var _ackTimeoutMs as Number = 5000;  // 5 second timeout for ACK
+    private var _ackTimeoutMs as Number = 4000;  // 4 second timeout for ACK (reduced for faster retry)
     private var _pendingSessionData as Dictionary? = null;
     private var _retryCount as Number = 0;
-    private var _maxRetries as Number = 3;
+    private var _maxRetries as Number = 5;  // Increased from 3 to 5 for better reliability
 
     // Timeline chunk sync state (phase 3)
     private var _timelineChunks as Array<Dictionary>?;
@@ -406,7 +406,7 @@ class reticccApp extends Application.AppBase {
     
     // ACK timeout callback - no ACK received in time (Protocol v2)
     function onAckTimeout() as Void {
-        System.println("[ACK] ⚠ Timeout! No ACK received (phase=" + _syncPhase + ")");
+        System.println("[ACK] ⚠ Timeout! No ACK received (phase=" + _syncPhase + ", attempt " + _retryCount + ")");
 
         _retryCount++;
 
@@ -419,33 +419,53 @@ class reticccApp extends Application.AppBase {
                 if (mainView != null) {
                     mainView.setLastMsg("Retry " + _retryCount + "...");
                 }
+                startAckTimer();
             } else if (_syncPhase == SYNC_TIMELINE && _timelineChunks != null) {
                 // Retry current timeline chunk
                 if (_currentChunkIndex < _totalChunks) {
                     var chunk = _timelineChunks[_currentChunkIndex];
                     sendMessage(MessageTypes.TIMELINE_CHUNK, chunk);
+                    startAckTimer();
                 }
-                // Don't update UI for timeline retry
             }
-
-            startAckTimer();
         } else {
-            // Max retries reached
+            // Max retries reached for this phase
             System.println("[ACK] Max retries reached for phase " + _syncPhase);
 
             if (_syncPhase == SYNC_SUMMARY) {
-                // Summary failed - keep in storage for later
-                System.println("[ACK] Summary sync failed. Saved for later.");
+                // Summary ACK never received, but phone might have it!
+                // Try to send timeline anyway - phone can handle duplicates
+                System.println("[ACK] ⚠ Summary ACK timeout - trying timeline anyway (phone may have received summary)");
                 if (mainView != null) {
-                    mainView.setLastMsg("Saved offline");
+                    mainView.setLastMsg("Syncing data...");
                 }
+                
+                // Don't remove from storage yet - keep for safety
+                // But still try to send timeline
+                startTimelineSync();
+                
             } else if (_syncPhase == SYNC_TIMELINE) {
-                // Timeline failed but summary succeeded - OK for now
-                System.println("[ACK] Timeline sync failed at chunk " + (_currentChunkIndex + 1) + "/" + _totalChunks + ". Will retry later.");
-                // Timeline already in storage
+                // Timeline chunk ACK never received
+                // Move to next chunk - phone might have received it
+                System.println("[ACK] ⚠ Timeline chunk " + (_currentChunkIndex + 1) + "/" + _totalChunks + " ACK timeout");
+                
+                _currentChunkIndex++;
+                _retryCount = 0;
+                
+                if (_currentChunkIndex < _totalChunks) {
+                    // Try next chunk
+                    System.println("[ACK] Moving to chunk " + (_currentChunkIndex + 1) + "/" + _totalChunks);
+                    sendNextTimelineChunk();
+                } else {
+                    // All chunks attempted
+                    System.println("[ACK] All timeline chunks attempted. Sync may be partial.");
+                    // Don't remove from storage - keep for retry on next launch
+                    if (mainView != null) {
+                        mainView.setLastMsg("Synced (partial)");
+                    }
+                    clearSyncState();
+                }
             }
-
-            clearSyncState();
         }
     }
     
