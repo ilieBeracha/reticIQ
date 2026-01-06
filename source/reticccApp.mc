@@ -59,6 +59,7 @@ class reticccApp extends Application.AppBase {
     // Session management modules (two-phase sync architecture)
     private var _sessionManager as SessionManager?;
     private var _payloadBuilder as PayloadBuilder?;
+    private var _weatherService as WeatherService?;
     
     // Error tracking for display and phone logging
     private var _lastErrorCode as String = "";
@@ -70,6 +71,12 @@ class reticccApp extends Application.AppBase {
         AppBase.initialize();
         _sessionManager = new SessionManager();
         _payloadBuilder = new PayloadBuilder();
+        _weatherService = new WeatherService();
+    }
+    
+    // Get weather service for external access
+    function getWeatherService() as WeatherService? {
+        return _weatherService;
     }
     
     // =========================================================================
@@ -184,7 +191,7 @@ class reticccApp extends Application.AppBase {
         }
 
         // Build summary payload (Protocol v2: no separate details phase)
-        var payloads = payloadBldr.build(sessionMgr, bioTracker, steadyAnalyzer);
+        var payloads = payloadBldr.build(sessionMgr, bioTracker, steadyAnalyzer, _weatherService);
         var summary = payloads.get("summary") as Dictionary;
 
         // Collect timeline chunks from biometrics tracker

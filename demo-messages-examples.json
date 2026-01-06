@@ -53,7 +53,8 @@
       "windSpeed": 8,
       "windDirection": "NE",
       "temperature": 18
-    }
+    },
+    "_comment": "OPTIONAL: Phone can send weather to watch. Usually NOT needed - watch fetches its own weather from Garmin API."
   },
   {
     "type": "SESSION_END",

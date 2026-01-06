@@ -26,7 +26,7 @@ class DetectionConfig {
     var sensitivity as Float = 3.5;      // Primary G-force threshold
     var minThreshold as Float = 1.6;     // Reject peaks below this (false positive rejection)
     var maxThreshold as Float = 9.6;     // Expected max peak for normalization
-    var cooldownMs as Number = 80;       // Minimum time between detected shots
+    var cooldownMs as Number = 250;      // Minimum ms between shots (prevents double-detection)
     var profile as WeaponProfile = PROFILE_HANDGUN;
     
     function initialize() {}
@@ -144,6 +144,8 @@ class DetectionConfig {
     }
     
     // Get profile-specific cooldown (can override config value)
+    // INCREASED: Short cooldowns caused double-detection on hand motions
+    // Real firearms have ~200-500ms between shots minimum anyway
     function getEffectiveCooldown() as Number {
         // Use configured cooldown, or fall back to profile defaults
         if (cooldownMs > 0) {
@@ -152,12 +154,12 @@ class DetectionConfig {
         
         switch (profile) {
             case PROFILE_RIFLE:
-                return 80;
+                return 300;   // Was 80ms - bolt action needs more time
             case PROFILE_SHOTGUN:
-                return 120;
+                return 400;   // Was 120ms - pump action needs more time
             case PROFILE_HANDGUN:
             default:
-                return 60;
+                return 250;   // Was 60ms - double-taps are ~200ms minimum
         }
     }
     
@@ -192,7 +194,7 @@ class ShotDetector {
     
     // Legacy parameters (for backwards compat)
     private var _threshold as Float = 3.5;      // G-force threshold (maps to _config.sensitivity)
-    private var _cooldownMs as Number = 200;    // Minimum ms between shots
+    private var _cooldownMs as Number = 250;    // Minimum ms between shots (prevents double-detection)
     private var _enabled as Boolean = true;     // Enabled by default
     private var _calibrating as Boolean = false;
     

@@ -571,6 +571,12 @@ class reticccView extends WatchUi.View {
         var sessionMgr = app.getSessionManager();
         sessionMgr.startSession(data);
         
+        // Refresh weather data at session start (uses cache if recent)
+        var weatherSvc = app.getWeatherService();
+        if (weatherSvc != null) {
+            weatherSvc.refreshWeather();
+        }
+        
         // Extract session data
         _sessionId = data.get("sessionId") != null ? data.get("sessionId").toString() : "";
         _drillName = data.get("drillName") != null ? data.get("drillName").toString() : "Session";

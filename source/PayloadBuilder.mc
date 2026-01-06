@@ -17,10 +17,11 @@ class PayloadBuilder {
     function build(
         sessionManager as SessionManager,
         biometricsTracker as BiometricsTracker?,
-        steadinessAnalyzer as SteadinessAnalyzer?
+        steadinessAnalyzer as SteadinessAnalyzer?,
+        weatherService as WeatherService?
     ) as Dictionary {
         return {
-            "summary" => buildSummary(sessionManager, biometricsTracker, steadinessAnalyzer)
+            "summary" => buildSummary(sessionManager, biometricsTracker, steadinessAnalyzer, weatherService)
         };
     }
 
@@ -33,7 +34,8 @@ class PayloadBuilder {
     function buildSummary(
         session as SessionManager,
         bioTracker as BiometricsTracker?,
-        steadyAnalyzer as SteadinessAnalyzer?
+        steadyAnalyzer as SteadinessAnalyzer?,
+        weatherService as WeatherService?
     ) as Dictionary {
 
         var splitTimes = session.getSplitTimes();
@@ -86,6 +88,15 @@ class PayloadBuilder {
 
         // Calculate average split
         var avgSplit = splitStats.get("avg") as Number;
+
+        // Get weather data if available
+        var weatherDict = null;
+        if (weatherService != null) {
+            var weather = weatherService.getCurrentWeather();
+            if (weather != null && weather.isAvailable) {
+                weatherDict = weather.toCompactDict();
+            }
+        }
 
         return {
             // === IDENTIFICATION ===
@@ -142,6 +153,10 @@ class PayloadBuilder {
                 "avg" => avgSplit,                   // Average split
                 "spm" => spm                         // Shots per minute x10
             },
+
+            // === WEATHER CONDITIONS ===
+            // Compact format: temp (C x10), hum%, wind (m/s x10), dir (cardinal), pres (hPa), cond
+            "weather" => weatherDict,
 
             // === TIMESTAMP ===
             "ts" => Time.now().value() * 1000  // Unix timestamp in ms
