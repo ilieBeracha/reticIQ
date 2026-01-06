@@ -206,12 +206,23 @@ class ShotDetector {
     
     // Adaptive threshold system
     private var _adaptiveThreshold as Float = 3.5;  // Learned from actual shots
-    private var _recentPeaks as Array<Float> = [];  // Last 5 detected peak magnitudes
+    private var _recentPeaks as Array<Float>;       // Circular buffer for peak magnitudes
+    private var _recentPeaksIdx as Number = 0;      // Current write index
+    private var _recentPeaksCount as Number = 0;    // Number of valid entries
     private const MAX_RECENT_PEAKS = 5;
     
-    // Rise time tracking for shot signature validation
-    private var _previousMagnitudes as Array<Float> = [];  // Last few magnitudes for rise time calc
-    private const RISE_TIME_SAMPLES = 3;  // Number of samples to track
+    // Magnitude tracking (circular buffer)
+    private var _previousMagnitudes as Array<Float>;  // Circular buffer for recent magnitudes
+    private var _prevMagIdx as Number = 0;            // Current write index
+    private var _prevMagCount as Number = 0;          // Number of valid entries
+    private const MAGNITUDE_BUFFER_SIZE = 10;         // Larger buffer for pattern analysis
+    
+    // Rolling baseline (instead of hardcoded 1.0G)
+    private var _baselineMagnitude as Float = 1.0;
+    private const BASELINE_ALPHA as Float = 0.02;  // Slow adaptation rate
+    
+    // Pre-allocated scratch buffer for sorting (zero allocation during runtime)
+    private var _sortScratch as Array<Float>;
     
     // Calibration data
     private var _calibrationPeaks as Array<Float> = [];
@@ -248,8 +259,27 @@ class ShotDetector {
         
         // Initialize adaptive threshold from config
         _adaptiveThreshold = _config.sensitivity;
-        _recentPeaks = [];
-        _previousMagnitudes = [];
+        
+        // Pre-allocate circular buffers (no runtime allocation)
+        _recentPeaks = new [MAX_RECENT_PEAKS] as Array<Float>;
+        for (var i = 0; i < MAX_RECENT_PEAKS; i++) {
+            _recentPeaks[i] = 0.0;
+        }
+        _recentPeaksIdx = 0;
+        _recentPeaksCount = 0;
+        
+        _previousMagnitudes = new [MAGNITUDE_BUFFER_SIZE] as Array<Float>;
+        for (var i = 0; i < MAGNITUDE_BUFFER_SIZE; i++) {
+            _previousMagnitudes[i] = 0.0;
+        }
+        _prevMagIdx = 0;
+        _prevMagCount = 0;
+        
+        // Pre-allocate sort scratch buffer (for adaptive threshold calculation)
+        _sortScratch = new [MAX_RECENT_PEAKS] as Array<Float>;
+        for (var i = 0; i < MAX_RECENT_PEAKS; i++) {
+            _sortScratch[i] = 0.0;
+        }
         
         // Initialize steadiness analyzer
         _steadinessAnalyzer = new SteadinessAnalyzer();
@@ -301,7 +331,8 @@ class ShotDetector {
         
         // Reset adaptive threshold to new sensitivity
         _adaptiveThreshold = config.sensitivity;
-        _recentPeaks = [];
+        _recentPeaksIdx = 0;
+        _recentPeaksCount = 0;
         
         System.println("[SHOT] Detection config updated: " + config.toString());
     }
@@ -332,6 +363,8 @@ class ShotDetector {
         try {
             // Use registerSensorDataListener for HIGH-FREQUENCY sensor data (25Hz)
             // enableSensorEvents only provides 1Hz which is too slow for steadiness analysis!
+            // NOTE: Gyroscope removed - was registered but never used (battery waste)
+            // If angular velocity analysis is needed later, add gyro back AND read the data
             var options = {
                 :period => 1,  // 1 second batches
                 :accelerometer => {
@@ -340,19 +373,6 @@ class ShotDetector {
                 }
             };
             
-            // Try to enable gyroscope for angular velocity (muzzle wobble detection)
-            // This significantly improves steadiness analysis for barrel tracking
-            // Available on most modern Garmin watches (Fenix 6+, Venu, epix, etc.)
-            try {
-                options.put(:gyroscope, {
-                    :enabled => true,
-                    :sampleRate => 25
-                });
-                System.println("[SHOT] ✓ Gyroscope enabled for angular velocity tracking");
-            } catch (ex) {
-                System.println("[SHOT] ⚠ Gyroscope not available on this device");
-            }
-            
             Sensor.registerSensorDataListener(method(:onHighFreqSensorData), options);
             
             _isMonitoring = true;
@@ -360,8 +380,14 @@ class ShotDetector {
             
             // Reset adaptive threshold state
             _adaptiveThreshold = _config.sensitivity;
-            _recentPeaks = [];
-            _previousMagnitudes = [];
+            _baselineMagnitude = 1.0;
+            
+            // Reset circular buffer indices (no memory allocation)
+            _recentPeaksIdx = 0;
+            _recentPeaksCount = 0;
+            _prevMagIdx = 0;
+            _prevMagCount = 0;
+            
             _rejectedLowCount = 0;
             _rejectedVerticalCount = 0;
 
@@ -510,10 +536,16 @@ class ShotDetector {
         _steadinessAnalyzer.resetSession();
         _biometricsTracker.reset();
         
-        // Reset adaptive threshold
+        // Reset adaptive threshold and circular buffers
         _adaptiveThreshold = _config.sensitivity;
-        _recentPeaks = [];
-        _previousMagnitudes = [];
+        _baselineMagnitude = 1.0;
+        
+        // Clear circular buffers (reset indices, don't reallocate)
+        _recentPeaksIdx = 0;
+        _recentPeaksCount = 0;
+        _prevMagIdx = 0;
+        _prevMagCount = 0;
+        
         _rejectedLowCount = 0;
         _rejectedVerticalCount = 0;
     }
@@ -688,105 +720,35 @@ class ShotDetector {
             return;
         }
         
+        // Calculate timing for samples
+        var now = System.getTimer();
+        var batchDuration = 1000;  // 1 second batch
+        var sampleInterval = batchDuration / sampleCount;  // ~40ms at 25Hz
+        
+        // Check if timestamps are available (not all devices support this)
+        var hasTimestamps = false;
+        var timestamps = null;
+        if (accelData has :timestamps) {
+            timestamps = accelData.timestamps;
+            hasTimestamps = (timestamps != null && timestamps.size() >= sampleCount);
+        }
+        
         // Process each sample in the batch
         for (var i = 0; i < sampleCount; i++) {
             var x = xSamples[i].toFloat() / 1000.0;  // Convert milli-G to G
             var y = ySamples[i].toFloat() / 1000.0;
             var z = zSamples[i].toFloat() / 1000.0;
             
-            // Feed to steadiness analyzer (this is the key fix!)
-            _steadinessAnalyzer.addSample(x, y, z);
-            
-            // Calculate magnitude for shot detection
-            var magnitudeSq = (x * x) + (y * y) + (z * z);
-            var magnitude = Math.sqrt(magnitudeSq).toFloat();
-            var delta = (magnitude - 1.0).abs();
-            _lastMagnitude = delta;
-            
-            // Track for rise time
-            _previousMagnitudes.add(delta);
-            if (_previousMagnitudes.size() > RISE_TIME_SAMPLES) {
-                var newMags = [] as Array<Float>;
-                var startIdx = _previousMagnitudes.size() - RISE_TIME_SAMPLES;
-                for (var j = startIdx; j < _previousMagnitudes.size(); j++) {
-                    newMags.add(_previousMagnitudes[j]);
-                }
-                _previousMagnitudes = newMags;
+            // Use real timestamp if available, otherwise estimate
+            var sampleTime;
+            if (hasTimestamps && timestamps != null) {
+                sampleTime = timestamps[i];
+            } else {
+                sampleTime = now - batchDuration + (i * sampleInterval);
             }
             
-            // Calibration mode
-            if (_calibrating && delta > 1.5) {
-                _calibrationPeaks.add(delta);
-                continue;
-            }
-            
-            // Shot detection
-            if (!_enabled) {
-                continue;
-            }
-            
-            var now = System.getTimer();
-            var timeSinceLastShot = now - _lastShotTime;
-            
-            if (timeSinceLastShot < _config.getEffectiveCooldown()) {
-                continue;
-            }
-            
-            if (delta < _config.minThreshold) {
-                continue;
-            }
-            
-            if (delta >= _adaptiveThreshold) {
-                if (!validateShotSignature(x, y, z, delta)) {
-                    _rejectedVerticalCount++;
-                    continue;
-                }
-                
-                // Shot detected!
-                _lastShotTime = now;
-                _totalDetections++;
-                
-                // Update adaptive threshold
-                _recentPeaks.add(delta);
-                if (_recentPeaks.size() > MAX_RECENT_PEAKS) {
-                    var newPeaks = [] as Array<Float>;
-                    var startIdx = _recentPeaks.size() - MAX_RECENT_PEAKS;
-                    for (var j = startIdx; j < _recentPeaks.size(); j++) {
-                        newPeaks.add(_recentPeaks[j]);
-                    }
-                    _recentPeaks = newPeaks;
-                }
-                updateAdaptiveThreshold();
-                
-                // Analyze steadiness (now with proper data!)
-                _lastSteadinessResult = _steadinessAnalyzer.analyzeShot(now, _totalDetections);
-                _lastShotBiometrics = _biometricsTracker.recordShotBiometrics(_totalDetections);
-                
-                _biometricsTracker.recordShotForTimeline(
-                    _totalDetections,
-                    _lastSteadinessResult.steadinessScore.toNumber(),
-                    _lastSteadinessResult.flinchDetected,
-                    false
-                );
-                
-                System.println("[SHOT] Detected! Mag: " + delta.format("%.2f") + "G, Steady: " + 
-                              _lastSteadinessResult.gradeString + " (buffer: " + 
-                              _steadinessAnalyzer.getBufferCount() + " samples)");
-                
-                // Callbacks
-                if (_onShotWithSteadiness != null && _lastSteadinessResult != null) {
-                    _onShotWithSteadiness.invoke(_lastSteadinessResult);
-                }
-                if (_onShotDetected != null) {
-                    _onShotDetected.invoke();
-                }
-                
-                // Vibration feedback
-                if (_vrcv && (Attention has :vibrate)) {
-                    var vibeData = [new Attention.VibeProfile(75, 50)];
-                    Attention.vibrate(vibeData);
-                }
-            }
+            // Use common processing function (DRY)
+            processSample(x, y, z, sampleTime);
         }
     }
     
@@ -797,111 +759,97 @@ class ShotDetector {
     // Called when new accelerometer data is available (1Hz - fallback only)
     function onSensorData(sensorInfo as Sensor.Info) as Void {
         if (sensorInfo.accel == null) {
-            // First few calls might be null - that's OK, but log it occasionally
             return;
         }
         
-        // Get acceleration values (in milli-G)
         var accel = sensorInfo.accel;
-        var x = accel[0].toFloat() / 1000.0;  // Convert to G
+        var x = accel[0].toFloat() / 1000.0;  // Convert milli-G to G
         var y = accel[1].toFloat() / 1000.0;
         var z = accel[2].toFloat() / 1000.0;
         
-        // Always feed samples to steadiness analyzer (buffering for analysis)
+        // Use common processing function (DRY)
+        processSample(x, y, z, System.getTimer());
+    }
+    
+    // =========================================================================
+    // COMMON SAMPLE PROCESSING (DRY - used by both high-freq and low-freq callbacks)
+    // =========================================================================
+    
+    private function processSample(x as Float, y as Float, z as Float, sampleTime as Number) as Void {
+        // Feed to steadiness analyzer
         _steadinessAnalyzer.addSample(x, y, z);
         
-        // Calculate magnitude: sqrt(x² + y² + z²)
+        // Calculate magnitude
         var magnitudeSq = (x * x) + (y * y) + (z * z);
         var magnitude = Math.sqrt(magnitudeSq).toFloat();
         
-        // Subtract baseline gravity (~1G) to get delta
-        var delta = magnitude - 1.0;
-        if (delta < 0) {
-            delta = -delta;  // abs()
+        // Update rolling baseline (only when not spiking, avoids recoil contamination)
+        if (magnitude < 1.5 && magnitude > 0.5) {
+            _baselineMagnitude = (_baselineMagnitude * (1.0 - BASELINE_ALPHA)) + 
+                                 (magnitude * BASELINE_ALPHA);
         }
+        
+        // Delta from rolling baseline (not hardcoded 1.0G)
+        var delta = (magnitude - _baselineMagnitude).abs();
         _lastMagnitude = delta;
         
-        // Track previous magnitudes for rise time calculation
-        _previousMagnitudes.add(delta);
-        if (_previousMagnitudes.size() > RISE_TIME_SAMPLES) {
-            var newMags = [] as Array<Float>;
-            var startIdx = _previousMagnitudes.size() - RISE_TIME_SAMPLES;
-            for (var i = startIdx; i < _previousMagnitudes.size(); i++) {
-                newMags.add(_previousMagnitudes[i]);
-            }
-            _previousMagnitudes = newMags;
-        }
+        // Add to circular buffer (no memory allocation)
+        addToPreviousMagnitudes(delta);
         
-        // During calibration, record peaks above 1.5G
+        // Calibration mode
         if (_calibrating && delta > 1.5) {
             _calibrationPeaks.add(delta);
-            return;  // Don't trigger shots during calibration
+            return;
         }
         
-        // Check if detection is enabled
+        // Shot detection disabled - still collecting data for steadiness
         if (!_enabled) {
             return;
         }
         
-        var now = System.getTimer();
-        var timeSinceLastShot = now - _lastShotTime;
-        var effectiveCooldown = _config.getEffectiveCooldown();
-        
-        // 1. Cooldown check - prevent double-counting
-        if (timeSinceLastShot < effectiveCooldown) {
+        // Cooldown check
+        var timeSinceLastShot = sampleTime - _lastShotTime;
+        if (timeSinceLastShot < _config.getEffectiveCooldown()) {
             return;
         }
         
-        // 2. Below minimum threshold - definitely not a shot (false positive rejection)
+        // Below minimum threshold
         if (delta < _config.minThreshold) {
             return;
         }
         
-        // 3. Detection check against adaptive threshold
+        // Detection check
         if (delta >= _adaptiveThreshold) {
-            // 4. Validate shot signature
-            if (!validateShotSignature(x, y, z, delta)) {
+            // Validate shot signature
+            if (!validateShotSignature(x, y, z, magnitude, delta)) {
                 _rejectedVerticalCount++;
                 return;
             }
             
             // Shot detected!
-            _lastShotTime = now;
+            _lastShotTime = sampleTime;
             _totalDetections++;
             
-            // 5. Record peak for adaptive threshold learning
-            _recentPeaks.add(delta);
-            if (_recentPeaks.size() > MAX_RECENT_PEAKS) {
-                var newPeaks = [] as Array<Float>;
-                var startIdx = _recentPeaks.size() - MAX_RECENT_PEAKS;
-                for (var i = startIdx; i < _recentPeaks.size(); i++) {
-                    newPeaks.add(_recentPeaks[i]);
-                }
-                _recentPeaks = newPeaks;
-            }
-            
-            // 6. Update adaptive threshold based on actual shots
+            // Record peak to circular buffer
+            addToRecentPeaks(delta);
             updateAdaptiveThreshold();
             
-            // Analyze pre-shot steadiness
-            _lastSteadinessResult = _steadinessAnalyzer.analyzeShot(now, _totalDetections);
-
-            // Record biometrics at shot moment (HR, breathing)
+            // Analyze steadiness and biometrics
+            _lastSteadinessResult = _steadinessAnalyzer.analyzeShot(sampleTime, _totalDetections);
             _lastShotBiometrics = _biometricsTracker.recordShotBiometrics(_totalDetections);
-
-            // Record to timeline for chunked sync (includes HR, breath, steadiness, etc.)
+            
             _biometricsTracker.recordShotForTimeline(
                 _totalDetections,
                 _lastSteadinessResult.steadinessScore.toNumber(),
                 _lastSteadinessResult.flinchDetected,
-                false  // isHit - will be updated by view if known
+                false
             );
-
+            
             System.println("[SHOT] Detected! Mag: " + delta.format("%.2f") + "G, Adaptive: " + 
                           _adaptiveThreshold.format("%.2f") + "G, Total: " + _totalDetections +
                           ", Steady: " + _lastSteadinessResult.gradeString);
             
-            // Trigger callbacks
+            // Callbacks
             if (_onShotWithSteadiness != null && _lastSteadinessResult != null) {
                 _onShotWithSteadiness.invoke(_lastSteadinessResult);
             }
@@ -909,14 +857,40 @@ class ShotDetector {
                 _onShotDetected.invoke();
             }
             
-            // VRCV: only vibrate when enabled by setting
+            // Vibration feedback
             if (_vrcv && (Attention has :vibrate)) {
-                var vibeData = [
-                    new Attention.VibeProfile(75, 50)  // Short 50ms pulse
-                ];
+                var vibeData = [new Attention.VibeProfile(75, 50)];
                 Attention.vibrate(vibeData);
             }
         }
+    }
+    
+    // =========================================================================
+    // CIRCULAR BUFFER HELPERS (no memory allocation after init)
+    // =========================================================================
+    
+    private function addToRecentPeaks(value as Float) as Void {
+        _recentPeaks[_recentPeaksIdx] = value;
+        _recentPeaksIdx = (_recentPeaksIdx + 1) % MAX_RECENT_PEAKS;
+        if (_recentPeaksCount < MAX_RECENT_PEAKS) {
+            _recentPeaksCount++;
+        }
+    }
+    
+    private function addToPreviousMagnitudes(value as Float) as Void {
+        _previousMagnitudes[_prevMagIdx] = value;
+        _prevMagIdx = (_prevMagIdx + 1) % MAGNITUDE_BUFFER_SIZE;
+        if (_prevMagCount < MAGNITUDE_BUFFER_SIZE) {
+            _prevMagCount++;
+        }
+    }
+    
+    private function getPreviousMagnitude(offset as Number) as Float {
+        if (offset >= _prevMagCount) {
+            return 0.0;
+        }
+        var idx = (_prevMagIdx - 1 - offset + MAGNITUDE_BUFFER_SIZE) % MAGNITUDE_BUFFER_SIZE;
+        return _previousMagnitudes[idx];
     }
     
     // =========================================================================
@@ -924,54 +898,46 @@ class ShotDetector {
     // Real shots have specific characteristics that differentiate them from arm movement
     // =========================================================================
     
-    private function validateShotSignature(x as Float, y as Float, z as Float, magnitude as Float) as Boolean {
-        // RELAXED VALIDATION - previous version was too strict and rejected real shots
+    private function validateShotSignature(x as Float, y as Float, z as Float, magnitude as Float, delta as Float) as Boolean {
+        // FIXED VALIDATION - Uses delta values to remove gravity bias
         // 
-        // The problem: watch orientation varies greatly based on grip, stance, etc.
-        // We can't reliably assume which axis the recoil will be on.
+        // Previous issue: Using raw magnitude included gravity (~1G on Z-axis),
+        // which biased the dominant axis check.
         //
-        // For now, just do a basic sanity check that there's SOME directional component
-        // (not just noise across all axes equally)
+        // Rise time check REMOVED: At 25Hz (40ms samples), a gunshot impulse (1-5ms)
+        // lands entirely within one sample. The check wasn't doing anything useful.
         
-        // 1. Check that at least one axis dominates (not equal noise)
-        var absX = (x < 0) ? -x : x;
-        var absY = (y < 0) ? -y : y;
-        var absZ = (z < 0) ? -z : z;
+        // Remove gravity from calculation (use deltas, not raw values)
+        var deltaX = (x).abs();
+        var deltaY = (y).abs();
+        var deltaZ = (z - _baselineMagnitude).abs();  // Z typically has gravity
         
-        // Find the dominant axis
-        var maxAxis = absX;
-        if (absY > maxAxis) { maxAxis = absY; }
-        if (absZ > maxAxis) { maxAxis = absZ; }
+        var deltaMag = Math.sqrt(deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ).toFloat();
         
-        // The dominant axis should be at least 30% of total magnitude
-        // This is MUCH more relaxed than before (was 40-45%)
+        // Find dominant delta axis
+        var maxDeltaAxis = deltaX;
+        if (deltaY > maxDeltaAxis) { maxDeltaAxis = deltaY; }
+        if (deltaZ > maxDeltaAxis) { maxDeltaAxis = deltaZ; }
+        
+        // Check for directional impulse (not uniform noise)
         var dominantRatio = 0.0;
-        if (magnitude > 0) {
-            dominantRatio = maxAxis / magnitude;
+        if (deltaMag > 0.1) {
+            dominantRatio = maxDeltaAxis / deltaMag;
         }
         
         if (dominantRatio < 0.25) {
-            // All axes equally noisy - probably not a real impulse
             System.println("[SHOT] Rejected: no dominant axis (ratio=" + dominantRatio.format("%.2f") + ")");
             return false;
         }
         
-        // 2. Rise time check - RELAXED
-        // Only reject if it's VERY gradual (walking, etc.)
-        if (_previousMagnitudes.size() >= 2) {
-            var previousMag = _previousMagnitudes[_previousMagnitudes.size() - 2];
-            var riseRatio = 0.0;
-            if (previousMag > 0.2) {
-                riseRatio = magnitude / previousMag;
-            } else {
-                // Previous was very low, this is definitely a spike
-                riseRatio = 10.0;
-            }
-            
-            // Only reject if rise is VERY gradual (< 1.2x means almost no change)
-            // Real shots are typically 2-10x, but some light recoil might be 1.3-2x
-            if (riseRatio < 1.2) {
-                System.println("[SHOT] Rejected: gradual rise (ratio=" + riseRatio.format("%.2f") + ")");
+        // Optional: Verify decay pattern (post-shot samples should decrease)
+        // This catches "held acceleration" like arm swings
+        // Only check if we have enough history
+        if (_prevMagCount >= 3) {
+            var prevDelta = getPreviousMagnitude(1);  // 1 sample ago
+            // If previous sample was ALSO high, this might be sustained movement, not impulse
+            if (prevDelta > delta * 0.9 && prevDelta > _config.minThreshold * 2) {
+                System.println("[SHOT] Rejected: sustained high magnitude (prev=" + prevDelta.format("%.2f") + ")");
                 return false;
             }
         }
@@ -986,28 +952,28 @@ class ShotDetector {
     
     private function updateAdaptiveThreshold() as Void {
         // Need at least 2 shots to adapt
-        if (_recentPeaks.size() < 2) {
+        if (_recentPeaksCount < 2) {
             return;
         }
         
-        // Calculate median of recent peaks (more robust than average)
-        var sorted = [] as Array<Float>;
-        for (var i = 0; i < _recentPeaks.size(); i++) {
-            sorted.add(_recentPeaks[i]);
+        // Copy circular buffer to pre-allocated scratch array (zero allocation)
+        for (var i = 0; i < _recentPeaksCount; i++) {
+            var idx = (_recentPeaksIdx - _recentPeaksCount + i + MAX_RECENT_PEAKS) % MAX_RECENT_PEAKS;
+            _sortScratch[i] = _recentPeaks[idx];
         }
         
-        // Simple bubble sort (array is small)
-        for (var i = 0; i < sorted.size() - 1; i++) {
-            for (var j = 0; j < sorted.size() - 1 - i; j++) {
-                if (sorted[j] > sorted[j + 1]) {
-                    var temp = sorted[j];
-                    sorted[j] = sorted[j + 1];
-                    sorted[j + 1] = temp;
+        // Simple bubble sort in-place (only _recentPeaksCount elements)
+        for (var i = 0; i < _recentPeaksCount - 1; i++) {
+            for (var j = 0; j < _recentPeaksCount - 1 - i; j++) {
+                if (_sortScratch[j] > _sortScratch[j + 1]) {
+                    var temp = _sortScratch[j];
+                    _sortScratch[j] = _sortScratch[j + 1];
+                    _sortScratch[j + 1] = temp;
                 }
             }
         }
         
-        var median = sorted[sorted.size() / 2];
+        var median = _sortScratch[_recentPeaksCount / 2];
         
         // Set threshold at 60% of median (allows for shot variation)
         var newThreshold = median * 0.6;
@@ -1024,7 +990,7 @@ class ShotDetector {
         _adaptiveThreshold = (_adaptiveThreshold * 0.7) + (newThreshold * 0.3);
         
         System.println("[SHOT] Adaptive threshold: " + _adaptiveThreshold.format("%.2f") + 
-                      "G (median: " + median.format("%.2f") + "G, samples: " + _recentPeaks.size() + ")");
+                      "G (median: " + median.format("%.2f") + "G, samples: " + _recentPeaksCount + ")");
     }
     
     // =========================================================================

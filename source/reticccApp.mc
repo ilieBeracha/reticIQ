@@ -59,11 +59,92 @@ class reticccApp extends Application.AppBase {
     // Session management modules (two-phase sync architecture)
     private var _sessionManager as SessionManager?;
     private var _payloadBuilder as PayloadBuilder?;
+    
+    // Error tracking for display and phone logging
+    private var _lastErrorCode as String = "";
+    private var _lastErrorMsg as String = "";
+    private var _lastErrorTime as Number = 0;
+    private var _errorCount as Number = 0;
 
     function initialize() {
         AppBase.initialize();
         _sessionManager = new SessionManager();
         _payloadBuilder = new PayloadBuilder();
+    }
+    
+    // =========================================================================
+    // CENTRALIZED ERROR HANDLING - Shows on screen AND sends to phone
+    // =========================================================================
+    
+    // Report an error - shows on watch screen and queues for phone logging
+    function reportError(errorCode as String, errorMsg as String) as Void {
+        _lastErrorCode = errorCode;
+        _lastErrorMsg = errorMsg;
+        _lastErrorTime = System.getTimer();
+        _errorCount++;
+        
+        var fullError = errorCode + ": " + errorMsg;
+        System.println("[ERROR] " + fullError + " (total errors: " + _errorCount + ")");
+        
+        // Show on watch screen
+        if (mainView != null) {
+            mainView.setErrorMsg(fullError);
+        }
+        
+        // DISABLED: Sending error to phone during retries can cause contention
+        // Only log critical errors (ACK_TIMEOUT) to phone after all retries exhausted
+        if (errorCode.equals("ACK_TIMEOUT") || errorCode.equals("SYNC_PARTIAL")) {
+            tryLogErrorToPhone(errorCode, errorMsg);
+        }
+    }
+    
+    // Send error log to phone (best effort, won't retry on failure)
+    private function tryLogErrorToPhone(errorCode as String, errorMsg as String) as Void {
+        try {
+            var errorPayload = {
+                "code" => errorCode,
+                "message" => errorMsg,
+                "timestamp" => Time.now().value(),
+                "errorCount" => _errorCount
+            };
+            
+            var message = {
+                "type" => MessageTypes.ERROR,
+                "payload" => errorPayload
+            };
+            
+            // Use a silent listener that doesn't report errors (to avoid infinite loop)
+            var listener = new SilentCommListener();
+            Communications.transmit(message, null, listener);
+            
+            System.println("[ERROR] Error log sent to phone");
+        } catch (ex) {
+            // Can't send to phone - just log locally
+            System.println("[ERROR] Failed to send error to phone: " + ex.getErrorMessage());
+        }
+    }
+    
+    // Get last error for display
+    function getLastError() as String {
+        if (_lastErrorCode.equals("")) {
+            return "";
+        }
+        return _lastErrorCode + ": " + _lastErrorMsg;
+    }
+    
+    // Get error count
+    function getErrorCount() as Number {
+        return _errorCount;
+    }
+    
+    // Clear error state
+    function clearErrors() as Void {
+        _lastErrorCode = "";
+        _lastErrorMsg = "";
+        _errorCount = 0;
+        if (mainView != null) {
+            mainView.clearError();
+        }
     }
 
     // Get session manager for View integration
@@ -183,6 +264,14 @@ class reticccApp extends Application.AppBase {
             
         } else if (typeStr.equals(MessageTypes.SESSION_START)) {
             if (mainView != null && payload != null && payload instanceof Dictionary) {
+                // CRITICAL: Clear any pending sync from previous session
+                // This prevents session 1 retries from interfering with session 2
+                stopAckTimer();
+                clearSyncState();
+                clearPendingSessions();
+                Storage.deleteValue(StorageKeys.PENDING_TIMELINE);
+                System.println("[SYNC] Cleared previous session state for new SESSION_START");
+                
                 mainView.prepareSession(payload as Dictionary);
                 sendMessage(MessageTypes.ACK, {"status" => "session_ready"});
             }
@@ -218,6 +307,20 @@ class reticccApp extends Application.AppBase {
         
         System.println("[RETIC] Sending: " + msgType);
         var listener = new CommListener();
+        listener.initWithType(msgType);  // Track message type for error reporting
+        Communications.transmit(message, null, listener);
+    }
+    
+    // Send message with additional context for error reporting
+    function sendMessageWithContext(msgType as String, payload as Dictionary, context as String) as Void {
+        var message = {
+            "type" => msgType,
+            "payload" => payload
+        };
+        
+        System.println("[RETIC] Sending: " + msgType + " (" + context + ")");
+        var listener = new CommListener();
+        listener.initWithContext(msgType, context);
         Communications.transmit(message, null, listener);
     }
     
@@ -242,7 +345,7 @@ class reticccApp extends Application.AppBase {
         
         // Phase 1: Send summary immediately
         System.println("[SYNC] Phase 1: Sending SESSION_SUMMARY");
-        sendMessage(MessageTypes.SESSION_SUMMARY, summary);
+        sendMessageWithContext(MessageTypes.SESSION_SUMMARY, summary, "session:" + sessionId);
         
         // Start ACK timeout timer
         startAckTimer();
@@ -415,7 +518,7 @@ class reticccApp extends Application.AppBase {
             System.println("[ACK] Retry attempt " + _retryCount + "/" + _maxRetries);
 
             if (_syncPhase == SYNC_SUMMARY && _pendingSessionData != null) {
-                sendMessage(MessageTypes.SESSION_SUMMARY, _pendingSessionData);
+                sendMessageWithContext(MessageTypes.SESSION_SUMMARY, _pendingSessionData, "retry:" + _retryCount);
                 if (mainView != null) {
                     mainView.setLastMsg("Retry " + _retryCount + "...");
                 }
@@ -424,13 +527,17 @@ class reticccApp extends Application.AppBase {
                 // Retry current timeline chunk
                 if (_currentChunkIndex < _totalChunks) {
                     var chunk = _timelineChunks[_currentChunkIndex];
-                    sendMessage(MessageTypes.TIMELINE_CHUNK, chunk);
+                    sendMessageWithContext(MessageTypes.TIMELINE_CHUNK, chunk, "chunk:" + (_currentChunkIndex + 1) + " retry:" + _retryCount);
                     startAckTimer();
                 }
             }
         } else {
             // Max retries reached for this phase
             System.println("[ACK] Max retries reached for phase " + _syncPhase);
+            
+            // Report timeout error
+            var phaseStr = (_syncPhase == SYNC_SUMMARY) ? "SUMMARY" : "TIMELINE";
+            reportError("ACK_TIMEOUT", phaseStr + " max retries (" + _maxRetries + ")");
 
             if (_syncPhase == SYNC_SUMMARY) {
                 // Summary ACK never received, but phone might have it!
@@ -459,6 +566,7 @@ class reticccApp extends Application.AppBase {
                 } else {
                     // All chunks attempted
                     System.println("[ACK] All timeline chunks attempted. Sync may be partial.");
+                    reportError("SYNC_PARTIAL", "Timeline sync incomplete");
                     // Don't remove from storage - keep for retry on next launch
                     if (mainView != null) {
                         mainView.setLastMsg("Synced (partial)");
@@ -832,14 +940,20 @@ class reticccApp extends Application.AppBase {
 // Communication listener for transmit callbacks
 class CommListener extends Communications.ConnectionListener {
     private var _msgType as String = "";
+    private var _context as String = "";  // Additional context for error reporting
 
     function initialize() {
         ConnectionListener.initialize();
     }
 
     function initWithType(msgType as String) {
-        ConnectionListener.initialize();
         _msgType = msgType;
+        _context = "";
+    }
+    
+    function initWithContext(msgType as String, context as String) {
+        _msgType = msgType;
+        _context = context;
     }
 
     function onComplete() as Void {
@@ -847,10 +961,31 @@ class CommListener extends Communications.ConnectionListener {
     }
 
     function onError() as Void {
-        System.println("[COMM] ✗ " + _msgType + " send FAILED - check phone connection");
-        // Notify view of send failure
-        if (mainView != null) {
-            mainView.setLastMsg("Send failed!");
+        var errorDetail = _msgType + " FAILED";
+        if (!_context.equals("")) {
+            errorDetail = errorDetail + " (" + _context + ")";
         }
+        
+        System.println("[COMM] ✗ " + errorDetail + " - check phone connection");
+        
+        // Report error to centralized handler
+        var app = Application.getApp() as reticccApp;
+        app.reportError("SEND_FAILED", errorDetail);
+    }
+}
+
+// Silent listener - used for error logging to avoid infinite loop
+class SilentCommListener extends Communications.ConnectionListener {
+    function initialize() {
+        ConnectionListener.initialize();
+    }
+
+    function onComplete() as Void {
+        // Silent success
+    }
+
+    function onError() as Void {
+        // Silent failure - don't report errors for error logging (would cause infinite loop)
+        System.println("[COMM] Error log send failed (silent)");
     }
 }

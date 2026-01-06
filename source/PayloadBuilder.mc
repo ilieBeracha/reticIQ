@@ -49,7 +49,6 @@ class PayloadBuilder {
         var hrvSource = "estimated";  // "native" (IBI) or "estimated"
         var bodyBattery = -1;  // Readiness at session start
         var optimalPct = 0;  // % of shots in optimal conditions
-        var shotBiometrics = [] as Array<Dictionary>;  // Per-shot biometrics
 
         if (bioTracker != null) {
             var bioSummary = bioTracker.getSessionSummary();
@@ -60,7 +59,7 @@ class PayloadBuilder {
             hrvSource = bioTracker.getHrvSource();
             bodyBattery = bioTracker.getSessionStartBodyBattery();
             optimalPct = bioSummary.get("optimalPct") != null ? bioSummary.get("optimalPct") as Number : 0;
-            shotBiometrics = bioTracker.getShotBiometrics();
+            // NOTE: shotBiometrics removed - too large for summary, sent in TIMELINE_CHUNK
         }
 
         // Get steadiness metrics
@@ -115,8 +114,8 @@ class PayloadBuilder {
                 "optimalPct" => optimalPct    // % of shots in optimal conditions (pause+stable+lowStress)
             },
 
-            // === PER-SHOT BIOMETRICS (for correlation analysis) ===
-            "shotBio" => shotBiometrics,  // [{shot, hr, hrAvg, br, breathPhase, hrTrend, stress, rmssd}, ...]
+            // NOTE: Per-shot biometrics (shotBio) removed from summary - too large!
+            // This data is sent in TIMELINE_CHUNK instead
 
             // === DETECTION METADATA ===
             "detection" => {
