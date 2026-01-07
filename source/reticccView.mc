@@ -8,6 +8,12 @@ import Toybox.Weather;
 import Toybox.Math;
 import Toybox.Attention;
 
+// ============================================================================
+// APP VERSION - Update this when deploying new builds!
+// Display on idle screen to verify correct version is running
+// ============================================================================
+const APP_VERSION as String = "1.0.1";  // << UPDATE THIS WHEN DEPLOYING
+
 // Session state enum
 enum SessionState {
     STATE_IDLE,
@@ -1659,6 +1665,10 @@ class reticccView extends WatchUi.View {
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(centerX, centerY + 2, Graphics.FONT_LARGE, timeStr, Graphics.TEXT_JUSTIFY_CENTER);
         
+        // Version - right below the time, BRIGHT WHITE, bigger font
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, centerY + 45, Graphics.FONT_SMALL, "v" + APP_VERSION, Graphics.TEXT_JUSTIFY_CENTER);
+        
         // =====================================================================
         // Bottom info area
         // =====================================================================
@@ -1672,6 +1682,7 @@ class reticccView extends WatchUi.View {
             dc.setColor(0x666666, Graphics.COLOR_TRANSPARENT);
             dc.drawCircle(centerX, bottomY, 4);
         }
+        
 
         // =====================================================================
         // Pending session - center overlay

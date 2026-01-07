@@ -46,10 +46,10 @@ class reticccApp extends Application.AppBase {
     private var _syncPhase as SyncPhase = SYNC_IDLE;
     private var _pendingAckSessionId as String? = null;
     private var _ackTimer as Timer.Timer? = null;
-    private var _ackTimeoutMs as Number = 4000;  // 4 second timeout for ACK (reduced for faster retry)
+    private var _ackTimeoutMs as Number = 6000;  // 6 second timeout for ACK
     private var _pendingSessionData as Dictionary? = null;
     private var _retryCount as Number = 0;
-    private var _maxRetries as Number = 5;  // Increased from 3 to 5 for better reliability
+    private var _maxRetries as Number = 2;  // Reduced to 2 for development (less error spam)
 
     // Timeline chunk sync state (phase 3)
     private var _timelineChunks as Array<Dictionary>?;
@@ -224,8 +224,11 @@ class reticccApp extends Application.AppBase {
         Communications.registerForPhoneAppMessages(method(:onPhoneMessage));
         System.println("[RETIC] Registered for phone messages");
         
-        // Check for pending sessions on app start (retries failed syncs)
-        checkPendingSessions();
+        // DISABLED: Auto-retry on app start causes too many errors during development
+        // Clear stale pending data instead to start fresh
+        clearPendingSessions();
+        Storage.deleteValue(StorageKeys.PENDING_TIMELINE);
+        System.println("[RETIC] Cleared pending sessions (auto-retry disabled)");
     }
 
     // Callback when a phone message is received
@@ -425,8 +428,22 @@ class reticccApp extends Application.AppBase {
         } else if (_syncPhase == SYNC_TIMELINE) {
             // Timeline chunk ACK received - send next chunk or complete
             var ackChunk = ackPayload.get("chunk");
+            
+            // CRITICAL: Verify ACK is for the chunk we're waiting for
+            // This prevents race conditions where delayed ACKs cause skipped chunks
+            if (ackChunk != null && ackChunk instanceof Number) {
+                var ackChunkNum = ackChunk as Number;
+                if (ackChunkNum != _currentChunkIndex) {
+                    System.println("[SYNC] ⚠️ ACK chunk mismatch! Expected: " + _currentChunkIndex + ", got: " + ackChunkNum + " (ignoring stale ACK)");
+                    return;  // Ignore stale/duplicate ACK
+                }
+            }
+            
             System.println("[SYNC] Timeline chunk " + (_currentChunkIndex + 1) + "/" + _totalChunks + " ACK received");
 
+            // Cancel timeout and move to next chunk
+            stopAckTimer();
+            _retryCount = 0;
             _currentChunkIndex++;
 
             if (_currentChunkIndex < _totalChunks) {
@@ -615,21 +632,27 @@ class reticccApp extends Application.AppBase {
     // =========================================================================
     
     // Save session summary to local storage
+    // DISABLED: Persistent storage causes retry storms on app restart during development
     private function saveSessionToStorage(sessionId as String, payload as Dictionary) as Void {
-        try {
-            var pending = Storage.getValue(StorageKeys.PENDING_SESSIONS);
-            var pendingDict = {} as Dictionary<String, Dictionary>;
-            
-            if (pending != null && pending instanceof Dictionary) {
-                pendingDict = pending as Dictionary<String, Dictionary>;
-            }
-            
-            pendingDict.put(sessionId, payload);
-            Storage.setValue(StorageKeys.PENDING_SESSIONS, pendingDict);
-            System.println("[STORAGE] Saved session summary: " + sessionId);
-        } catch (ex) {
-            System.println("[STORAGE] Error saving session: " + ex.getErrorMessage());
-        }
+        // Skip saving to prevent retry accumulation
+        System.println("[STORAGE] Skipping save (disabled for dev): " + sessionId);
+        return;
+        
+        // Original code (commented out):
+        // try {
+        //     var pending = Storage.getValue(StorageKeys.PENDING_SESSIONS);
+        //     var pendingDict = {} as Dictionary<String, Dictionary>;
+        //     
+        //     if (pending != null && pending instanceof Dictionary) {
+        //         pendingDict = pending as Dictionary<String, Dictionary>;
+        //     }
+        //     
+        //     pendingDict.put(sessionId, payload);
+        //     Storage.setValue(StorageKeys.PENDING_SESSIONS, pendingDict);
+        //     System.println("[STORAGE] Saved session summary: " + sessionId);
+        // } catch (ex) {
+        //     System.println("[STORAGE] Error saving session: " + ex.getErrorMessage());
+        // }
     }
     
     // Remove session from storage (after successful ACK)
@@ -649,25 +672,11 @@ class reticccApp extends Application.AppBase {
     }
 
     // Save timeline chunks to local storage (for phase 2 recovery)
+    // DISABLED: Persistent storage causes retry storms on app restart during development
     private function saveTimelineToStorage(sessionId as String, chunks as Array<Dictionary>) as Void {
-        try {
-            var pending = Storage.getValue(StorageKeys.PENDING_TIMELINE);
-            var pendingDict = {} as Dictionary<String, Object>;
-
-            if (pending != null && pending instanceof Dictionary) {
-                pendingDict = pending as Dictionary<String, Object>;
-            }
-
-            // Store chunks array and current index for resume
-            pendingDict.put(sessionId, {
-                "chunks" => chunks,
-                "index" => 0
-            });
-            Storage.setValue(StorageKeys.PENDING_TIMELINE, pendingDict);
-            System.println("[STORAGE] Saved " + chunks.size() + " timeline chunks: " + sessionId);
-        } catch (ex) {
-            System.println("[STORAGE] Error saving timeline: " + ex.getErrorMessage());
-        }
+        // Skip saving to prevent retry accumulation
+        System.println("[STORAGE] Skipping timeline save (disabled for dev): " + sessionId);
+        return;
     }
 
     // Remove timeline from storage (after all chunks sent)
