@@ -12,7 +12,7 @@ import Toybox.Attention;
 // APP VERSION - Update this when deploying new builds!
 // Display on idle screen to verify correct version is running
 // ============================================================================
-const APP_VERSION as String = "1.0.1";  // << UPDATE THIS WHEN DEPLOYING
+const APP_VERSION as String = "1.0.3";  // << UPDATE THIS WHEN DEPLOYING
 
 // Session state enum
 enum SessionState {

@@ -7,8 +7,9 @@ import Toybox.System;
 import Toybox.Timer;
 import Toybox.Application.Storage;
 
-// Global variable to store the view reference for UI updates
+// Global variables
 var mainView as reticccView?;
+var logger as Logger?;
 
 // Message type constants - MUST match your React Native AppConstants
 // Protocol v2: 2-phase sync (SESSION_SUMMARY -> TIMELINE_CHUNK)
@@ -72,6 +73,9 @@ class reticccApp extends Application.AppBase {
         _sessionManager = new SessionManager();
         _payloadBuilder = new PayloadBuilder();
         _weatherService = new WeatherService();
+        
+        // Initialize logger
+        logger = new Logger();
     }
     
     // Get weather service for external access
@@ -92,6 +96,11 @@ class reticccApp extends Application.AppBase {
         
         var fullError = errorCode + ": " + errorMsg;
         System.println("[ERROR] " + fullError + " (total errors: " + _errorCount + ")");
+        
+        // Log to PostHog
+        if (logger != null) {
+            logger.logError(errorCode, errorMsg);
+        }
         
         // Show on watch screen
         if (mainView != null) {
@@ -212,6 +221,16 @@ class reticccApp extends Application.AppBase {
         System.println("[APP] onSessionComplete - sessionId: " + sessionId + ", completed: " + completed);
         System.println("[APP] Summary keys: sid=" + summary.get("sid") + ", shots=" + summary.get("shots"));
 
+        // Track session complete
+        if (logger != null) {
+            logger.track("session_complete", {
+                "session_id" => sessionId,
+                "completed" => completed,
+                "shots" => summary.get("shots"),
+                "timeline_chunks" => _totalChunks
+            }, true);
+        }
+
         // Initiate Protocol v2 sync (summary -> timeline chunks)
         sendSessionSummary(sessionId, summary);
 
@@ -223,6 +242,14 @@ class reticccApp extends Application.AppBase {
     function onStart(state as Dictionary?) as Void {
         Communications.registerForPhoneAppMessages(method(:onPhoneMessage));
         System.println("[RETIC] Registered for phone messages");
+        
+        // Track app started
+        if (logger != null) {
+            logger.track("app_started", {
+                "device" => System.getDeviceSettings().partNumber,
+                "memory_free" => System.getSystemStats().freeMemory
+            }, true);
+        }
         
         // DISABLED: Auto-retry on app start causes too many errors during development
         // Clear stale pending data instead to start fresh
@@ -453,6 +480,15 @@ class reticccApp extends Application.AppBase {
                 // All chunks sent successfully!
                 System.println("[SYNC] ✓✓ All " + _totalChunks + " timeline chunks sent! Sync complete!");
 
+                // Track sync complete
+                if (logger != null) {
+                    logger.track("sync_complete", {
+                        "session_id" => _pendingAckSessionId,
+                        "chunks_sent" => _totalChunks,
+                        "has_timeline" => true
+                    }, true);
+                }
+
                 // Remove timeline from storage
                 removeTimelineFromStorage(_pendingAckSessionId);
 
@@ -471,6 +507,16 @@ class reticccApp extends Application.AppBase {
         if (_timelineChunks == null || _totalChunks == 0) {
             // No timeline data, sync complete
             System.println("[SYNC] No timeline data, sync complete");
+            
+            // Track sync complete (no timeline)
+            if (logger != null) {
+                logger.track("sync_complete", {
+                    "session_id" => _pendingAckSessionId,
+                    "chunks_sent" => 0,
+                    "has_timeline" => false
+                }, true);
+            }
+            
             clearSyncState();
             return;
         }
@@ -944,6 +990,11 @@ class reticccApp extends Application.AppBase {
         // Clean up demo mode on app stop
         if (mainView != null) {
             mainView.stopDemoMode();
+        }
+        
+        // Flush any pending logs
+        if (logger != null) {
+            logger.flush();
         }
     }
 

@@ -17,7 +17,7 @@ import Toybox.Math;
 [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 9; @symbol_importdef<0> = [Toybox,9,7,13]; @symbol_importdef<1> = [Attention,9,14,23]; ]
 import Toybox.Attention;
 [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 15; @position = 6; @symbol_constdef = [APP_VERSION,15,6,17]; @symbol_type<0> = [String,15,21,27]; ]
-const APP_VERSION as String = "1.0.1";
+const APP_VERSION as String = "1.0.3";
 [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 18; @symbol_enumdef = [SessionState,18,5,17]; ]
 enum SessionState {
     [ @file = "/Users/ilie/Desktop/Dev/garmin/reticcc/source/reticccView.mc"; @line = 19; @position = 4; @symbol_enumdec = [STATE_IDLE,19,4,14]; ]
